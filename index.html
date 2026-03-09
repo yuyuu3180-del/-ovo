@@ -1,5 +1,4 @@
 <!DOCTYPE html>
-
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
@@ -11,8 +10,6 @@
 <meta name="apple-mobile-web-app-title" content="垂耳兔手机">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<!-- Android Chrome 状态栏颜色与背景一致 -->
-<meta name="theme-color" content="#ffffff">
 
 <style>
     :root {
@@ -28,98 +25,115 @@
         --island-bg: #000;
     }
 
-/* ===== 全局重置：彻底消灭边距和背景色泄漏 ===== */
-*, *::before, *::after {
-    margin: 0; padding: 0; box-sizing: border-box;
-    -webkit-tap-highlight-color: transparent;
-}
+/* ===== 全局重置 — 背景全黑，杜绝任何黄边 ===== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-/* html 和 body 背景必须与手机壳一致，防止任何缝隙透色 */
-html, body {
-    width: 100%; height: 100%;
-    /* 白色背景：任何缝隙/透明区域全部显示白色，不显示黄色 */
-    background-color: #ffffff;
+html {
+    background: #000 !important;
+    height: 100%;
     overflow: hidden;
-    margin: 0; padding: 0;
+}
+body {
+    background: #000 !important;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    display: flex; justify-content: center; align-items: center;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
 }
 
-/* ===== 手机主容器：用 inset:0 无缝铺满所有区域 ===== */
+/* ===== 核心手机容器 — 完全撑满，不加任何 padding ===== */
 #phone-wrapper {
     position: fixed;
-    /* inset:0 = top/right/bottom/left 全部为0，无缝填满含刘海/灵动岛/底部条区域 */
-    inset: 0;
+    top: 0; left: 0;
+    width: 100%;
+    height: 100dvh;
     background-color: var(--bg);
     background-size: cover;
     background-position: center;
     overflow: hidden;
     transition: background 0.3s;
-    /* 不在 wrapper 上加 padding！padding 会让背景色透出来形成彩边 */
+    /* 绝对不加 padding-top / padding-bottom —— 黄边就是从这里来的 */
 }
 
-/* ===== 锁屏 ===== */
+/* iPad / 平板 */
+@media (min-width: 431px) and (max-width: 1024px) {
+    body { background: #111 !important; }
+    #phone-wrapper { 
+        position: relative;
+        top: auto; left: auto;
+        max-width: 430px;
+        height: calc(100dvh - 20px);
+        border-radius: 40px;
+        box-shadow: 0 0 60px rgba(0,0,0,0.6);
+    }
+}
+
+/* 桌面浏览器 */
+@media (min-width: 1025px) {
+    #phone-wrapper { width: 100%; height: 100dvh; }
+}
+
+/* 超小屏 */
+@media (max-width: 360px) {
+    :root { --cell-w: 70px; --cell-h: 85px; }
+}
+
+/* 横屏 */
+@media (orientation: landscape) and (max-height: 500px) {
+    #phone-wrapper { max-width: 100%; height: 100dvh; }
+    .desktop-content { margin-top: 1dvh; height: calc(100% - 8dvh); }
+}
+
+/* PWA 独立模式 */
+@media (display-mode: standalone) {
+    html, body { background: #000 !important; }
+    #phone-wrapper { border-radius: 0; box-shadow: none; }
+}
+
+/* ===== 锁屏 — 子元素自己处理安全区 ===== */
 #lock-screen { 
-    position: absolute; 
-    inset: 0;
-    z-index: 100; 
+    position: absolute; width: 100%; height: 100%; z-index: 100; 
     display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
-    padding-top: max(env(safe-area-inset-top, 0px), 80px);
-    padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
-    padding-left: env(safe-area-inset-left, 0px);
-    padding-right: env(safe-area-inset-right, 0px);
+    padding-top: calc(env(safe-area-inset-top, 0px) + 80px);
+    padding-bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
     background-color: var(--bg);
+    background-image: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
     background-size: cover; background-position: center;
     transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1);
     touch-action: none;
 }
 
-/* ===== 桌面 ===== */
-#home-screen { 
-    position: absolute; 
-    inset: 0;
-    z-index: 50; 
-    background: var(--glass); 
-    backdrop-filter: var(--blur); 
-    -webkit-backdrop-filter: var(--blur); 
-    background-size: cover; 
-    background-position: center; 
+#home-screen {
+    position: absolute; width: 100%; height: 100%; z-index: 50;
+    background: var(--glass);
+    backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
+    background-size: cover; background-position: center;
 }
 
-/* ===== 顶部导航：适配各种刘海/灵动岛 ===== */
+/* ===== 顶部导航 — 安全区偏移 ===== */
 .top-nav {
     position: absolute;
-    top: max(env(safe-area-inset-top, 0px), 10px);
-    left: max(env(safe-area-inset-left, 0px), 20px);
-    right: max(env(safe-area-inset-right, 0px), 20px);
-    padding-top: 10px;
-    display: flex; justify-content: space-between; align-items: flex-start; z-index: 1000;
-    pointer-events: none; 
+    top: calc(env(safe-area-inset-top, 0px) + 10px);
+    left: 0; width: 100%; padding: 0 20px;
+    display: flex; justify-content: space-between; align-items: flex-start;
+    z-index: 1000; pointer-events: none; 
 }
 
 .nav-left-group { display: flex; flex-direction: column; gap: 10px; pointer-events: auto; }
-
 .nav-btn {
     background: rgba(255,255,255,0.95); padding: 8px 16px; border-radius: 20px;
     font-size: 13px; color: #333; cursor: pointer; border: none; font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s;
-    display: none; 
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1); transition: transform 0.1s; display: none; 
 }
 .nav-btn:active { transform: scale(0.95); }
 #diy-btn { background: var(--bunny-pink); color: white; }
-#done-btn { pointer-events: auto; background: #333; color: white;}
+#done-btn { pointer-events: auto; background: #333; color: white; }
 
-/* ===== 桌面内容区：顶部留出安全区+导航高度，底部留出 dock ===== */
-.desktop-content { 
-    position: relative; 
-    width: 100%; 
-    margin-top: calc(max(env(safe-area-inset-top, 0px), 10px) + 60px);
-    height: calc(100% - max(env(safe-area-inset-top, 0px), 10px) - 60px - 90px - env(safe-area-inset-bottom, 0px));
-}
+.desktop-content { position: relative; width: 100%; height: calc(100% - 16dvh); margin-top: 3dvh; }
 
-/* ===== App 图标 ===== */
+/* ===== App / 小组件 ===== */
 .app-item, .widget-item { position: absolute; z-index: 10; transition: transform 0.2s, left 0.3s, top 0.3s; }
 .app-item { width: var(--cell-w); height: var(--cell-h); display: flex; flex-direction: column; align-items: center; justify-content: center; }
-
 .app-icon { 
     width: calc(var(--cell-w) * 0.72); height: calc(var(--cell-w) * 0.72); 
     max-width: 65px; max-height: 65px;
@@ -129,7 +143,6 @@ html, body {
     background-size: cover; background-position: center; overflow: hidden; background-repeat: no-repeat;
 }
 .app-name { font-size: clamp(10px, 2.5vw, 12px); margin-top: 6px; color: #444; font-weight: 500; pointer-events: none; text-shadow: 0 1px 2px rgba(255,255,255,0.8); }
-
 .widget-item { border-radius: 28px; box-shadow: 0 10px 30px rgba(0,0,0,0.08); overflow: hidden; background: #fff; }
 
 /* ===== 灵动岛 ===== */
@@ -141,7 +154,7 @@ html, body {
     z-index: 3000; box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 .widget-island.expanded { width: 370px !important; height: 100px !important; border-radius: 38px; padding: 12px 20px; justify-content: space-between; }
-.island-content-collapsed { display: flex; align-items: center; font-size: 12px; opacity: 1; transition: opacity 0.2s; white-space: nowrap; font-weight: 500; letter-spacing: 0.5px;}
+.island-content-collapsed { display: flex; align-items: center; font-size: 12px; opacity: 1; transition: opacity 0.2s; white-space: nowrap; font-weight: 500; letter-spacing: 0.5px; }
 .widget-island.expanded .island-content-collapsed { opacity: 0; pointer-events: none; display: none; }
 .island-content-expanded { display: none; width: 100%; height: 100%; opacity: 0; transition: opacity 0.3s 0.1s; align-items: center; gap: 15px; }
 .widget-island.expanded .island-content-expanded { display: flex; opacity: 1; }
@@ -172,7 +185,7 @@ html, body {
 .music-controls { display: flex; align-items: center; gap: 20px; }
 .music-heart { color: var(--music-red); margin-left: auto; }
 
-/* ===== Twitter 组件 ===== */
+/* ===== 推特组件 ===== */
 .widget-twitter { width: calc(var(--cell-w) * 2 - 12px); height: calc(var(--cell-h) * 2 - 12px); }
 .tw-header { height: 40%; background: #eee center/cover; cursor: pointer; }
 .tw-content { position: relative; padding: 8px 12px; display: flex; flex-direction: column; height: 60%; }
@@ -183,30 +196,7 @@ html, body {
 .tw-bio { font-size: clamp(10px, 2.5vw, 11px); color: #333; margin-top: auto; margin-bottom: 5px; opacity: 0.9; line-height: 1.3; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; outline: none; }
 @keyframes rotate { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 
-/* ===== 备忘录组件 ===== */
-.widget-memo {
-    width: calc(var(--cell-w) * 2 - 12px);
-    height: calc(var(--cell-h) * 2 - 12px);
-    background: #fffafa;
-    border-radius: 20px;
-    padding: 12px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-image: radial-gradient(#ffe0e6 1.5px, transparent 1.5px);
-    background-size: 10px 10px; 
-    border: 2px solid #fff0f3;
-    box-shadow: 0 4px 10px rgba(255,182,193,0.15);
-}
-.memo-top { display: flex; justify-content: space-between; align-items: flex-start; height: 50px; margin-bottom: 5px; }
-.memo-avatar { width: 45px; height: 45px; border-radius: 50%; background: #ddd center/cover; border: 2px solid #fff; cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
-.memo-decor { font-size: 14px; color: #ffb6c1; font-weight: bold; text-shadow: 1px 1px 0 #fff; margin-top: 5px; }
-.memo-lines { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.memo-line { display: flex; align-items: flex-end; gap: 8px; }
-.memo-icon { font-size: 16px; margin-bottom: 2px; }
-.memo-text { flex: 1; border-bottom: 2px dashed #ffc0cb; font-size: 12px; color: #666; padding-bottom: 2px; outline: none; white-space: nowrap; overflow: hidden; }
-
-/* ===== 删除按钮 & 抖动 ===== */
+/* ===== 删除 / 抖动 ===== */
 .remove-btn { 
     position: absolute; top: -8px; left: -8px; width: 28px; height: 28px; 
     background: var(--delete-red); color: white; border-radius: 50%; 
@@ -218,58 +208,40 @@ html, body {
 .dragging { z-index: 1000 !important; transform: scale(1.05) !important; opacity: 0.9; transition: none !important; }
 @keyframes shake { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
 
-/* ===== Dock：紧贴底部，彻底填满安全区 ===== */
-.dock-container { 
-    position: absolute; 
-    bottom: 0;
-    left: 0; right: 0; 
-    height: calc(90px + env(safe-area-inset-bottom, 0px));
-    padding-bottom: env(safe-area-inset-bottom, 0px);
-    padding-left: 20px; padding-right: 20px;
-    /* 完全透明：壁纸从底部一直铺到边，真正全屏 */
-    background: transparent;
-    border-radius: 0;
-    display: flex; justify-content: space-around; align-items: center; 
-    z-index: 200; 
-}
-
-/* ===== Home bar ===== */
-.home-bar { 
-    position: absolute; 
-    bottom: max(calc(env(safe-area-inset-bottom, 0px) / 2 - 2px), 6px);
-    left: 50%; transform: translateX(-50%); 
-    width: 130px; height: 5px; 
-    background: rgba(0,0,0,0.15); border-radius: 10px; cursor: pointer; z-index: 300; 
-}
+/* ===== Dock ===== */
+.dock-container { position: absolute; bottom: 3dvh; left: 20px; right: 20px; height: 95px; background: rgba(255,255,255,0.4); border-radius: 32px; display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(10px); z-index: 200; }
+.home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 130px; height: 5px; background: rgba(0,0,0,0.1); border-radius: 10px; cursor: pointer; z-index: 300; }
 
 /* ===== 底部面板 ===== */
 .bottom-panel {
     position: absolute; bottom: -100%; left: 0; width: 100%; height: 75%;
     background: rgba(255,255,255,0.98); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
     border-top-left-radius: 35px; border-top-right-radius: 35px;
-    z-index: 2000; transition: bottom 0.5s cubic-bezier(0.2, 1, 0.2, 1); padding: 30px; overflow-y: auto; display: flex; flex-direction: column;
+    z-index: 2000; transition: bottom 0.5s cubic-bezier(0.2, 1, 0.2, 1);
+    padding: 30px; overflow-y: auto; display: flex; flex-direction: column;
 }
 .bottom-panel.active { bottom: 0; }
 .section-title { margin: 25px 0 15px; font-size: 16px; color: #111; font-weight: bold; border-left: 4px solid var(--bunny-pink); padding-left: 10px; }
 .close-panel-btn { margin-top: auto; width: 100%; padding: 15px; border-radius: 20px; border: none; background: #f0f0f0; font-weight: bold; font-size: 15px; cursor: pointer; }
 
+/* ===== 壁纸 ===== */
 .wallpaper-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; }
 .wallpaper-item { 
-    height: 120px; background: #eee; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; border: 2px dashed #ccc; position: relative; overflow: hidden;
+    height: 120px; background: #eee; border-radius: 15px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    cursor: pointer; border: 2px dashed #ccc; position: relative; overflow: hidden;
     background-size: cover; background-position: center;
 }
-.wallpaper-label { background: rgba(0,0,0,0.5); color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; z-index: 2; pointer-events: none;}
+.wallpaper-label { background: rgba(0,0,0,0.5); color: white; padding: 4px 10px; border-radius: 10px; font-size: 12px; z-index: 2; pointer-events: none; }
 
+/* ===== App DIY ===== */
 .app-edit-grid { display: flex; flex-wrap: wrap; gap: 15px; }
 .app-edit-item { display: flex; flex-direction: column; align-items: center; width: 60px; cursor: pointer; }
-.app-edit-icon { 
-    width: 55px; height: 55px; background: #fff; border-radius: 14px; 
-    display: flex; justify-content: center; align-items: center; font-size: 24px; 
-    border: 1px solid #eee; background-size: cover; background-position: center; 
-}
+.app-edit-icon { width: 55px; height: 55px; background: #fff; border-radius: 14px; display: flex; justify-content: center; align-items: center; font-size: 24px; border: 1px solid #eee; background-size: cover; background-position: center; }
 .app-edit-name { font-size: 10px; margin-top: 5px; color: #666; text-align: center; }
 
-#db-loading { position: absolute; inset: 0; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #555; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
+/* ===== 加载 ===== */
+#db-loading { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255,255,255,0.9); z-index: 9999; display: flex; justify-content: center; align-items: center; font-weight: bold; color: #555; pointer-events: none; opacity: 0; transition: opacity 0.5s; }
 #db-loading.show { opacity: 1; pointer-events: auto; }
 
 .upload-btn-large {
@@ -281,73 +253,33 @@ html, body {
 
 /* ===== App 打开层 ===== */
 #app-overlay {
-    position: absolute;
-    inset: 0;
-    z-index: 200;
-    display: none;
-    background: #fff;
-    overflow: hidden;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+    z-index: 200; display: none; background: #fff; border-radius: inherit; overflow: hidden;
 }
 #app-overlay.open {
     display: block;
     animation: appOpen 0.35s cubic-bezier(0.34, 1.2, 0.64, 1);
 }
-@keyframes appOpen {
-    from { opacity: 0; transform: scale(0.88); }
-    to   { opacity: 1; transform: scale(1); }
-}
-#app-iframe {
-    border: none;
-    width: 100%;
-    height: 100%;
-    display: block;
-}
+@keyframes appOpen { from { opacity: 0; transform: scale(0.88); } to { opacity: 1; transform: scale(1); } }
+#app-iframe { border: none; width: 100%; height: 100%; display: block; }
 
-/* ===== 超小屏手机 ===== */
-@media (max-width: 360px) {
-    :root { --cell-w: 70px; --cell-h: 85px; }
+/* ===== 备忘录组件 ===== */
+.widget-memo {
+    width: calc(var(--cell-w) * 2 - 12px);
+    height: calc(var(--cell-h) * 2 - 12px);
+    background: #fffafa; border-radius: 20px; padding: 12px;
+    display: flex; flex-direction: column; position: relative;
+    background-image: radial-gradient(#ffe0e6 1.5px, transparent 1.5px);
+    background-size: 10px 10px; 
+    border: 2px solid #fff0f3; box-shadow: 0 4px 10px rgba(255,182,193,0.15);
 }
-
-/* ===== iPad / 平板：居中显示手机壳 ===== */
-@media (min-width: 431px) and (max-width: 1024px) {
-    body { 
-        background: #1a1a1a;
-        display: flex; justify-content: center; align-items: center;
-    }
-    #phone-wrapper { 
-        position: relative;
-        inset: unset;
-        width: 390px; 
-        height: 844px;
-        max-height: 95vh;
-        border-radius: 40px;
-        box-shadow: 0 0 60px rgba(0,0,0,0.6);
-    }
-}
-
-/* ===== 桌面浏览器：居中手机壳 ===== */
-@media (min-width: 1025px) {
-    body { 
-        background: #1a1a1a;
-        display: flex; justify-content: center; align-items: center;
-    }
-    #phone-wrapper { 
-        position: relative;
-        inset: unset;
-        width: 390px; 
-        height: 844px;
-        max-height: 95vh;
-        border-radius: 40px;
-        box-shadow: 0 0 60px rgba(0,0,0,0.6);
-    }
-}
-
-/* ===== 横屏手机 ===== */
-@media (orientation: landscape) and (max-height: 500px) {
-    #phone-wrapper { inset: 0; position: fixed; border-radius: 0; }
-    .desktop-content { margin-top: 50px; height: calc(100% - 50px - 70px); }
-    .dock-container { height: 70px; border-radius: 20px 20px 0 0; padding-bottom: 0; }
-}
+.memo-top { display: flex; justify-content: space-between; align-items: flex-start; height: 50px; margin-bottom: 5px; }
+.memo-avatar { width: 45px; height: 45px; border-radius: 50%; background: #ddd center/cover; border: 2px solid #fff; cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.1); }
+.memo-decor { font-size: 14px; color: #ffb6c1; font-weight: bold; text-shadow: 1px 1px 0 #fff; margin-top: 5px; }
+.memo-lines { display: flex; flex-direction: column; gap: 8px; flex: 1; }
+.memo-line { display: flex; align-items: flex-end; gap: 8px; }
+.memo-icon { font-size: 16px; margin-bottom: 2px; }
+.memo-text { flex: 1; border-bottom: 2px dashed #ffc0cb; font-size: 12px; color: #666; padding-bottom: 2px; outline: none; white-space: nowrap; overflow: hidden; }
 </style>
 
 </head>
@@ -356,87 +288,84 @@ html, body {
 <div id="phone-wrapper">
     <div id="db-loading" class="show">正在校准灵动岛...</div>
 
-<!-- App 打开层 -->
-
-<div id="app-overlay">
-    <iframe id="app-iframe" src="" allowfullscreen></iframe>
-</div>
-
-<div id="lock-screen">
-    <div style="text-align: center; pointer-events: none;">
-        <h1 id="clock" style="font-size: 80px; font-weight: 200; color: #333;">20:45</h1>
-        <p id="date-str" style="color: #555;">3月3日 星期二</p>
+    <div id="app-overlay">
+        <iframe id="app-iframe" src="" allowfullscreen></iframe>
     </div>
-    <p style="color: #666; font-weight: 500;">↑ 向上滑动解锁</p>
-</div>
 
-<div id="home-screen">
-    <div class="top-nav">
-        <div class="nav-left-group">
-            <button class="nav-btn" id="add-widget-btn">＋ 添加组件</button>
-            <button class="nav-btn" id="diy-btn">🐰 小兔DIY</button>
+    <div id="lock-screen">
+        <div style="text-align: center; pointer-events: none;">
+            <h1 id="clock" style="font-size: 80px; font-weight: 200; color: #333;">20:45</h1>
+            <p id="date-str" style="color: #555;">3月3日 星期二</p>
         </div>
-        <button class="nav-btn" id="done-btn">完成</button>
+        <p style="color: #666; font-weight: 500;">↑ 向上滑动解锁</p>
     </div>
-    <div class="desktop-content" id="desktop"></div>
-    <div class="dock-container">
-        <div class="app-icon" data-dock-id="dock-phone">📞</div>
-        <div class="app-icon" data-dock-id="dock-msg">💬</div>
-        <div class="app-icon" data-dock-id="dock-browser">🌐</div>
-        <div class="app-icon" data-dock-id="dock-camera">📷</div>
-    </div>
-    <div class="home-bar" id="to-lock"></div>
-</div>
 
-<div id="widget-panel" class="bottom-panel">
-    <h2 style="text-align: center; font-size: 20px; margin-bottom: 20px;">组件中心</h2>
-    <div class="section-title">特别推荐</div>
-    <div onclick="addNewWidget('island')" style="width: 100%; height: 60px; background: #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; cursor: pointer; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
-        🏝️ 添加灵动岛
+    <div id="home-screen">
+        <div class="top-nav">
+            <div class="nav-left-group">
+                <button class="nav-btn" id="add-widget-btn">＋ 添加组件</button>
+                <button class="nav-btn" id="diy-btn">🐰 小兔DIY</button>
+            </div>
+            <button class="nav-btn" id="done-btn">完成</button>
+        </div>
+        <div class="desktop-content" id="desktop"></div>
+        <div class="dock-container">
+            <div class="app-icon" data-dock-id="dock-phone">📞</div>
+            <div class="app-icon" data-dock-id="dock-msg">💬</div>
+            <div class="app-icon" data-dock-id="dock-browser">🌐</div>
+            <div class="app-icon" data-dock-id="dock-camera">📷</div>
+        </div>
+        <div class="home-bar" id="to-lock"></div>
     </div>
-    <div class="section-title">媒体与社交</div>
-    <div style="display: flex; gap: 15px;">
-        <div onclick="addNewWidget('music')" style="width: 150px; height: 90px; background: #333; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; cursor: pointer;">🎵 网易云音乐</div>
-        <div onclick="addNewWidget('twitter')" style="width: 100px; height: 90px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--twitter-blue); cursor: pointer;">𝕏 推特</div>
-        <div onclick="addNewWidget('memo')" style="width: 100px; height: 90px; background: #fffafa; border: 1px solid #ffe0e6; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #ff8da1; cursor: pointer;">备忘录</div>
-    </div>
-    <div class="section-title">精选 App</div>
-    <div id="app-store-grid" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
-    <button class="close-panel-btn" onclick="closePanels()">返回桌面</button>
-</div>
 
-<div id="diy-panel" class="bottom-panel">
-    <h2 style="text-align: center; font-size: 20px; margin-bottom: 10px;">🐰 小兔 DIY</h2>
-    <div class="section-title">终极系统备份 (桌面 + Chat)</div>
-    <div style="display: flex; gap: 15px; margin-bottom: 10px;">
-        <button class="close-panel-btn" style="margin-top: 0; background: #333; color: white;" onclick="exportAll()">📥 导出整机备份</button>
-        <label class="close-panel-btn" style="margin-top: 0; background: var(--bunny-pink); color: white; text-align: center; cursor: pointer;">
-            📤 恢复整机备份
-            <input type="file" accept=".json" style="display: none;" onchange="importAll(event)">
-        </label>
-    </div>
-    <div class="section-title">灵动岛音频配置</div>
-    <div style="background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #eee;">
-        <div style="font-size: 12px; color: #666; margin-bottom: 5px;">上传 MP3 音频文件:</div>
-        <div class="upload-btn-large" onclick="triggerAudioUpload()">
-            🎵 <span id="audio-upload-text">点击选择 MP3 文件...</span>
+    <div id="widget-panel" class="bottom-panel">
+        <h2 style="text-align: center; font-size: 20px; margin-bottom: 20px;">组件中心</h2>
+        <div class="section-title">特别推荐</div>
+        <div onclick="addNewWidget('island')" style="width: 100%; height: 60px; background: #000; border-radius: 30px; display: flex; align-items: center; justify-content: center; font-size: 14px; color: white; cursor: pointer; margin-bottom: 20px; box-shadow: 0 5px 15px rgba(0,0,0,0.2);">
+            🏝️ 添加灵动岛
         </div>
-        <div style="font-size: 10px; color: #999; margin-top: 8px;">文件将自动保存在浏览器中，刷新不丢失。</div>
-    </div>
-    <div class="section-title">壁纸设置</div>
-    <div class="wallpaper-grid">
-        <div class="wallpaper-item" id="wp-lock-preview" onclick="triggerWallaper('lock')">
-            <div class="wallpaper-label">锁屏壁纸</div>
+        <div class="section-title">媒体与社交</div>
+        <div style="display: flex; gap: 15px;">
+            <div onclick="addNewWidget('music')" style="width: 150px; height: 90px; background: #333; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; cursor: pointer;">🎵 网易云音乐</div>
+            <div onclick="addNewWidget('twitter')" style="width: 100px; height: 90px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--twitter-blue); cursor: pointer;">𝕏 推特</div>
+            <div onclick="addNewWidget('memo')" style="width: 100px; height: 90px; background: #fffafa; border: 1px solid #ffe0e6; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #ff8da1; cursor: pointer;">备忘录</div>
         </div>
-        <div class="wallpaper-item" id="wp-home-preview" onclick="triggerWallaper('home')">
-            <div class="wallpaper-label">桌面壁纸</div>
-        </div>
+        <div class="section-title">精选 App</div>
+        <div id="app-store-grid" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
+        <button class="close-panel-btn" onclick="closePanels()">返回桌面</button>
     </div>
-    <div class="section-title">App & Dock 图标换肤</div>
-    <div id="app-diy-grid" class="app-edit-grid"></div>
-    <button class="close-panel-btn" onclick="closePanels()">完成装修</button>
-</div>
 
+    <div id="diy-panel" class="bottom-panel">
+        <h2 style="text-align: center; font-size: 20px; margin-bottom: 10px;">🐰 小兔 DIY</h2>
+        <div class="section-title">终极系统备份 (桌面 + Chat)</div>
+        <div style="display: flex; gap: 15px; margin-bottom: 10px;">
+            <button class="close-panel-btn" style="margin-top: 0; background: #333; color: white;" onclick="exportAll()">📥 导出整机备份</button>
+            <label class="close-panel-btn" style="margin-top: 0; background: var(--bunny-pink); color: white; text-align: center; cursor: pointer;">
+                📤 恢复整机备份
+                <input type="file" accept=".json" style="display: none;" onchange="importAll(event)">
+            </label>
+        </div>
+        <div class="section-title">灵动岛音频配置</div>
+        <div style="background: #fff; padding: 15px; border-radius: 15px; border: 1px solid #eee;">
+            <div style="font-size: 12px; color: #666; margin-bottom: 5px;">上传 MP3 音频文件:</div>
+            <div class="upload-btn-large" onclick="triggerAudioUpload()">
+                🎵 <span id="audio-upload-text">点击选择 MP3 文件...</span>
+            </div>
+            <div style="font-size: 10px; color: #999; margin-top: 8px;">文件将自动保存在浏览器中，刷新不丢失。</div>
+        </div>
+        <div class="section-title">壁纸设置</div>
+        <div class="wallpaper-grid">
+            <div class="wallpaper-item" id="wp-lock-preview" onclick="triggerWallaper('lock')">
+                <div class="wallpaper-label">锁屏壁纸</div>
+            </div>
+            <div class="wallpaper-item" id="wp-home-preview" onclick="triggerWallaper('home')">
+                <div class="wallpaper-label">桌面壁纸</div>
+            </div>
+        </div>
+        <div class="section-title">App & Dock 图标换肤</div>
+        <div id="app-diy-grid" class="app-edit-grid"></div>
+        <button class="close-panel-btn" onclick="closePanels()">完成装修</button>
+    </div>
 </div>
 
 <input type="file" id="image-input" accept="image/*" style="display: none;">
@@ -530,7 +459,7 @@ html, body {
             let col = parseInt(el.dataset.col) || 0;
             let row = parseInt(el.dataset.row) || 0;
             el.style.left = (layoutMarginX + col * CELL_W) + 'px';
-            el.style.top = (0 + row * CELL_H) + 'px';
+            el.style.top = (row * CELL_H) + 'px';
         });
     }
 
@@ -669,20 +598,16 @@ html, body {
             const savedSettings = await getFromDB('settings');
             const audioBlob = await getFromDB('island_audio_blob');
             loading.classList.remove('show');
-
             if(savedSettings) {
                 if(savedSettings.lockBg) { globalImageCache['wallpaper_lock'] = savedSettings.lockBg; lockScreen.style.backgroundImage = savedSettings.lockBg; document.getElementById('wp-lock-preview').style.backgroundImage = savedSettings.lockBg; }
                 if(savedSettings.homeBg) { globalImageCache['wallpaper_home'] = savedSettings.homeBg; document.getElementById('home-screen').style.backgroundImage = savedSettings.homeBg; document.getElementById('wp-home-preview').style.backgroundImage = savedSettings.homeBg; }
                 if(savedSettings.customIcons) { customAppIcons = savedSettings.customIcons; for(let appId in customAppIcons) { globalImageCache['icon_' + appId] = savedSettings['icon_img_' + appId]; } }
             }
-
             if(audioBlob) { islandAudioUrl = URL.createObjectURL(audioBlob); audioText.innerText = "已加载本地 MP3 (点击更换)"; }
-
             ['dock-phone', 'dock-msg', 'dock-browser', 'dock-camera'].forEach(dockId => {
                 const dockEl = document.querySelector(`.app-icon[data-dock-id="${dockId}"]`);
                 if(dockEl && customAppIcons[dockId] && globalImageCache['icon_' + dockId]) { dockEl.innerText = ''; dockEl.style.backgroundImage = globalImageCache['icon_' + dockId]; }
             });
-
             desktop.innerHTML = '';
             if (savedLayout && savedLayout.length > 0) {
                 savedLayout.forEach(item => {
@@ -697,21 +622,17 @@ html, body {
                 createAppElement('app-bunny', 2, 2);
                 createAppElement('app-jieyou', 3, 2);
             }
-
             setTimeout(() => {
                 document.querySelectorAll('.app-item').forEach(el => {
                     const id = el.dataset.id;
                     if(customAppIcons[id] && globalImageCache['icon_' + id]) { const iconEl = el.querySelector('.app-icon'); iconEl.innerText = ''; iconEl.style.backgroundImage = globalImageCache['icon_' + id]; }
                 });
             }, 50);
-
-            updateAppStore();
-            updateDiyGrid();
+            updateAppStore(); updateDiyGrid();
         } catch (e) { console.error(e); loading.innerText = "出错了"; }
     }
 
     function triggerAudioUpload() { audioFileInput.click(); }
-
     audioFileInput.onchange = async (e) => {
         const file = e.target.files[0];
         if(file) { audioText.innerText = "正在保存..."; await saveToDB('island_audio_blob', file); islandAudioUrl = URL.createObjectURL(file); audioText.innerText = "上传成功！(已保存)"; alert('MP3 音频上传成功！点击灵动岛即可播放~'); }
@@ -726,7 +647,20 @@ html, body {
         div.style.transform = 'translateX(-50%)'; 
         div.style.top = '-8px'; 
         const d = data || { title: "垂耳兔", subtitle: "希望垂耳兔小手机可以给你带来快乐^ ^" };
-        div.innerHTML = `<div class="island-content-collapsed"></div><div class="island-content-expanded"><div class="island-avatar"></div><div class="island-text"><div class="island-title" contenteditable="true">${d.title}</div><div class="island-subtitle" contenteditable="true">${d.subtitle}</div></div><div class="island-visualizer"><div class="bar"></div><div class="bar"></div><div class="bar"></div></div></div><div class="remove-btn">×</div>`;
+        div.innerHTML = `
+            <div class="island-content-collapsed"></div>
+            <div class="island-content-expanded">
+                <div class="island-avatar"></div>
+                <div class="island-text">
+                    <div class="island-title" contenteditable="true">${d.title}</div>
+                    <div class="island-subtitle" contenteditable="true">${d.subtitle}</div>
+                </div>
+                <div class="island-visualizer">
+                    <div class="bar"></div><div class="bar"></div><div class="bar"></div>
+                </div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
         const imgKey = div.dataset.id + '_island';
         if(globalImageCache[imgKey]) div.querySelector('.island-avatar').style.backgroundImage = globalImageCache[imgKey];
         else { const def = "url('https://picsum.photos/seed/handsome/100')"; div.querySelector('.island-avatar').style.backgroundImage = def; globalImageCache[imgKey] = def; }
@@ -734,10 +668,13 @@ html, body {
             if(isEditing) return;
             if(e.target.closest('[contenteditable]') || e.target.classList.contains('remove-btn')) return;
             div.classList.toggle('expanded');
-            if(div.classList.contains('expanded')) { if(islandAudioUrl) { audioEl.src = islandAudioUrl; audioEl.load(); audioEl.play().catch(e => {}); } }
-            else { audioEl.pause(); }
+            if(div.classList.contains('expanded')) {
+                if(islandAudioUrl) { audioEl.src = islandAudioUrl; audioEl.load(); audioEl.play().catch(e => { console.log('自动播放受限'); }); }
+            } else { audioEl.pause(); }
         };
-        div.querySelector('.island-avatar').onclick = (e) => { if(!isEditing) { e.stopPropagation(); activeEditType = 'widget'; currentImgKey = imgKey; imgInput.click(); } };
+        div.querySelector('.island-avatar').onclick = (e) => {
+            if(!isEditing) { e.stopPropagation(); activeEditType = 'widget'; currentImgKey = imgKey; imgInput.click(); }
+        };
         document.addEventListener('click', (e) => { if (!div.contains(e.target)) { div.classList.remove('expanded'); audioEl.pause(); } });
         div.querySelectorAll('[contenteditable]').forEach(el => { el.onclick = (e) => e.stopPropagation(); el.onblur = () => saveLayout(); });
         div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
@@ -770,7 +707,8 @@ html, body {
         div.dataset.col = col; div.dataset.row = row;
         const d = data || { name: "XX", handle: "@QwQ_520", bio: "这里是心情签名..." };
         div.innerHTML = `<div class="tw-header"></div><div class="tw-content"><div class="tw-avatar"></div><div class="tw-info-block"><div class="tw-name" contenteditable="true">${d.name}</div><div class="tw-handle" contenteditable="true">${d.handle}</div></div><div class="tw-bio" contenteditable="true">${d.bio}</div></div><div class="remove-btn">×</div>`;
-        const bgKey = div.dataset.id + '_bg'; const avatarKey = div.dataset.id + '_avatar';
+        const bgKey = div.dataset.id + '_bg';
+        const avatarKey = div.dataset.id + '_avatar';
         if(!globalImageCache[bgKey] && !data) globalImageCache[bgKey] = "url('https://picsum.photos/seed/bg/300/150')";
         if(!globalImageCache[avatarKey] && !data) globalImageCache[avatarKey] = "url('https://picsum.photos/seed/bunny/100')";
         if (globalImageCache[bgKey]) div.querySelector('.tw-header').style.backgroundImage = globalImageCache[bgKey];
@@ -788,7 +726,18 @@ html, body {
         div.dataset.type = 'memo';
         div.dataset.col = col; div.dataset.row = row;
         const d = data || { line1: "今天也要开心呀~", line2: "(｡･ω･｡) 打游戏", line3: "♪ 听音乐" };
-        div.innerHTML = `<div class="memo-top"><div class="memo-avatar"></div><div class="memo-decor">しゅき(>ω<)</div></div><div class="memo-lines"><div class="memo-line"><span class="memo-icon">💬</span><div class="memo-text" contenteditable="true">${d.line1}</div></div><div class="memo-line"><span class="memo-icon">🎮</span><div class="memo-text" contenteditable="true">${d.line2}</div></div><div class="memo-line"><span class="memo-icon">🎵</span><div class="memo-text" contenteditable="true">${d.line3}</div></div></div><div class="remove-btn">×</div>`;
+        div.innerHTML = `
+            <div class="memo-top">
+                <div class="memo-avatar"></div>
+                <div class="memo-decor">しゅき(>ω<)</div>
+            </div>
+            <div class="memo-lines">
+                <div class="memo-line"><span class="memo-icon">💬</span><div class="memo-text" contenteditable="true">${d.line1}</div></div>
+                <div class="memo-line"><span class="memo-icon">🎮</span><div class="memo-text" contenteditable="true">${d.line2}</div></div>
+                <div class="memo-line"><span class="memo-icon">🎵</span><div class="memo-text" contenteditable="true">${d.line3}</div></div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
         const avatarKey = div.dataset.id + '_avatar';
         if(!globalImageCache[avatarKey] && !data) globalImageCache[avatarKey] = "url('https://picsum.photos/seed/cute/100')";
         if (globalImageCache[avatarKey]) div.querySelector('.memo-avatar').style.backgroundImage = globalImageCache[avatarKey];
@@ -803,7 +752,8 @@ html, body {
         const div = document.createElement('div');
         div.className = 'app-item'; div.dataset.id = id; div.dataset.type = 'app';
         div.dataset.col = col; div.dataset.row = row;
-        let iconContent = data.icon; let iconStyle = '';
+        let iconContent = data.icon;
+        let iconStyle = '';
         if (customAppIcons[id] && globalImageCache['icon_' + id]) { iconContent = ''; iconStyle = `background-image: ${globalImageCache['icon_' + id]};`; }
         div.innerHTML = `<div class="app-icon" style="${iconStyle}">${iconContent}</div><div class="app-name">${data.name}</div><div class="remove-btn">×</div>`;
         desktop.appendChild(div); initDrag(div);
@@ -844,8 +794,10 @@ html, body {
     function initDrag(el) {
         if(el.dataset.type === 'island') return;
         el.style.left = (layoutMarginX + el.dataset.col * CELL_W) + 'px';
-        el.style.top = (0 + el.dataset.row * CELL_H) + 'px';
-        if(el.querySelector('.remove-btn')) { el.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); el.remove(); updateAppStore(); saveLayout(); }; }
+        el.style.top = (el.dataset.row * CELL_H) + 'px';
+        if(el.querySelector('.remove-btn')) {
+            el.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); el.remove(); updateAppStore(); saveLayout(); };
+        }
         const start = e => {
             if(e.target.closest('[contenteditable]')) return;
             if (!isEditing) {
@@ -865,18 +817,24 @@ html, body {
             activeEl = el; const ev = e.touches ? e.touches[0] : e;
             const rect = el.getBoundingClientRect();
             const ox = ev.clientX - rect.left, oy = ev.clientY - rect.top;
-            const moveHandler = move => { const mev = move.touches ? move.touches[0] : move; const dRect = desktop.getBoundingClientRect(); el.classList.add('dragging'); el.style.left = (mev.clientX - dRect.left - ox) + 'px'; el.style.top = (mev.clientY - dRect.top - oy) + 'px'; };
+            const moveHandler = move => {
+                const mev = move.touches ? move.touches[0] : move;
+                const dRect = desktop.getBoundingClientRect();
+                el.classList.add('dragging');
+                el.style.left = (mev.clientX - dRect.left - ox) + 'px';
+                el.style.top = (mev.clientY - dRect.top - oy) + 'px';
+            };
             const endHandler = () => {
                 window.removeEventListener('mousemove', moveHandler); window.removeEventListener('touchmove', moveHandler);
                 window.removeEventListener('mouseup', endHandler); window.removeEventListener('touchend', endHandler);
                 if (activeEl && isEditing) {
                     let col = Math.round((parseFloat(activeEl.style.left) - layoutMarginX) / CELL_W);
-                    let row = Math.round((parseFloat(activeEl.style.top) - 0) / CELL_H);
+                    let row = Math.round(parseFloat(activeEl.style.top) / CELL_H);
                     activeEl.dataset.col = Math.max(0, Math.min(activeEl.dataset.type==='music' ? 2 : 3, col)); 
                     activeEl.dataset.row = Math.max(0, Math.min(6, row));
                     activeEl.classList.remove('dragging');
                     activeEl.style.left = (layoutMarginX + activeEl.dataset.col * CELL_W) + 'px';
-                    activeEl.style.top = (0 + activeEl.dataset.row * CELL_H) + 'px';
+                    activeEl.style.top = (activeEl.dataset.row * CELL_H) + 'px';
                     saveLayout();
                 }
                 activeEl = null;
@@ -943,11 +901,22 @@ html, body {
                     globalImageCache[currentImgKey] = cssUrl;
                     if(currentImgKey.includes('cover')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-music[data-id="${id}"] .music-cover`); if(el) el.style.backgroundImage = cssUrl; }
                     else if(currentImgKey.includes('bg')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-header`); if(el) el.style.backgroundImage = cssUrl; }
-                    else if(currentImgKey.includes('avatar')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-avatar`); if(el) el.style.backgroundImage = cssUrl; const memoEl = document.querySelector(`.widget-memo[data-id="${id}"] .memo-avatar`); if(memoEl) memoEl.style.backgroundImage = cssUrl; }
-                    else if(currentImgKey.includes('island')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-island[data-id="${id}"] .island-avatar`); if(el) el.style.backgroundImage = cssUrl; }
+                    else if(currentImgKey.includes('avatar')) {
+                        const id = currentImgKey.split('_')[0];
+                        const el = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-avatar`); if(el) el.style.backgroundImage = cssUrl;
+                        const memoEl = document.querySelector(`.widget-memo[data-id="${id}"] .memo-avatar`); if(memoEl) memoEl.style.backgroundImage = cssUrl;
+                    } else if(currentImgKey.includes('island')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-island[data-id="${id}"] .island-avatar`); if(el) el.style.backgroundImage = cssUrl; }
                 } 
                 else if (activeEditType === 'wallpaper-lock') { globalImageCache['wallpaper_lock'] = cssUrl; lockScreen.style.backgroundImage = cssUrl; document.getElementById('wp-lock-preview').style.backgroundImage = cssUrl; }
-                else if (activeEditType === 'wallpaper-home') { globalImageCache['wallpaper_home'] = cssUrl; document.getElementById('home-screen').style.backgroundImage = cssUrl; document.getElementById('wp-home-preview').style.backgroundImage = cssUrl; }                else if (activeEditType === 'app-icon') { globalImageCache['icon_' + activeAppId] = cssUrl; customAppIcons[activeAppId] = true; const desktopApp = document.querySelector(`.app-item[data-id="${activeAppId}"] .app-icon`); if (desktopApp) { desktopApp.innerText = ''; desktopApp.style.backgroundImage = cssUrl; } const dockApp = document.querySelector(`.app-icon[data-dock-id="${activeAppId}"]`); if(dockApp) { dockApp.innerText = ''; dockApp.style.backgroundImage = cssUrl; } updateDiyGrid(); }
+                else if (activeEditType === 'wallpaper-home') { globalImageCache['wallpaper_home'] = cssUrl; document.getElementById('home-screen').style.backgroundImage = cssUrl; document.getElementById('wp-home-preview').style.backgroundImage = cssUrl; }
+                else if (activeEditType === 'app-icon') {
+                    globalImageCache['icon_' + activeAppId] = cssUrl; customAppIcons[activeAppId] = true; 
+                    const desktopApp = document.querySelector(`.app-item[data-id="${activeAppId}"] .app-icon`);
+                    if (desktopApp) { desktopApp.innerText = ''; desktopApp.style.backgroundImage = cssUrl; }
+                    const dockApp = document.querySelector(`.app-icon[data-dock-id="${activeAppId}"]`);
+                    if(dockApp) { dockApp.innerText = ''; dockApp.style.backgroundImage = cssUrl; }
+                    updateDiyGrid(); 
+                }
                 saveLayout(); 
             };
         }
@@ -958,9 +927,7 @@ html, body {
         if (isEditing || e.target.closest('.remove-btn') || e.target.closest('[contenteditable]') || e.target.closest('.icon-btn') || e.target.classList.contains('widget-island')) return;
         longPressTimer = setTimeout(() => { 
             isEditing = true; 
-            doneBtn.style.display = 'block'; 
-            addBtn.style.display = 'block';
-            diyBtn.style.display = 'block';
+            doneBtn.style.display = 'block'; addBtn.style.display = 'block'; diyBtn.style.display = 'block';
             document.querySelectorAll('.app-item, .widget-item').forEach(el => { if(!el.classList.contains('widget-island')) el.classList.add('jiggling'); });
             document.querySelectorAll('.widget-island').forEach(el => el.classList.add('jiggling')); 
         }, 800);
@@ -968,10 +935,7 @@ html, body {
     desktop.addEventListener('touchend', () => clearTimeout(longPressTimer));
     
     doneBtn.onclick = () => { 
-        isEditing = false; 
-        doneBtn.style.display = 'none'; 
-        addBtn.style.display = 'none';
-        diyBtn.style.display = 'none';
+        isEditing = false; doneBtn.style.display = 'none'; addBtn.style.display = 'none'; diyBtn.style.display = 'none';
         document.querySelectorAll('.app-item, .widget-item').forEach(el => el.classList.remove('jiggling')); 
         saveLayout(); 
     };
@@ -994,37 +958,6 @@ html, body {
     document.querySelectorAll('.app-icon[data-dock-id]').forEach(el => {
         el.addEventListener('click', () => { const dockId = el.dataset.dockId; if (APP_URLS[dockId]) openApp(dockId); });
     });
-
-    // ===== 全屏逻辑 =====
-    function tryFullscreen() {
-        const el = document.documentElement;
-        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
-        if (req) req.call(el).catch(() => {});
-    }
-
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
-
-    // 安卓：首次触摸触发全屏（必须由用户手势触发）
-    if (!isIOS && !isStandalone) {
-        document.addEventListener('touchstart', function triggerFS() {
-            tryFullscreen();
-            document.removeEventListener('touchstart', triggerFS);
-        }, { once: true });
-    }
-
-    // iOS：未添加到主屏幕时，显示引导提示
-    if (isIOS && !isStandalone) {
-        if (!localStorage.getItem('pwa_tip_shown')) {
-            const tip = document.createElement('div');
-            tip.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📲</span><div><div style="font-weight:bold;font-size:13px;">添加到主屏幕即可全屏使用</div><div style="font-size:11px;opacity:0.8;margin-top:2px;">点击底部 <b>分享</b> 按钮 → 添加到主屏幕</div></div><span id="pwa-close" style="margin-left:auto;font-size:22px;cursor:pointer;padding:4px 10px;">×</span></div>`;
-            tip.style.cssText = 'position:fixed;bottom:110px;left:16px;right:16px;background:rgba(0,0,0,0.88);color:white;padding:14px 16px;border-radius:16px;z-index:99999;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.3);';
-            document.body.appendChild(tip);
-            localStorage.setItem('pwa_tip_shown', '1');
-            document.getElementById('pwa-close').onclick = () => tip.remove();
-            setTimeout(() => { if(tip.parentNode) tip.remove(); }, 9000);
-        }
-    }
 </script>
 
 </body>
