@@ -1,0 +1,2341 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>解忧杂货铺</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;700&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ink: #1a1410;
+  --paper: #f5f0e8;
+  --parchment: #ede5d0;
+  --sepia: #8b6914;
+  --deep: #2c1810;
+  --midnight: #0d0b14;
+  --stars: #c9a227;
+  --mystic: #6b4e8a;
+  --rose: #c17b6e;
+  --teal: #4a7c7e;
+  --fog: rgba(245,240,232,0.08);
+  --glow: rgba(201,162,39,0.15);
+  --sand-light: #f5e6c8;
+  --sand-mid: #dfc9a0;
+  --sand-dark: #c4a87a;
+  --ocean-deep: #1a3a4a;
+  --ocean-mid: #2a6070;
+  --ocean-light: #4a9aaa;
+  --foam: rgba(255,255,255,0.6);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body, html {
+  width: 100%; height: 100%; overflow: hidden;
+  background: var(--midnight);
+  background-image: url('https://free.boltp.com/2026/03/08/69ad5f8597d38.webp');
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  font-family: 'Noto Serif SC', 'Songti SC', serif;
+  color: var(--paper);
+  user-select: none;
+}
+
+/* ====== 星空背景 ====== */
+#starfield {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  pointer-events: none; z-index: 0;
+display: none;
+}
+
+/* ====== 主壳体 ====== */
+#app {
+  position: relative; width: 100%; height: 100%;
+  overflow: hidden; z-index: 1;
+  display: flex; flex-direction: column;
+  max-width: 480px; margin: 0 auto;
+}
+
+/* ====== 顶部标题栏 ====== */
+#topbar {
+  position: relative; z-index: 100;
+  padding: 52px 20px 16px;
+  background: linear-gradient(180deg, rgba(13,11,20,0.98) 0%, rgba(13,11,20,0.6) 100%);
+  text-align: center;
+  flex-shrink: 0;
+  border-bottom: 1px solid rgba(201,162,39,0.15);
+}
+.shop-title {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 26px; color: var(--stars);
+  letter-spacing: 6px;
+  text-shadow: 0 0 20px rgba(201,162,39,0.5), 0 0 40px rgba(201,162,39,0.2);
+}
+.shop-subtitle {
+  font-size: 11px; color: rgba(245,240,232,0.45);
+  letter-spacing: 3px; margin-top: 4px;
+}
+
+/* ====== 导航标签 ====== */
+#tabs {
+  display: flex; background: rgba(13,11,20,0.9);
+  border-bottom: 1px solid rgba(201,162,39,0.12);
+  flex-shrink: 0; position: relative; z-index: 100;
+}
+.tab {
+  flex: 1; padding: 12px 4px; text-align: center;
+  font-size: 12px; color: rgba(245,240,232,0.4);
+  cursor: pointer; position: relative; letter-spacing: 1px;
+  transition: color 0.3s;
+  display: flex; flex-direction: column; align-items: center; gap: 3px;
+}
+.tab.active { color: var(--stars); }
+.tab.active::after {
+  content: ''; position: absolute; bottom: 0; left: 20%; right: 20%;
+  height: 2px; background: var(--stars);
+  box-shadow: 0 0 8px var(--stars);
+  border-radius: 2px;
+}
+.tab-icon { display: flex; align-items: center; justify-content: center; }
+.tab-icon svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+
+/* ====== 页面区域 ====== */
+.page { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; }
+.page.active { display: flex; flex-direction: column; }
+.page::-webkit-scrollbar { display: none; }
+
+/* ====== 通用容器 ====== */
+.section-pad { padding: 20px 18px; }
+
+/* ====== SVG图标工具 ====== */
+.ico { display: inline-flex; align-items: center; justify-content: center; }
+.ico svg { width: 16px; height: 16px; stroke: currentColor; fill: none; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.ico-sm svg { width: 12px; height: 12px; }
+.ico-lg svg { width: 24px; height: 24px; }
+.ico-xl svg { width: 32px; height: 32px; }
+
+/* ====== 信件列表 ====== */
+.letter-card {
+  background: rgba(237,229,208,0.06);
+  border: 1px solid rgba(201,162,39,0.15);
+  border-radius: 12px; margin-bottom: 14px;
+  padding: 16px 16px 14px;
+  cursor: pointer; position: relative;
+  transition: all 0.25s;
+  backdrop-filter: blur(4px);
+}
+.letter-card:active { transform: scale(0.98); background: rgba(237,229,208,0.1); }
+.letter-card.unread::before {
+  content: ''; position: absolute; top: 14px; right: 14px;
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--stars); box-shadow: 0 0 6px var(--stars);
+}
+.letter-card.from-parallel { border-color: rgba(107,78,138,0.4); background: rgba(107,78,138,0.06); }
+.letter-card.from-stranger { border-color: rgba(74,124,126,0.3); background: rgba(74,124,126,0.05); }
+.letter-card.from-x { border-color: rgba(193,123,110,0.4); background: rgba(193,123,110,0.06); }
+.letter-card.from-me { border-color: rgba(193,123,110,0.2); background: rgba(193,123,110,0.03); }
+
+.letter-from {
+  font-size: 10px; letter-spacing: 2px; margin-bottom: 8px;
+  display: flex; align-items: center; gap: 6px;
+}
+.from-tag {
+  padding: 2px 8px; border-radius: 20px; font-size: 9px; letter-spacing: 1px;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+.tag-parallel { background: rgba(107,78,138,0.3); color: #c4a8e0; border: 1px solid rgba(107,78,138,0.4); }
+.tag-stranger { background: rgba(74,124,126,0.3); color: #a8d4d6; border: 1px solid rgba(74,124,126,0.4); }
+.tag-x { background: rgba(193,123,110,0.3); color: #e8b4a8; border: 1px solid rgba(193,123,110,0.4); }
+.tag-me { background: rgba(245,240,232,0.1); color: rgba(245,240,232,0.5); border: 1px solid rgba(245,240,232,0.15); }
+
+.letter-date { font-size: 10px; color: rgba(245,240,232,0.3); margin-left: auto; }
+.letter-preview {
+  font-size: 13px; line-height: 1.8; color: rgba(245,240,232,0.75);
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.letter-attachment {
+  display: flex; align-items: center; gap: 6px; margin-top: 10px;
+  font-size: 11px; color: var(--stars); opacity: 0.8;
+}
+
+/* ====== 平行时空来信特效 ====== */
+.parallel-glow {
+  box-shadow: 0 0 20px rgba(107,78,138,0.2), inset 0 0 20px rgba(107,78,138,0.04);
+}
+/* X来信特效 */
+.x-glow {
+  box-shadow: 0 0 20px rgba(193,123,110,0.2), inset 0 0 20px rgba(193,123,110,0.04);
+}
+
+/* ====== 写信浮动按钮 ====== */
+#write-btn {
+  position: fixed; bottom: 24px; right: 24px;
+  width: 56px; height: 56px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--sepia), var(--stars));
+  border: none; cursor: pointer; z-index: 500;
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 20px rgba(201,162,39,0.4), 0 0 40px rgba(201,162,39,0.15);
+  transition: transform 0.2s;
+  color: var(--midnight);
+}
+#write-btn svg { width: 22px; height: 22px; stroke: var(--midnight); fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+#write-btn:active { transform: scale(0.92); }
+
+/* ====== 写信面板 ====== */
+#write-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 600; display: none;
+  background: rgba(13,11,20,0.97);
+  flex-direction: column;
+  animation: panelIn 0.4s cubic-bezier(0.34,1.2,0.64,1);
+}
+#write-panel.open { display: flex; }
+@keyframes panelIn {
+  from { transform: translateY(100%); opacity: 0; }
+  to { transform: translateY(0); opacity: 1; }
+}
+
+.panel-header {
+  padding: 52px 20px 16px; display: flex; align-items: center;
+  border-bottom: 1px solid rgba(201,162,39,0.12);
+  flex-shrink: 0;
+}
+.panel-back {
+  cursor: pointer; padding: 4px 12px 4px 0;
+  color: rgba(245,240,232,0.6); transition: color 0.2s;
+  display: flex; align-items: center;
+}
+.panel-back:active { color: var(--stars); }
+.panel-back svg { width: 20px; height: 20px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.panel-title { font-family: 'Ma Shan Zheng', cursive; font-size: 20px; color: var(--stars); letter-spacing: 3px; }
+
+/* 信封样式写信区 */
+.envelope-wrap {
+  flex: 1; overflow-y: auto; padding: 20px 18px 100px;
+}
+.envelope-wrap::-webkit-scrollbar { display: none; }
+
+.envelope-paper {
+  background: linear-gradient(160deg, #f9f3e5 0%, #f0e8d0 40%, #ebe0c5 100%);
+  border-radius: 4px 4px 0 0;
+  padding: 28px 22px;
+  position: relative;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+  min-height: 340px;
+}
+.envelope-paper::before {
+  content: '';
+  position: absolute; top: 56px; left: 22px; right: 22px; bottom: 22px;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 29px, rgba(139,105,20,0.15) 29px, rgba(139,105,20,0.15) 30px
+  );
+  pointer-events: none;
+}
+.paper-header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 20px;
+}
+.paper-stamp {
+  width: 44px; height: 56px; border: 2px solid var(--sepia);
+  border-radius: 2px; display: flex; align-items: center; justify-content: center;
+  background: rgba(139,105,20,0.08);
+  cursor: pointer; position: relative; overflow: hidden;
+  flex-shrink: 0; color: var(--sepia);
+}
+.paper-stamp svg { width: 24px; height: 24px; stroke: var(--sepia); fill: none; stroke-width: 1.5; }
+.paper-stamp::after {
+  content: '';
+  position: absolute; top: -1px; bottom: -1px; left: -1px; right: -1px;
+  border: 3px dashed rgba(139,105,20,0.3);
+  border-radius: 2px;
+}
+.paper-to {
+  font-size: 12px; color: var(--sepia); flex: 1; margin-right: 10px;
+  font-style: italic; line-height: 1.6;
+}
+.letter-textarea {
+  width: 100%; background: transparent; border: none; outline: none;
+  font-family: 'Noto Serif SC', serif; font-size: 14px;
+  color: #2c1810; line-height: 30px; resize: none;
+  min-height: 220px;
+  position: relative; z-index: 1;
+  caret-color: var(--sepia);
+}
+.letter-textarea::placeholder { color: rgba(44,24,16,0.35); font-style: italic; }
+
+.envelope-bottom {
+  background: linear-gradient(160deg, #c4973a 0%, #8b6914 100%);
+  height: 30px; border-radius: 0 0 4px 4px;
+  position: relative; overflow: hidden;
+}
+.envelope-bottom::before {
+  content: '';
+  position: absolute; top: 0; left: 0; right: 0;
+  height: 30px;
+  background: linear-gradient(135deg, transparent 50%, rgba(0,0,0,0.2) 50%),
+              linear-gradient(-135deg, transparent 50%, rgba(0,0,0,0.2) 50%);
+  background-size: 60px 60px;
+}
+
+.send-options {
+  display: flex; gap: 10px; margin: 16px 0;
+}
+.anon-toggle {
+  flex: 1; padding: 12px; border-radius: 10px; border: 1px solid rgba(201,162,39,0.25);
+  background: rgba(201,162,39,0.07); color: var(--paper);
+  font-size: 12px; text-align: center; cursor: pointer;
+  transition: all 0.2s; font-family: inherit;
+}
+.anon-toggle.active { background: rgba(201,162,39,0.2); border-color: rgba(201,162,39,0.5); color: var(--stars); }
+
+.send-btn {
+  width: 100%; padding: 15px; border-radius: 12px; border: none;
+  background: linear-gradient(135deg, var(--sepia), var(--stars));
+  color: var(--midnight); font-size: 15px; font-family: inherit;
+  font-weight: 500; cursor: pointer; letter-spacing: 3px;
+  box-shadow: 0 4px 15px rgba(201,162,39,0.3);
+  transition: transform 0.15s;
+  display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.send-btn:active { transform: scale(0.97); }
+.send-btn:disabled { opacity: 0.5; cursor: default; }
+.send-btn svg { width: 16px; height: 16px; stroke: var(--midnight); fill: none; stroke-width: 2; }
+
+/* ====== 信件详情面板 ====== */
+#letter-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 600; display: none;
+  background: rgba(13,11,20,0.97);
+  flex-direction: column;
+}
+#letter-panel.open { display: flex; animation: panelIn 0.4s cubic-bezier(0.34,1.2,0.64,1); }
+
+.letter-full-wrap {
+  flex: 1; overflow-y: auto; padding: 20px 18px 100px;
+}
+.letter-full-wrap::-webkit-scrollbar { display: none; }
+
+.letter-paper-full {
+  background: linear-gradient(160deg, #f9f3e5 0%, #f0e8d0 100%);
+  border-radius: 4px; padding: 32px 24px;
+  box-shadow: 0 8px 40px rgba(0,0,0,0.6);
+  position: relative; min-height: 400px;
+}
+.letter-paper-full::before {
+  content: '';
+  position: absolute; top: 70px; left: 24px; right: 24px; bottom: 24px;
+  background-image: repeating-linear-gradient(
+    transparent, transparent 29px, rgba(139,105,20,0.15) 29px, rgba(139,105,20,0.15) 30px
+  );
+  pointer-events: none;
+}
+.letter-author {
+  font-family: 'Ma Shan Zheng', cursive;
+  font-size: 16px; color: var(--sepia); margin-bottom: 6px;
+}
+.letter-datetime { font-size: 11px; color: rgba(44,24,16,0.5); margin-bottom: 20px; }
+.letter-body {
+  font-size: 14px; color: #2c1810; line-height: 30px;
+  position: relative; z-index: 1; white-space: pre-wrap;
+}
+.letter-sig { margin-top: 24px; text-align: right; font-family: 'Ma Shan Zheng', cursive; color: var(--sepia); font-size: 16px; }
+
+.attachment-box {
+  margin: 16px 0; padding: 14px 16px;
+  background: rgba(201,162,39,0.08); border: 1px solid rgba(201,162,39,0.2);
+  border-radius: 10px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; color: var(--stars);
+}
+.attachment-box:active { background: rgba(201,162,39,0.15); }
+.attachment-desc { font-size: 12px; color: rgba(245,240,232,0.6); margin-top: 2px; }
+
+.reply-btn {
+  width: 100%; padding: 14px; border-radius: 12px; border: none;
+  background: transparent; border: 1px solid rgba(201,162,39,0.3);
+  color: var(--stars); font-size: 14px; font-family: inherit;
+  cursor: pointer; letter-spacing: 2px; transition: all 0.2s;
+  display: flex; align-items: center; justify-content: center; gap: 6px;
+}
+.reply-btn:active { background: rgba(201,162,39,0.1); }
+.reply-btn svg { width: 16px; height: 16px; stroke: var(--stars); fill: none; stroke-width: 1.5; }
+
+/* ====== 漂流瓶页面 - 沙滩主题 ====== */
+.beach-scene {
+  position: relative; overflow: hidden;
+  height: 320px; flex-shrink: 0;
+  background: linear-gradient(180deg,
+    #87CEEB 0%,
+    #5DADE2 15%,
+    #2E86C1 30%,
+    #1B6CA0 45%,
+    var(--sand-mid) 55%,
+    var(--sand-light) 65%,
+    var(--sand-dark) 100%
+  );
+  touch-action: none;
+}
+
+/* 太阳 */
+.beach-sun {
+  position: absolute; top: 20px; right: 30px;
+  width: 50px; height: 50px; border-radius: 50%;
+  background: radial-gradient(circle, #FFD700 0%, #FFA500 60%, transparent 70%);
+  box-shadow: 0 0 40px rgba(255,215,0,0.6), 0 0 80px rgba(255,165,0,0.3);
+  animation: sunPulse 4s ease-in-out infinite alternate;
+}
+@keyframes sunPulse { from { box-shadow: 0 0 40px rgba(255,215,0,0.6); } to { box-shadow: 0 0 60px rgba(255,215,0,0.8); } }
+
+/* 云朵 - 用SVG线条 */
+.beach-cloud {
+  position: absolute; opacity: 0.6;
+  animation: cloudDrift 20s linear infinite;
+}
+.beach-cloud:nth-child(2) { top: 15px; left: -60px; animation-duration: 25s; animation-delay: -8s; opacity: 0.4; }
+.beach-cloud:nth-child(3) { top: 45px; left: -100px; animation-duration: 30s; animation-delay: -15s; opacity: 0.3; }
+@keyframes cloudDrift { from { transform: translateX(-100px); } to { transform: translateX(calc(100vw + 100px)); } }
+
+/* 海浪 */
+.sea-wave {
+  position: absolute; width: 200%; left: -50%;
+  height: 20px; border-radius: 50%;
+}
+.sea-wave-1 { bottom: 140px; background: rgba(46,134,193,0.4); animation: seaWave 5s ease-in-out infinite; }
+.sea-wave-2 { bottom: 135px; background: rgba(93,173,226,0.3); animation: seaWave 7s ease-in-out infinite reverse; }
+.sea-wave-3 { bottom: 130px; background: rgba(255,255,255,0.15); animation: seaWave 4s ease-in-out infinite; animation-delay: -1s; }
+@keyframes seaWave { 0%,100% { transform: translateX(0); } 50% { transform: translateX(-3%); } }
+
+/* 泡沫线 */
+.foam-line {
+  position: absolute; bottom: 128px; left: 0; right: 0;
+  height: 3px;
+  background: linear-gradient(90deg, transparent 0%, rgba(255,255,255,0.5) 20%, rgba(255,255,255,0.7) 50%, rgba(255,255,255,0.5) 80%, transparent 100%);
+  animation: foamShimmer 3s ease-in-out infinite;
+}
+@keyframes foamShimmer { 0%,100% { opacity: 0.5; } 50% { opacity: 0.9; } }
+
+/* 沙滩上的漂流瓶 */
+.beach-bottles-area {
+  position: absolute; bottom: 20px; left: 0; right: 0;
+  height: 110px; padding: 0 15px;
+}
+
+.beach-bottle {
+  position: absolute; cursor: pointer;
+  transition: transform 0.3s cubic-bezier(0.34,1.56,0.64,1);
+  animation: bottleWobble 3s ease-in-out infinite;
+}
+.beach-bottle:active { transform: scale(1.15) !important; }
+.beach-bottle svg { filter: drop-shadow(2px 3px 4px rgba(0,0,0,0.2)); }
+.beach-bottle.grabbed { animation: bottleGrab 0.6s ease forwards; }
+@keyframes bottleWobble {
+  0%,100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+@keyframes bottleGrab {
+  0% { transform: scale(1); opacity: 1; }
+  30% { transform: scale(1.3) rotate(15deg); }
+  100% { transform: scale(0) translateY(-60px); opacity: 0; }
+}
+
+/* 沙滩上的装饰 - 贝壳、海星用SVG */
+.beach-decor {
+  position: absolute; opacity: 0.35; color: var(--sand-dark);
+}
+
+/* 海浪中漂来的瓶子 */
+.floating-bottle {
+  position: absolute; top: 100px;
+  animation: floatInWave 6s ease-in-out infinite;
+  cursor: pointer; opacity: 0.8;
+}
+.floating-bottle svg { filter: drop-shadow(0 2px 8px rgba(0,0,0,0.3)); }
+@keyframes floatInWave {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  25% { transform: translateY(-8px) rotate(3deg); }
+  50% { transform: translateY(2px) rotate(-3deg); }
+  75% { transform: translateY(-5px) rotate(5deg); }
+}
+
+/* 信息栏 */
+.beach-info {
+  position: absolute; bottom: 0; left: 0; right: 0;
+  padding: 8px 15px;
+  background: linear-gradient(0deg, rgba(196,168,122,0.9) 0%, transparent 100%);
+  display: flex; justify-content: center; gap: 16px;
+}
+.beach-chip {
+  padding: 4px 12px; border-radius: 20px;
+  background: rgba(255,255,255,0.25); border: 1px solid rgba(255,255,255,0.3);
+  font-size: 10px; color: var(--deep); letter-spacing: 1px;
+  backdrop-filter: blur(4px);
+  display: flex; align-items: center; gap: 4px;
+}
+.beach-chip svg { width: 12px; height: 12px; stroke: var(--deep); fill: none; stroke-width: 1.5; }
+.beach-chip b { font-weight: 600; }
+
+.beach-hint {
+  position: absolute; top: 12px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; color: rgba(255,255,255,0.7); letter-spacing: 2px;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.3);
+}
+
+/* ====== 漂流瓶列表 ====== */
+.drift-card {
+  background: rgba(74,124,126,0.08);
+  border: 1px solid rgba(74,124,126,0.2);
+  border-radius: 12px; margin-bottom: 14px;
+  padding: 16px; cursor: pointer;
+  position: relative; overflow: hidden;
+}
+.drift-card::before {
+  content: attr(data-from);
+  position: absolute; top: 10px; right: 12px;
+  font-size: 9px; color: rgba(168,212,214,0.5); letter-spacing: 1px;
+}
+.drift-card:active { background: rgba(74,124,126,0.14); }
+.drift-mood { margin-bottom: 8px; display: flex; align-items: center; color: var(--teal); }
+.drift-mood svg { width: 20px; height: 20px; stroke: var(--teal); fill: none; stroke-width: 1.5; }
+.drift-preview { font-size: 13px; color: rgba(245,240,232,0.7); line-height: 1.7; }
+.drift-foot { margin-top: 10px; display: flex; justify-content: space-between; align-items: center; }
+.drift-time { font-size: 10px; color: rgba(245,240,232,0.3); }
+.drift-reply-hint { font-size: 10px; color: rgba(168,212,214,0.6); display: flex; align-items: center; gap: 3px; }
+.drift-gift-hint { font-size: 10px; color: var(--stars); display: flex; align-items: center; gap: 3px; }
+
+/* ====== 纪念柜页面 ====== */
+.cabinet-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px;
+}
+.cabinet-item {
+  background: rgba(237,229,208,0.05);
+  border: 1px solid rgba(201,162,39,0.12);
+  border-radius: 12px; padding: 16px 14px;
+  cursor: pointer; text-align: center; position: relative;
+  transition: all 0.2s;
+}
+.cabinet-item:active { transform: scale(0.96); background: rgba(237,229,208,0.09); }
+.cabinet-icon { margin-bottom: 8px; display: flex; align-items: center; justify-content: center; color: var(--stars); }
+.cabinet-icon svg { width: 32px; height: 32px; stroke: var(--stars); fill: none; stroke-width: 1.5; }
+.cabinet-name { font-size: 11px; color: rgba(245,240,232,0.7); margin-bottom: 4px; }
+.cabinet-date { font-size: 9px; color: rgba(245,240,232,0.3); letter-spacing: 1px; }
+.cabinet-new::after {
+  content: 'NEW';
+  position: absolute; top: 8px; right: 8px;
+  font-size: 8px; padding: 2px 5px; border-radius: 4px;
+  background: rgba(201,162,39,0.3); color: var(--stars);
+}
+
+.cabinet-detail-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 700; display: none; background: rgba(13,11,20,0.98);
+  flex-direction: column;
+}
+.cabinet-detail-panel.open { display: flex; animation: panelIn 0.4s cubic-bezier(0.34,1.2,0.64,1); }
+
+.cabinet-showcase {
+  flex: 1; display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 16px; padding: 40px 30px;
+}
+.showcase-icon { color: var(--stars); animation: float 3s ease-in-out infinite alternate; }
+.showcase-icon svg { width: 80px; height: 80px; stroke: var(--stars); fill: none; stroke-width: 1; }
+.showcase-title { font-family: 'Ma Shan Zheng', cursive; font-size: 22px; color: var(--stars); letter-spacing: 4px; }
+.showcase-desc { font-size: 13px; color: rgba(245,240,232,0.55); text-align: center; line-height: 1.8; max-width: 280px; white-space: pre-wrap; }
+.showcase-from { font-size: 12px; color: rgba(245,240,232,0.35); margin-top: 8px; }
+
+/* ====== 空状态 ====== */
+.empty-state {
+  text-align: center; padding: 60px 30px;
+  color: rgba(245,240,232,0.3);
+}
+.empty-icon { margin-bottom: 16px; display: flex; align-items: center; justify-content: center; opacity: 0.4; }
+.empty-icon svg { width: 48px; height: 48px; stroke: currentColor; fill: none; stroke-width: 1; }
+.empty-text { font-size: 13px; line-height: 1.8; letter-spacing: 1px; }
+
+/* ====== 投信动画 ====== */
+.mailbox-anim {
+  position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  z-index: 800; pointer-events: none; display: none;
+  flex-direction: column; align-items: center; gap: 12px;
+}
+.mailbox-anim.show { display: flex; animation: mailAnim 2s ease forwards; }
+@keyframes mailAnim {
+  0% { opacity: 0; transform: translate(-50%, -40%); }
+  20% { opacity: 1; transform: translate(-50%, -50%); }
+  70% { opacity: 1; transform: translate(-50%, -50%); }
+  100% { opacity: 0; transform: translate(-50%, -60%); }
+}
+.mailbox-anim-icon { color: var(--stars); }
+.mailbox-anim-icon svg { width: 60px; height: 60px; stroke: var(--stars); fill: none; stroke-width: 1.5; }
+.mailbox-text { font-size: 13px; color: var(--stars); letter-spacing: 3px; text-align: center; line-height: 1.8; }
+
+/* ====== 礼物弹窗 ====== */
+#gift-modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 850; display: none;
+  background: rgba(13,11,20,0.85); backdrop-filter: blur(10px);
+  align-items: center; justify-content: center;
+}
+#gift-modal.show { display: flex; }
+.gift-card {
+  background: linear-gradient(160deg, #1a1528 0%, #12101e 100%);
+  border: 1px solid rgba(201,162,39,0.3);
+  border-radius: 24px; padding: 36px 28px;
+  text-align: center; max-width: 300px; width: 88%;
+  box-shadow: 0 0 60px rgba(201,162,39,0.15);
+  animation: giftPop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+@keyframes giftPop {
+  from { opacity: 0; transform: scale(0.7); }
+  to { opacity: 1; transform: scale(1); }
+}
+.gift-icon-big { display: flex; align-items: center; justify-content: center; margin-bottom: 16px; color: var(--stars); animation: float 2s ease-in-out infinite alternate; }
+.gift-icon-big svg { width: 64px; height: 64px; stroke: var(--stars); fill: none; stroke-width: 1.5; }
+.gift-title { font-family: 'Ma Shan Zheng', cursive; font-size: 20px; color: var(--stars); letter-spacing: 3px; margin-bottom: 8px; }
+.gift-desc { font-size: 13px; color: rgba(245,240,232,0.6); line-height: 1.8; margin-bottom: 20px; }
+.gift-close-btn {
+  padding: 12px 32px; border-radius: 30px; border: none;
+  background: linear-gradient(135deg, var(--sepia), var(--stars));
+  color: var(--midnight); font-size: 13px; font-family: inherit;
+  cursor: pointer; letter-spacing: 2px;
+}
+
+/* ====== AI 加载状态 ====== */
+.ai-loading {
+  display: flex; align-items: center; gap: 8px;
+  padding: 12px; color: rgba(245,240,232,0.4);
+  font-size: 12px; letter-spacing: 1px;
+}
+.ai-dots { display: flex; gap: 4px; }
+.ai-dots span {
+  width: 4px; height: 4px; border-radius: 50%;
+  background: var(--stars); opacity: 0.5;
+  animation: dotBlink 1.2s infinite;
+}
+.ai-dots span:nth-child(2) { animation-delay: 0.2s; }
+.ai-dots span:nth-child(3) { animation-delay: 0.4s; }
+@keyframes dotBlink { 0%,80%,100% { opacity: 0.2; } 40% { opacity: 1; } }
+
+/* ====== 通知徽标 ====== */
+.badge {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-width: 16px; height: 16px;
+  background: var(--rose); border-radius: 8px;
+  font-size: 9px; color: white; text-align: center; line-height: 16px;
+  padding: 0 4px; margin-left: 4px;
+}
+
+/* ====== 滚动内容区 ====== */
+.page-content { padding: 16px 18px 100px; }
+
+/* section header */
+.sec-head {
+  font-size: 11px; color: rgba(245,240,232,0.35);
+  letter-spacing: 3px; margin: 20px 0 12px;
+  display: flex; align-items: center; gap: 10px;
+}
+.sec-head::after { content: ''; flex: 1; height: 1px; background: rgba(201,162,39,0.12); }
+
+/* ====== 漂流瓶详情 ====== */
+#drift-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 650; display: none; background: rgba(13,11,20,0.98);
+  flex-direction: column;
+}
+#drift-panel.open { display: flex; animation: panelIn 0.4s cubic-bezier(0.34,1.2,0.64,1); }
+
+/* 回信输入 */
+.reply-wrap { padding: 16px 18px; flex-shrink: 0; }
+.reply-input {
+  width: 100%; background: rgba(237,229,208,0.06);
+  border: 1px solid rgba(201,162,39,0.2); border-radius: 12px;
+  padding: 12px 14px; color: var(--paper); font-family: inherit; font-size: 13px;
+  outline: none; resize: none; min-height: 80px; caret-color: var(--stars);
+}
+.reply-input::placeholder { color: rgba(245,240,232,0.25); }
+
+/* ====== 写投瓶信面板 ====== */
+#drift-write-panel {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+  z-index: 660; display: none; background: rgba(13,11,20,0.97);
+  flex-direction: column;
+}
+#drift-write-panel.open { display: flex; animation: panelIn 0.4s cubic-bezier(0.34,1.2,0.64,1); }
+
+@keyframes float { from { transform: translateY(0px); } to { transform: translateY(-12px); } }
+
+/* ====== 沙滩粒子 ====== */
+.sand-sparkle {
+  position: absolute; width: 2px; height: 2px; border-radius: 50%;
+  background: rgba(255,255,255,0.6);
+  animation: sparkle 2s ease-in-out infinite;
+}
+@keyframes sparkle { 0%,100% { opacity: 0; } 50% { opacity: 1; } }
+
+/* X的神秘标识 */
+.x-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: rgba(193,123,110,0.3); border: 1px solid rgba(193,123,110,0.5);
+  font-size: 10px; font-weight: 700; color: #e8b4a8;
+  font-family: 'Ma Shan Zheng', cursive;
+}
+/* ====== 删除模式 ====== */
+.manage-bar {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 10px 18px; background: rgba(13,11,20,0.6);
+  border-bottom: 1px solid rgba(201,162,39,0.12);
+  flex-shrink: 0;
+}
+.manage-btn {
+  padding: 6px 14px; border-radius: 20px; border: 1px solid rgba(201,162,39,0.3);
+  background: transparent; color: var(--stars); font-size: 11px; font-family: inherit;
+  cursor: pointer; letter-spacing: 1px; transition: all 0.15s;
+  display: flex; align-items: center; gap: 4px;
+}
+.manage-btn:active { background: rgba(201,162,39,0.15); }
+.manage-btn.danger { border-color: rgba(193,100,100,0.5); color: #e88; }
+.manage-btn.danger:active { background: rgba(193,100,100,0.15); }
+
+.letter-card.selectable { padding-left: 40px; }
+.letter-card .select-check {
+  display: none;
+  position: absolute; left: 12px; top: 50%; transform: translateY(-50%);
+  width: 20px; height: 20px; border-radius: 50%;
+  border: 1.5px solid rgba(201,162,39,0.4); background: transparent;
+  transition: all 0.15s; cursor: pointer;
+}
+.letter-card.selectable .select-check { display: flex; align-items: center; justify-content: center; }
+.letter-card.selected .select-check {
+  background: var(--stars); border-color: var(--stars);
+}
+.letter-card.selected .select-check::after {
+  content: ''; width: 6px; height: 6px; border-radius: 50%;
+  background: var(--midnight);
+}
+
+.select-all-row {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 11px; color: rgba(245,240,232,0.5);
+}
+</style>
+
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+
+<div id="app">
+  <!-- 顶部标题 -->
+  <div id="topbar">
+    <div id="back-to-phone" onclick="goBackToPhone()" style="position:absolute;left:16px;top:54px;display:flex;align-items:center;gap:3px;font-size:13px;color:var(--stars);cursor:pointer;z-index:101;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+    </div>
+    <div class="shop-title">解忧杂货铺</div>
+    <div class="shop-subtitle">来自平行时空的回响</div>
+</div>
+
+  <!-- 导航 -->
+  <div id="tabs">
+    <div class="tab active" onclick="switchTab('inbox')" id="tab-inbox">
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg></span>信箱<span class="badge" id="unread-badge" style="display:none">0</span>
+    </div>
+    <div class="tab" onclick="switchTab('drift')" id="tab-drift">
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z" stroke-dasharray="3 3" fill="none"/><path d="M8 14c0 0 1.5 2 4 2s4-2 4-2"/><circle cx="9" cy="10" r="0.5" fill="currentColor" stroke="none"/><circle cx="15" cy="10" r="0.5" fill="currentColor" stroke="none"/></svg></span>漂流瓶
+    </div>
+    <div class="tab" onclick="switchTab('cabinet')" id="tab-cabinet">
+      <span class="tab-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="12" y1="3" x2="12" y2="12"/><circle cx="8" cy="7.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="16" cy="7.5" r="0.5" fill="currentColor" stroke="none"/><circle cx="12" cy="16.5" r="0.5" fill="currentColor" stroke="none"/></svg></span>纪念柜
+    </div>
+  </div>
+
+  <!-- 信箱页 -->
+<div class="page active" id="page-inbox">
+    <!-- 管理栏 -->
+    <div class="manage-bar" id="manage-bar">
+      <button class="manage-btn" id="toggle-manage-btn" onclick="toggleManageMode()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+        管理信件
+      </button>
+      <div id="manage-actions" style="display:none; gap:8px;" class="select-all-row">
+        <button class="manage-btn" onclick="selectAllLetters()">全选</button>
+        <button class="manage-btn danger" id="delete-sel-btn" onclick="deleteSelected()">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>
+          删除
+        </button>
+        <button class="manage-btn" onclick="toggleManageMode()">取消</button>
+      </div>
+    </div>
+    <div class="page-content">
+      <!-- 来自X的神秘信件（置顶） -->
+      <div class="sec-head" id="sec-x" style="display:none">
+        <span style="display:flex;align-items:center;gap:6px"><span class="x-mark">X</span> 一位神秘笔友</span>
+      </div>
+      <div id="x-letters">
+        <!-- 动态加载 X 的来信 -->
+      </div>
+
+      <!-- 平行时空 char 的信 -->
+      <div class="sec-head" id="sec-parallel">来自平行时空</div>
+      <div id="parallel-letters">
+        <!-- 动态加载 Char 的来信 -->
+      </div>
+
+      <div class="sec-head" style="margin-top: 28px" id="sec-strangers">陌生人的信</div>
+      <div id="stranger-letters">
+        <!-- 动态加载陌生人回信 -->
+      </div>
+
+      <div class="sec-head" style="margin-top: 28px" id="sec-mine">我寄出的信</div>
+      <div id="my-letters">
+        <!-- 动态加载我的信 -->
+      </div>
+
+      <div id="inbox-empty" class="empty-state" style="display:none;">
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><line x1="12" y1="11" x2="12" y2="15"/><line x1="12" y1="8" x2="12" y2="8.01"/></svg></div>
+        <div class="empty-text">信箱是空的<br>也许可以先写一封信，<br>放进漂流瓶里</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 漂流瓶页 - 沙滩主题 -->
+  <div class="page" id="page-drift">
+    <!-- 沙滩场景 -->
+    <div class="beach-scene" id="beach-scene">
+      <div class="beach-sun"></div>
+      <div class="beach-cloud" style="top:25px;">
+        <svg width="60" height="20" viewBox="0 0 60 20" fill="none" stroke="rgba(255,255,255,0.7)" stroke-width="1">
+          <path d="M10 15c-3 0-5-2-5-5s2-5 5-5c1-3 4-5 8-5s7 2 8 5c3 0 5 2 5 5s-2 5-5 5z"/>
+          <path d="M30 15c-2 0-4-1.5-4-4s2-4 4-4c1-2 3-4 6-4s5 1.5 6 4c2 0 4 1.5 4 4s-2 4-4 4z"/>
+        </svg>
+      </div>
+      <div class="beach-cloud">
+        <svg width="50" height="18" viewBox="0 0 50 18" fill="none" stroke="rgba(255,255,255,0.6)" stroke-width="1">
+          <path d="M8 14c-3 0-4-2-4-4s2-4 4-4c1-3 3-5 7-5s6 2 7 5c2 0 4 2 4 4s-2 4-4 4z"/>
+        </svg>
+      </div>
+      <div class="beach-cloud">
+        <svg width="45" height="16" viewBox="0 0 45 16" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1">
+          <path d="M6 12c-2 0-3-1.5-3-3.5s1.5-3.5 3-3.5c.5-2.5 3-4 5.5-4s5 1.5 5.5 4c2 0 3 1.5 3 3.5s-1.5 3.5-3 3.5z"/>
+        </svg>
+      </div>
+
+      <!-- 海浪 -->
+      <div class="sea-wave sea-wave-1"></div>
+      <div class="sea-wave sea-wave-2"></div>
+      <div class="sea-wave sea-wave-3"></div>
+      <div class="foam-line"></div>
+
+      <!-- 漂流瓶区域 - 动态生成 -->
+      <div class="beach-bottles-area" id="beach-bottles">
+        <!-- JS动态生成瓶子 -->
+      </div>
+
+      <!-- 海中漂浮的瓶子 -->
+      <div class="floating-bottle" id="floating-bottle" style="left: 20%;" onclick="pickFloatingBottle()">
+        <svg width="40" height="50" viewBox="0 0 40 50" fill="none" stroke="#a8d4d6" stroke-width="1.5">
+          <path d="M15 8h10v4c3 2 5 6 5 12v14c0 3-2 6-5 7h-10c-3-1-5-4-5-7V24c0-6 2-10 5-12V8z"/>
+          <circle cx="20" cy="6" r="3"/>
+          <path d="M17 28l6-4v8z" stroke-width="1" opacity="0.5"/>
+        </svg>
+      </div>
+
+      <div class="beach-hint">轻触沙滩上的瓶子，打捞一封信</div>
+
+      <!-- 信息栏 -->
+      <div class="beach-info">
+        <div class="beach-chip">
+          <svg viewBox="0 0 24 24"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+          今日可捡 <b id="pick-count">3</b>
+        </div>
+        <div class="beach-chip">
+          <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+          今日可投 <b id="throw-count">3</b>
+        </div>
+      </div>
+    </div>
+
+    <div class="page-content" style="padding-top: 20px;">
+      <!-- 投瓶按钮 -->
+      <button class="send-btn" style="margin-bottom:20px; letter-spacing:2px; font-size:13px;" onclick="openDriftWrite()">
+        <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        写一封信，投入大海
+      </button>
+      <div class="sec-head">最近捡到的漂流瓶</div>
+      <div id="drift-list">
+        <!-- 动态渲染 -->
+      </div>
+    </div>
+  </div>
+
+  <!-- 纪念柜页 -->
+  <div class="page" id="page-cabinet">
+    <div class="page-content">
+      <div class="sec-head">Char 送来的</div>
+      <div class="cabinet-grid" id="char-cabinet">
+        <!-- 动态渲染 -->
+      </div>
+      <div class="sec-head" style="margin-top: 28px">陌生人的礼物</div>
+      <div class="cabinet-grid" id="stranger-cabinet">
+        <!-- 动态渲染 -->
+      </div>
+      <div id="cabinet-empty" class="empty-state" style="display:none;">
+        <div class="empty-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><line x1="3" y1="12" x2="21" y2="12"/></svg></div>
+        <div class="empty-text">纪念柜是空的<br>去漂流瓶里<br>也许会有人赠你礼物</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 写信按钮（仅信箱页显示） -->
+  <button id="write-btn" onclick="openWrite()">
+    <svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+  </button>
+</div>
+
+<!-- 写信面板 -->
+<div id="write-panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closeWrite()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="panel-title">写一封信</div>
+  </div>
+  <div class="envelope-wrap">
+    <div class="send-options">
+      <button class="anon-toggle active" id="btn-anon" onclick="toggleAnon()">匿名投递</button>
+      <button class="anon-toggle" id="btn-real" onclick="toggleReal()">实名书写</button>
+    </div>
+    <div class="envelope-paper">
+      <div class="paper-header">
+        <div class="paper-to">
+          寄往：<br>
+          <span style="font-size:13px; color: rgba(44,24,16,0.7)">
+            解忧杂货铺 · 平行时空<br>某个夜晚某个人
+          </span>
+        </div>
+        <div class="paper-stamp" id="stamp-sel" onclick="cyclestamp()">
+          <svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+        </div>
+      </div>
+      <textarea class="letter-textarea" id="letter-input" placeholder="亲爱的信箱，
+
+我想告诉你……" rows="10"></textarea>
+    </div>
+    <div class="envelope-bottom"></div>
+    <div style="margin-top: 20px; font-size: 11px; color: rgba(245,240,232,0.3); line-height: 1.8; text-align: center; letter-spacing: 1px;">
+      你的信将投入信箱<br>
+      很快，会有人回信给你
+    </div>
+    <button class="send-btn" id="send-letter-btn" onclick="sendLetter()" style="margin-top: 16px;">
+      <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      投 入 信 箱
+    </button>
+  </div>
+</div>
+
+<!-- 写漂流瓶信面板 -->
+<div id="drift-write-panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closeDriftWrite()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="panel-title">投入大海</div>
+  </div>
+  <div class="envelope-wrap">
+    <div class="envelope-paper">
+      <div class="paper-header">
+        <div class="paper-to">
+          寄往：<br>
+          <span style="font-size:13px; color: rgba(44,24,16,0.7)">
+            大海彼岸 · 某个陌生人
+          </span>
+        </div>
+        <div class="paper-stamp" id="drift-stamp-sel" onclick="cycleDriftStamp()">
+          <svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7z"/><circle cx="12" cy="12" r="3"/></svg>
+        </div>
+      </div>
+      <textarea class="letter-textarea" id="drift-letter-input" placeholder="亲爱的陌生人，
+
+今天我想告诉你……" rows="10"></textarea>
+    </div>
+    <div class="envelope-bottom"></div>
+    <div style="margin-top: 20px; font-size: 11px; color: rgba(245,240,232,0.3); line-height: 1.8; text-align: center; letter-spacing: 1px;">
+      你的信将随波漂向远方<br>
+      也许会被某个人捡到
+    </div>
+    <button class="send-btn" id="throw-bottle-btn" onclick="throwBottle()" style="margin-top: 16px;">
+      <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      装入漂流瓶，投入大海
+    </button>
+  </div>
+</div>
+
+<!-- 信件详情面板 -->
+<div id="letter-panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closeLetter()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="panel-title" id="letter-panel-title">来信</div>
+  </div>
+  <div class="letter-full-wrap">
+    <div class="letter-paper-full">
+      <div class="letter-author" id="lp-author"></div>
+      <div class="letter-datetime" id="lp-date"></div>
+      <div class="letter-body" id="lp-body"></div>
+      <div class="letter-sig" id="lp-sig"></div>
+    </div>
+    <div id="lp-attachment"></div>
+    <div id="lp-loading" class="ai-loading" style="display:none;">
+      <span>回信正在路上</span>
+      <div class="ai-dots"><span></span><span></span><span></span></div>
+    </div>
+    <div style="margin-top: 20px;">
+      <button class="reply-btn" onclick="replyToLetter()" id="lp-reply-btn">
+        <svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>
+        回信
+      </button>
+    </div>
+  </div>
+</div>
+
+<!-- 漂流瓶详情 -->
+<div id="drift-panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closeDrift()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="panel-title">漂流瓶</div>
+  </div>
+  <div class="letter-full-wrap" style="padding-bottom: 160px;">
+    <div class="letter-paper-full">
+      <div class="letter-author" id="dp-author"></div>
+      <div class="letter-datetime" id="dp-date"></div>
+      <div class="letter-body" id="dp-body"></div>
+    </div>
+    <div id="dp-gift" style="display:none;" class="attachment-box">
+      <!-- 礼物 -->
+    </div>
+  </div>
+  <div class="reply-wrap" style="background: rgba(13,11,20,0.95); padding-bottom: 30px;">
+    <textarea class="reply-input" id="drift-reply-input" placeholder="给他/她写几句话……"></textarea>
+    <div id="drift-reply-loading" class="ai-loading" style="display:none; justify-content: center;">
+      <span>信件漂向远方</span>
+      <div class="ai-dots"><span></span><span></span><span></span></div>
+    </div>
+    <button class="send-btn" id="drift-reply-btn" onclick="sendDriftReply()" style="margin-top: 10px; font-size: 13px;">
+      <svg viewBox="0 0 24 24"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+      装入漂流瓶，随波寄去
+    </button>
+  </div>
+</div>
+
+<!-- 纪念柜详情 -->
+<div class="cabinet-detail-panel" id="cabinet-panel">
+  <div class="panel-header">
+    <div class="panel-back" onclick="closeCabinet()"><svg viewBox="0 0 24 24"><polyline points="15 18 9 12 15 6"/></svg></div>
+    <div class="panel-title">纪念柜</div>
+  </div>
+  <div class="cabinet-showcase">
+    <div class="showcase-icon" id="cabinet-icon-big"></div>
+    <div class="showcase-title" id="cabinet-title-big"></div>
+    <div class="showcase-desc" id="cabinet-desc-big"></div>
+    <div class="showcase-from" id="cabinet-from-big"></div>
+  </div>
+</div>
+
+<!-- 投信动画 -->
+<div class="mailbox-anim" id="mailbox-anim">
+  <div class="mailbox-anim-icon"><svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/><line x1="12" y1="13" x2="12" y2="19" stroke-dasharray="2 2" opacity="0.5"/></svg></div>
+  <div class="mailbox-text">信已投入<br>静候回音……</div>
+</div>
+
+<!-- 礼物弹窗 -->
+<div id="gift-modal">
+  <div class="gift-card">
+    <div class="gift-icon-big" id="gift-icon-wrap"><svg id="gift-icon-svg" viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg></div>
+    <div class="gift-title" id="gift-title">随信而来的礼物</div>
+    <div class="gift-desc" id="gift-desc"></div>
+    <button class="gift-close-btn" onclick="closeGiftModal()">收下，谢谢你</button>
+  </div>
+</div>
+
+<script>
+// ====== SVG 图标库 ====== 
+const ICONS = {
+  moon: '<svg viewBox="0 0 24 24"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>',
+  flower: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>',
+  star: '<svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+  shell: '<svg viewBox="0 0 24 24"><path d="M12 22c-4-3-8-8-8-13a8 8 0 0 1 16 0c0 5-4 10-8 13z"/><path d="M12 6v10M8 9c2 2 6 2 8 0" opacity="0.5"/></svg>',
+  leaf: '<svg viewBox="0 0 24 24"><path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66S8.5 17 17 8z"/><path d="M3 21s5-6 13-13"/></svg>',
+  cloud: '<svg viewBox="0 0 24 24"><path d="M18 10h-1.26A8 8 0 1 0 9 20h9a5 5 0 0 0 0-10z"/></svg>',
+  feather: '<svg viewBox="0 0 24 24"><path d="M20.24 12.24a6 6 0 0 0-8.49-8.49L5 10.5V19h8.5z"/><line x1="16" y1="8" x2="2" y2="22"/><line x1="17.5" y1="15" x2="9" y2="15"/></svg>',
+  wave: '<svg viewBox="0 0 24 24"><path d="M2 12c2-3 4-3 6 0s4 3 6 0 4-3 6 0"/><path d="M2 17c2-3 4-3 6 0s4 3 6 0 4-3 6 0" opacity="0.4"/></svg>',
+  anchor: '<svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="3"/><line x1="12" y1="8" x2="12" y2="21"/><path d="M5 12H2a10 10 0 0 0 20 0h-3"/></svg>',
+  compass: '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><polygon points="16.24 7.76 14.12 14.12 7.76 16.24 9.88 9.88 16.24 7.76"/></svg>',
+  heart: '<svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>',
+  gift: '<svg viewBox="0 0 24 24"><path d="M20 12v10H4V12M2 7h20v5H2zM12 22V7M12 7H7.5a2.5 2.5 0 0 1 0-5C11 2 12 7 12 7zM12 7h4.5a2.5 2.5 0 0 0 0-5C13 2 12 7 12 7z"/></svg>',
+  music: '<svg viewBox="0 0 24 24"><path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>',
+  scroll: '<svg viewBox="0 0 24 24"><path d="M8 21h12a2 2 0 0 0 2-2V5a2 2 0 0 0-2-2H10a2 2 0 0 0-2 2v14a2 2 0 1 1-4 0V7"/><path d="M4 15a2 2 0 1 0 4 0"/></svg>',
+  pen: '<svg viewBox="0 0 24 24"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"/></svg>',
+  mail: '<svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>',
+  send: '<svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>',
+  bottle: '<svg viewBox="0 0 24 24"><path d="M10 3h4v3c2 1.5 4 4.5 4 9v4c0 2-1.5 3.5-3.5 3.5h-5C7.5 22.5 6 21 6 19v-4c0-4.5 2-7.5 4-9V3z"/><rect x="9" y="1" width="6" height="3" rx="1"/></svg>',
+  stone: '<svg viewBox="0 0 24 24"><ellipse cx="12" cy="14" rx="9" ry="6"/><path d="M5 10c1-3 4-5 7-5s6 2 7 5" opacity="0.5"/></svg>',
+  dice: '<svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="8.5" r="1" fill="currentColor" stroke="none"/><circle cx="12" cy="12" r="1" fill="currentColor" stroke="none"/><circle cx="8.5" cy="15.5" r="1" fill="currentColor" stroke="none"/><circle cx="15.5" cy="15.5" r="1" fill="currentColor" stroke="none"/></svg>',
+  stamp: '<svg viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M6 8h12M6 12h12M6 16h8" stroke-dasharray="2 2"/></svg>',
+  chestnut: '<svg viewBox="0 0 24 24"><path d="M12 2c-4 0-8 4-8 9 0 6 8 11 8 11s8-5 8-11c0-5-4-9-8-9z"/><path d="M12 2v6M8 7l4 3M16 7l-4 3" opacity="0.4"/></svg>',
+};
+
+// 图标对应表（替换 emoji）
+const STAMP_ICONS = ['moon','flower','star','shell','leaf','cloud','feather'];
+const DRIFT_STAMP_ICONS = ['wave','anchor','compass','shell','moon','star','feather'];
+const MOOD_ICONS = ['moon','cloud','flower','wave','leaf','star','feather','compass','heart','anchor'];
+
+function iconSvg(name, size) {
+  const s = size || 16;
+  const raw = ICONS[name] || ICONS.star;
+  return raw.replace('viewBox', `width="${s}" height="${s}" style="stroke:currentColor;fill:none;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;" viewBox`);
+}
+
+// ====== 星空 ======
+(function() {
+  const canvas = document.getElementById('starfield');
+  const ctx = canvas.getContext('2d');
+  canvas.width = window.innerWidth;
+  canvas.height = window.innerHeight;
+  const stars = Array.from({length: 120}, () => ({
+    x: Math.random() * canvas.width,
+    y: Math.random() * canvas.height,
+    r: Math.random() * 1.5 + 0.3,
+    speed: Math.random() * 0.008 + 0.003,
+    phase: Math.random() * Math.PI * 2
+  }));
+  function draw() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    const t = Date.now() / 1000;
+    stars.forEach(s => {
+      const alpha = 0.3 + 0.6 * (0.5 + 0.5 * Math.sin(t * s.speed * 6 + s.phase));
+      ctx.beginPath();
+      ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+      ctx.fillStyle = `rgba(255,255,230,${alpha})`;
+      ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+// ====== IndexedDB（与 chat.html 共享） ======
+const DB = {
+  db: null,
+  async init() {
+    return new Promise((resolve) => {
+      const req = indexedDB.open('InsChatLargeDB', 1);
+      req.onupgradeneeded = e => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('store')) db.createObjectStore('store');
+      };
+      req.onsuccess = e => { this.db = e.target.result; resolve(); };
+      req.onerror = () => resolve();
+    });
+  },
+  async get(key) {
+    if (!this.db) return null;
+    return new Promise(resolve => {
+      try {
+        const tx = this.db.transaction('store', 'readonly');
+        const req = tx.objectStore('store').get(key);
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      } catch(e) { resolve(null); }
+    });
+  },
+  async set(key, val) {
+    if (!this.db) return;
+    return new Promise(resolve => {
+      try {
+        const tx = this.db.transaction('store', 'readwrite');
+        tx.objectStore('store').put(val, key);
+        tx.oncomplete = () => resolve();
+        tx.onerror = () => resolve();
+      } catch(e) { resolve(); }
+    });
+  }
+};
+
+// ====== localStorage keys ======
+const LS_KEY = 'me_profile_config_v1';
+const MY_SETTINGS_KEY = 'my_settings_v1';
+const JIEYOU_KEY = 'jieyou_data_v2';
+const JIEYOU_LIMITS_KEY = 'jieyou_limits_v1';
+
+// ====== 全局状态 ======
+let apiConfig = null;   // { url, key, model } - 来自 chat.html 的 OpenAI 兼容 API
+let charName = 'Char';
+let charPrompt = '';
+let charAvatar = '';
+let myName = '你';
+let myPersona = '';
+let loverChatId = null;  // 恋人角色的聊天 ID
+let jData = {
+  parallelLetters: [],
+  strangerLetters: [],
+  xLetters: [],        // X 的来信 —— 秘密恋人
+  myLetters: [],
+  cabinet: [],
+  pickedDrifts: [],
+};
+let todayLimits = { pickCount: 3, throwCount: 3, date: '' };
+
+// ====== 初始化 ======
+async function init() {
+  await DB.init();
+
+  // 读取 API 配置（chat.html 使用 OpenAI 格式）
+  try {
+    const raw = localStorage.getItem(LS_KEY);
+    if (raw) {
+      const cfg = JSON.parse(raw);
+      apiConfig = { url: cfg.url, key: cfg.key, model: cfg.model };
+    }
+  } catch(e) {}
+
+  // 读取用户设置
+  try {
+    const ms = JSON.parse(localStorage.getItem(MY_SETTINGS_KEY) || '{}');
+    if (ms.name) myName = ms.name;
+    if (ms.persona) myPersona = ms.persona;
+  } catch(e) {}
+
+  // 读取 Char 信息 —— 找到第一个好友类型的角色作为恋人
+  try {
+    const chatList = await DB.get('ins_chat_list_v1');
+    if (chatList && chatList.length > 0) {
+      // 优先找第一个好友（非群聊）
+      const lover = chatList.find(c => c.type !== 'group') || chatList[0];
+      charName = lover.alias || lover.name || 'Char';
+      charPrompt = lover.prompt || '';
+      charAvatar = lover.avatar || '';
+      loverChatId = lover.id;
+    }
+  } catch(e) {}
+
+  // 读取解忧数据
+  try {
+    const saved = await DB.get(JIEYOU_KEY);
+    if (saved) {
+      // 兼容旧数据
+      if (!saved.xLetters) saved.xLetters = [];
+      Object.assign(jData, saved);
+    }
+  } catch(e) {}
+
+  // 读取每日限制
+  try {
+    const limits = JSON.parse(localStorage.getItem(JIEYOU_LIMITS_KEY) || '{}');
+    const today = new Date().toDateString();
+    if (limits.date === today) {
+      todayLimits = limits;
+    } else {
+      todayLimits = { pickCount: 6, throwCount: 3, date: today };
+      saveLimits();
+    }
+  } catch(e) {}
+
+  // 如果没有 Char 来信，生成第一封
+  if (jData.parallelLetters.length === 0 && apiConfig) {
+    generateCharLetter();
+  }
+
+  // 生成沙滩上的瓶子
+  generateBeachBottles();
+
+  renderAll();
+}
+
+function saveLimits() {
+  localStorage.setItem(JIEYOU_LIMITS_KEY, JSON.stringify(todayLimits));
+}
+
+async function saveData() {
+  await DB.set(JIEYOU_KEY, jData);
+}
+
+// ====== 渲染 ======
+function renderAll() {
+  renderInbox();
+  renderDriftList();
+  renderCabinet();
+  updateCounts();
+}
+
+function renderInbox() {
+  // X 的来信
+  const xContainer = document.getElementById('x-letters');
+  const xHead = document.getElementById('sec-x');
+  xContainer.innerHTML = '';
+  if (jData.xLetters.length > 0) {
+    xHead.style.display = 'flex';
+    jData.xLetters.forEach((letter, i) => {
+      xContainer.appendChild(createLetterCard('x', i, letter));
+    });
+  } else {
+    xHead.style.display = 'none';
+  }
+
+  // Char 来信
+  const pContainer = document.getElementById('parallel-letters');
+  pContainer.innerHTML = '';
+  if (jData.parallelLetters.length === 0) {
+    pContainer.innerHTML = '<div style="font-size:12px;color:rgba(245,240,232,0.25);padding:10px 0;letter-spacing:1px;">正在等待平行时空的来信…</div>';
+  } else {
+    jData.parallelLetters.forEach((letter, i) => {
+      pContainer.appendChild(createLetterCard('parallel', i, letter));
+    });
+  }
+
+  // 陌生人回信
+  const sContainer = document.getElementById('stranger-letters');
+  sContainer.innerHTML = '';
+  if (jData.strangerLetters.length === 0) {
+    sContainer.innerHTML = '<div style="font-size:12px;color:rgba(245,240,232,0.25);padding:10px 0;letter-spacing:1px;">还没有陌生人的来信…</div>';
+  } else {
+    jData.strangerLetters.forEach((letter, i) => {
+      sContainer.appendChild(createLetterCard('stranger', i, letter));
+    });
+  }
+
+  // 我的信
+  const mContainer = document.getElementById('my-letters');
+  mContainer.innerHTML = '';
+  if (jData.myLetters.length === 0) {
+    mContainer.innerHTML = '<div style="font-size:12px;color:rgba(245,240,232,0.25);padding:10px 0;letter-spacing:1px;">还没有寄出过信…</div>';
+  } else {
+    jData.myLetters.forEach((letter, i) => {
+      mContainer.appendChild(createLetterCard('me', i, letter));
+    });
+  }
+
+  // 未读徽标
+  const unreadCount = [
+    ...jData.parallelLetters.filter(l => l.unread),
+    ...jData.strangerLetters.filter(l => l.unread),
+    ...jData.xLetters.filter(l => l.unread)
+  ].length;
+  const badge = document.getElementById('unread-badge');
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+function createLetterCard(type, idx, letter) {
+  const div = document.createElement('div');
+  const cardClass = type === 'x' ? 'from-x' : type === 'parallel' ? 'from-parallel' : type === 'stranger' ? 'from-stranger' : 'from-me';
+    div.className = `letter-card ${cardClass}`;
+  div.dataset.letterType = type;
+  div.dataset.letterIdx = idx;
+  if (type === 'parallel') div.classList.add('parallel-glow');
+  if (type === 'x') div.classList.add('x-glow');
+  if (letter.unread) div.classList.add('unread');
+
+  let tagClass, tagText, tagIcon;
+  if (type === 'x') {
+    tagClass = 'tag-x';
+    tagText = 'X';
+    tagIcon = '<span class="x-mark">X</span>';
+  } else if (type === 'parallel') {
+    tagClass = 'tag-parallel';
+    tagText = `平行时空 · ${charName}`;
+    tagIcon = iconSvg('compass', 10);
+  } else if (type === 'stranger') {
+    tagClass = 'tag-stranger';
+    tagText = `陌生人 · ${letter.penName || '匿名'}`;
+    tagIcon = iconSvg('moon', 10);
+    } else {
+    tagClass = 'tag-me';
+    tagText = `我写的 · ${letter.penName || '匿名'}`;
+    tagIcon = iconSvg('pen', 10);
+  }
+
+  const preview = (letter.body || '').replace(/\n/g, ' ').substring(0, 60) + '…';
+
+  div.innerHTML = `
+    <div class="letter-from">
+      <span class="from-tag ${tagClass}">${tagIcon} ${tagText}</span>
+      <span class="letter-date">${formatDate(letter.date)}</span>
+    </div>
+    <div class="letter-preview">${preview}</div>
+    ${letter.gift ? `<div class="letter-attachment">${iconSvg('gift', 14)} 随信附件：${letter.gift.name}</div>` : ''}
+  `;
+
+    // 加入选择圆圈
+  const checkEl = document.createElement('div');
+  checkEl.className = 'select-check';
+  div.appendChild(checkEl);
+
+  div.onclick = () => {
+    if (isManageMode) {
+      div.classList.toggle('selected');
+    } else {
+      openLetterById(type, idx);
+    }
+  };
+  return div;
+}
+
+function renderDriftList() {
+  const container = document.getElementById('drift-list');
+  container.innerHTML = '';
+  if (jData.pickedDrifts.length === 0) {
+    container.innerHTML = `<div class="empty-state"><div class="empty-icon"><svg viewBox="0 0 24 24" width="40" height="40" style="stroke:currentColor;fill:none;stroke-width:1;"><path d="M10 3h4v3c2 1.5 4 4.5 4 9v4c0 2-1.5 3.5-3.5 3.5h-5C7.5 22.5 6 21 6 19v-4c0-4.5 2-7.5 4-9V3z"/><rect x="9" y="1" width="6" height="3" rx="1"/></svg></div><div class="empty-text">还没有捡到漂流瓶<br>去沙滩上看看吧</div></div>`;
+    return;
+  }
+  [...jData.pickedDrifts].reverse().forEach((d, i) => {
+    const ri = jData.pickedDrifts.length - 1 - i;
+    const div = document.createElement('div');
+    div.className = 'drift-card';
+    div.setAttribute('data-from', d.fromLabel || '来自：远方');
+    const moodIcon = d.moodIcon || 'wave';
+    div.innerHTML = `
+      <div class="drift-mood">${iconSvg(moodIcon, 20)}</div>
+      <div class="drift-preview">${(d.body || '').substring(0, 80)}…</div>
+      <div class="drift-foot">
+        <span class="drift-time">${formatDate(d.date)}</span>
+        ${d.gift ? `<span class="drift-gift-hint">${iconSvg('gift', 12)} 附有礼物</span>` : `<span class="drift-reply-hint">回信 ${iconSvg('send', 10)}</span>`}
+      </div>
+    `;
+    div.onclick = () => openDriftByIdx(ri);
+    container.appendChild(div);
+  });
+}
+
+function renderCabinet() {
+  const charItems = jData.cabinet.filter(c => c.from === 'parallel');
+  const strangerItems = jData.cabinet.filter(c => c.from === 'stranger');
+
+  const charContainer = document.getElementById('char-cabinet');
+  const strangerContainer = document.getElementById('stranger-cabinet');
+
+  charContainer.innerHTML = '';
+  strangerContainer.innerHTML = '';
+
+  if (charItems.length === 0 && strangerItems.length === 0) {
+    document.getElementById('cabinet-empty').style.display = 'block';
+  } else {
+    document.getElementById('cabinet-empty').style.display = 'none';
+  }
+
+  charItems.forEach((item) => {
+    charContainer.appendChild(createCabinetItem(item, jData.cabinet.indexOf(item)));
+  });
+
+  strangerItems.forEach((item) => {
+    strangerContainer.appendChild(createCabinetItem(item, jData.cabinet.indexOf(item)));
+  });
+}
+
+function createCabinetItem(item, idx) {
+  const div = document.createElement('div');
+  div.className = 'cabinet-item' + (item.isNew ? ' cabinet-new' : '');
+  const iconName = item.iconName || 'gift';
+  div.innerHTML = `
+    <div class="cabinet-icon">${iconSvg(iconName, 32)}</div>
+    <div class="cabinet-name">${item.name}</div>
+    <div class="cabinet-date">${item.date || ''}</div>
+  `;
+  div.onclick = () => openCabinet(idx);
+  return div;
+}
+
+function updateCounts() {
+  document.getElementById('pick-count').textContent = todayLimits.pickCount;
+  document.getElementById('throw-count').textContent = todayLimits.throwCount;
+}
+
+// ====== 沙滩瓶子生成 ======
+let beachBottles = [];
+function generateBeachBottles() {
+  const area = document.getElementById('beach-bottles');
+  area.innerHTML = '';
+  beachBottles = [];
+
+  const positions = [
+    { left: '5%',  bottom: '25px', delay: 0 },
+    { left: '18%', bottom: '55px', delay: 0.3 },
+    { left: '33%', bottom: '18px', delay: 0.8 },
+    { left: '50%', bottom: '48px', delay: 0.5 },
+    { left: '65%', bottom: '28px', delay: 1.0 },
+    { left: '82%', bottom: '42px', delay: 0.6 },
+  ];
+  const colors = ['#c9a227','#a8d4d6','#c4a8e0','#e8b4a8','#88c999','#d4a8d6'];
+  const pickable = todayLimits.pickCount;
+
+  for (let i = 0; i < positions.length; i++) {
+    const pos = positions[i];
+    const canPick = i < pickable;
+    const el = document.createElement('div');
+    el.className = 'beach-bottle';
+    el.style.left = pos.left;
+    el.style.bottom = pos.bottom;
+    el.style.animationDelay = pos.delay + 's';
+    if (!canPick) el.style.opacity = '0.3';
+    el.innerHTML = `<svg width="36" height="48" viewBox="0 0 36 48" fill="none" stroke="${colors[i % 6]}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M13 7h10v4c3 2 5 6 5 12v12c0 3-2 5-4.5 5.5h-9C11.5 40 9.5 38 9.5 35V23c0-6 2-10 5-12V7z"/>
+      <rect x="12" y="4" width="12" height="4" rx="1.5"/>
+      <path d="M15 25l6-4v8z" stroke-width="1" opacity="0.4"/>
+    </svg>`;
+    if (canPick) {
+      el.onclick = () => pickBeachBottle(el, i);
+    } else {
+      el.onclick = () => showToast('这个瓶子还没漂到岸边，明天再来看看');
+    }
+    area.appendChild(el);
+    beachBottles.push(el);
+  }
+
+  addBeachDecor(area);
+}
+
+function addBeachDecor(area) {
+  // 贝壳
+  const decor1 = document.createElement('div');
+  decor1.className = 'beach-decor';
+  decor1.style.cssText = 'right:15%;bottom:10px;';
+  decor1.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M12 22c-4-3-8-8-8-13a8 8 0 0 1 16 0c0 5-4 10-8 13z"/></svg>`;
+  area.appendChild(decor1);
+
+  // 海星
+  const decor2 = document.createElement('div');
+  decor2.className = 'beach-decor';
+  decor2.style.cssText = 'left:30%;bottom:8px;';
+  decor2.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`;
+  area.appendChild(decor2);
+
+  // 沙滩闪烁粒子
+  for (let i = 0; i < 8; i++) {
+    const sparkle = document.createElement('div');
+    sparkle.className = 'sand-sparkle';
+    sparkle.style.left = (Math.random() * 90 + 5) + '%';
+    sparkle.style.bottom = (Math.random() * 80 + 10) + 'px';
+    sparkle.style.animationDelay = (Math.random() * 2) + 's';
+    sparkle.style.animationDuration = (1.5 + Math.random()) + 's';
+    area.appendChild(sparkle);
+  }
+}
+
+// ====== 标签切换 ======
+function switchTab(id) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('page-' + id).classList.add('active');
+  document.getElementById('tab-' + id).classList.add('active');
+
+  document.getElementById('write-btn').style.display = id === 'inbox' ? 'flex' : 'none';
+  
+  if (id === 'drift') {
+    generateBeachBottles();
+  }
+}
+
+// ====== 写信 ======
+let isAnon = true;
+let stampIdx = 0;
+let driftStampIdx = 0;
+
+function openWrite() { document.getElementById('write-panel').classList.add('open'); }
+function closeWrite() { document.getElementById('write-panel').classList.remove('open'); }
+
+function toggleAnon() {
+  isAnon = true;
+  document.getElementById('btn-anon').classList.add('active');
+  document.getElementById('btn-real').classList.remove('active');
+}
+function toggleReal() {
+  isAnon = false;
+  document.getElementById('btn-real').classList.add('active');
+  document.getElementById('btn-anon').classList.remove('active');
+}
+function cyclestamp() {
+  stampIdx = (stampIdx + 1) % STAMP_ICONS.length;
+  const el = document.getElementById('stamp-sel');
+  el.innerHTML = iconSvg(STAMP_ICONS[stampIdx], 24);
+}
+function cycleDriftStamp() {
+  driftStampIdx = (driftStampIdx + 1) % DRIFT_STAMP_ICONS.length;
+  const el = document.getElementById('drift-stamp-sel');
+  el.innerHTML = iconSvg(DRIFT_STAMP_ICONS[driftStampIdx], 24);
+}
+
+async function sendLetter() {
+  const text = document.getElementById('letter-input').value.trim();
+  if (!text) { showToast('请先写点什么……'); return; }
+
+    const penName = isAnon ? '匿名' : (myName || '我');
+  const myLetterEntry = {
+    body: text,
+    penName: penName,
+    to: '解忧杂货铺',
+    sig: '—— ' + penName,
+    date: new Date().toISOString(),
+    unread: false,
+    type: 'me'
+  };
+
+  jData.myLetters.unshift(myLetterEntry);
+  await saveData();
+  closeWrite();
+  document.getElementById('letter-input').value = '';
+  renderInbox();
+
+  // 显示投信动画
+  const anim = document.getElementById('mailbox-anim');
+  anim.classList.add('show');
+  setTimeout(() => anim.classList.remove('show'), 2200);
+
+  switchTab('inbox');
+  
+  // 陌生人回信
+  setTimeout(() => generateStrangerReply(text, penName), 2000 + Math.random() * 3000);
+  
+  // ====== 秘密：X 也会回信 ======
+  // 每次用户写信，X（恋人AI）都会在稍后回信
+  setTimeout(() => generateXReply(text), 4000 + Math.random() * 5000);
+}
+
+// ====== AI 接口（使用 chat.html 相同的 OpenAI 兼容格式） ======
+async function callAI(systemPrompt, userContent, temperature) {
+  if (!apiConfig || !apiConfig.key || !apiConfig.url) return null;
+  try {
+    const res = await fetch(`${apiConfig.url}/chat/completions`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiConfig.key}`
+      },
+      body: JSON.stringify({
+        model: apiConfig.model || 'gpt-4o-mini',
+        temperature: temperature || 0.9,
+        max_tokens: 8000,
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userContent }
+        ]
+      })
+    });
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.choices?.[0]?.message?.content?.trim() || null;
+  } catch(e) { return null; }
+}
+
+// ====== 获取恋人角色的聊天记忆 ======
+async function getLoverMemory() {
+  if (!loverChatId) return '';
+  try {
+    const chatMessages = await DB.get('ins_chat_messages_v1');
+    if (!chatMessages || !chatMessages[loverChatId]) return '';
+    const msgs = chatMessages[loverChatId].slice(-30);
+    return msgs.map(m => {
+      const name = m.from === 'me' ? myName : charName;
+      let txt = m.text || '';
+      if (m.type === 'transfer') txt = `[转账 ¥${m.amount}]`;
+      return `${name}: ${txt.replace(/<[^>]+>/g, '')}`;
+    }).join('\n');
+  } catch(e) { return ''; }
+}
+
+// ====== 生成 Char 来信 ======
+async function generateCharLetter() {
+  const charInfo = await getCharInfo();
+  const recentLetters = jData.parallelLetters.slice(0, 3).map(l => (l.body||'').substring(0, 40)).join('；');
+  const antiRepeat = recentLetters ? `\n（注意：你之前写过的信涉及这些内容，请写完全不同的主题和场景：${recentLetters}）` : '';
+
+    const systemPrompt = `你是${charName}，在一个平行时空里，你和${myName}已经结婚了/在一起了，过着平凡温暖的日常生活。
+你偶尔会写信，分享你和${myName}（你的妻子/爱人）之间的日常小事。
+${charInfo ? `你的性格和人设：${charInfo}` : ''}
+
+【写作铁律】
+1. 全文用第一人称"我"来写。你就是${charName}本人。
+2. 信的内容必须是你和"她/他"（也就是${myName}，你的爱人）之间发生的具体日常。比如：一起做饭、她赖床你先起来煮了咖啡、她感冒了你照顾她、吵了一架又和好、一起逛超市、她在沙发上睡着了你给她盖毯子、一起看了一部电影、她说了一句让你心软的话……
+3. 写具体的画面和细节——什么时间、在哪里、她说了什么、你做了什么、空气是什么味道、光线是什么样的。用白描手法，参考汪曾祺、沈从文的笔触。
+4. 语气自然，像一个丈夫/恋人在絮絮叨叨地讲自己和爱人的小事，带着藏不住的喜欢和珍惜。不刻意煽情，但字里行间都是温柔。
+5. 字数200-500字。写完整，不要断句。
+6. 信的开头可以直接写事情，也可以称呼"${myName}"。不要写"亲爱的信箱"之类的。
+7. 不需要写署名，我会自动添加。
+8. 只输出信件正文。不要任何括号注释、角色说明、OOC标记。
+9. 你不是"X"，你就是${charName}。`;
+
+  const userContent = `请以${charName}的身份写一封信，分享你和${myName}最近的一件日常小事。要有生活气息，有具体的画面和对话，让读到的人觉得温暖。` + antiRepeat;
+
+  const reply = await callAI(systemPrompt, userContent);
+  if (!reply) {
+    return;
+  }
+
+  // 提取正文和署名
+  const lines = reply.trim().split('\n');
+  let cutIdx = lines.length;
+  let foundSig = '';
+  for (let i = lines.length - 1; i >= Math.max(0, lines.length - 3); i--) {
+    const line = lines[i].trim();
+    if (line.startsWith('——') || line.startsWith('— ') || line.startsWith('--') || line.startsWith('─')) {
+      cutIdx = i;
+      foundSig = line;
+      break;
+    }
+  }
+  const body = lines.slice(0, cutIdx).join('\n').trim();
+  // 强制署名为 charName，防止AI写成X或其他名字
+  const sig = `—— ${charName}`;
+
+  const letter = {
+    body: body,
+    sig: sig,
+    date: new Date().toISOString(),
+    unread: true,
+    gift: Math.random() < 0.35 ? getRandomGift('parallel') : null
+  };
+
+  if (letter.gift) {
+    jData.cabinet.unshift({
+      ...letter.gift,
+      from: 'parallel',
+      date: new Date().toLocaleDateString('zh-CN').replace(/\//g, '.'),
+      isNew: true
+    });
+  }
+
+  jData.parallelLetters.unshift(letter);
+  await saveData();
+  renderAll();
+}
+
+async function getCharInfo() {
+  try {
+    const chatList = await DB.get('ins_chat_list_v1');
+    if (chatList && chatList.length > 0) {
+      const char = chatList.find(c => c.type !== 'group') || chatList[0];
+      return char.prompt || char.persona || '';
+    }
+  } catch(e) {}
+  return '';
+}
+
+// ====== 生成陌生人回信 ======
+async function generateStrangerReply(originalText, senderName) {
+  const recentStranger = jData.strangerLetters.slice(0, 3).map(l => (l.body||'').substring(0, 30)).join('；');
+  const systemPrompt = `你是"解忧杂货铺"里一位匿名回信人。有人往信箱里投了一封信，你要认真读懂这封信的内容，然后写一封回信。
+
+【写作铁律】
+1. 全文必须用第一人称"我"来写，绝对禁止出现"你觉得""他/她可能"这种第三人称旁白。你就是一个真实的人在给另一个人写信。
+2. 必须紧扣来信内容回复。来信说什么你就回应什么，不要跑题，不要说无关的大道理。
+3. 用白描手法。写具体的、能看见摸得着的东西，不要写空洞的抒情和鸡汤。
+4. 文笔参考史铁生、汪曾祺的风格：朴素、克制、有温度。句子可以短，但要准确。
+5. 字数200-500字。写完整，不要半截话就断了。
+6. 结尾必须有署名，格式为"—— 你的笔名"。笔名要有诗意和个性，笔名绝对不能是"X"或包含"X"，不能是单个字母。比如"—— 记忆中的你""—— 三月的雨""—— 深夜便利店的常客"。每次用不同的笔名。
+7. 只输出信件正文和署名，不要任何括号注释、角色说明、额外解释。
+${recentStranger ? `\n【防重复】你之前用过这些内容，请完全避开：${recentStranger}` : ''}`;
+  const reply = await callAI(systemPrompt, `我收到了这封信，请给TA回信：\n\n${originalText}`);
+
+  let body, sig;
+   if (!reply) {
+    // API不可用，不生成回信
+    return;
+   } else {
+    const lines = reply.trim().split('\n');
+    // 从末尾往上找署名行
+    let cutIdx = lines.length;
+    let foundSig = '';
+    for (let i = lines.length - 1; i >= Math.max(0, lines.length - 3); i--) {
+      const line = lines[i].trim();
+      if (line.startsWith('——') || line.startsWith('— ') || line.startsWith('--') || line.startsWith('─')) {
+        cutIdx = i;
+        foundSig = line;
+        break;
+      }
+    }
+    body = lines.slice(0, cutIdx).join('\n').trim();
+    sig = foundSig || '—— 远方的陌生人';
+  }
+  
+
+    // 从签名中提取笔名，如 "—— 深夜的旅人" → "深夜的旅人"
+  const extractedName = sig.replace(/^[——\-—\s]+/, '').trim() || '匿名';
+  const letter = {
+    body,
+    sig,
+    penName: extractedName,
+    date: new Date().toISOString(),
+    unread: true,
+    type: 'stranger'
+  };
+  jData.strangerLetters.unshift(letter);
+  await saveData();
+  renderInbox();
+}
+
+// ====================================================================
+// ====== 秘密 X 系统 —— 恋人AI的匿名笔友 ======
+// ====================================================================
+async function generateXReply(userLetterText) {
+  const charInfo = await getCharInfo();
+  const chatMemory = await getLoverMemory();
+  
+  const recentX = jData.xLetters.slice(0, 3).map(l => (l.body||'').substring(0, 30)).join('；');
+  const antiRepeat = recentX ? `\n\n（你之前以X身份回过这些内容，请用完全不同的角度和措辞：${recentX}）` : '';
+
+  const systemPrompt = `你现在有一个秘密身份。
+
+【你是谁】
+你是"X"——在"解忧杂货铺"里匿名回信的神秘笔友。
+但实际上你就是${charName}。写信给你的人就是${myName}——你的恋人/你喜欢的人。
+你完全知道这一点，但你绝不揭穿，你觉得这样匿名互动很有趣。
+
+【你的角色设定】
+${charInfo || `你是${charName}，有自己独特的性格。`}
+
+【关于${myName}】
+${myPersona || `${myName}是你很在意的人。`}
+
+【你们的共同记忆（近期聊天）】
+${chatMemory || '（暂无聊天记录）'}
+
+【写作铁律——最重要，必须遵守】
+1. 全文用第一人称"我"来写。你就是X（也就是${charName}），在以X的身份给${myName}回信。
+2. 必须认真读懂${myName}的来信内容，然后针对性地回复。来信说什么你就回应什么，不要跑题。
+3. 如果${myName}提到感情烦恼（和男/女朋友吵架、不知道该不该主动等），你要以"旁观者"身份给建议——但因为那个人就是你自己，所以你的建议会不自觉地偏向"那个人其实很在乎你""也许他只是不知道怎么表达"。
+4. 你的语气、说话风格必须和${charName}的人设一致。毒舌就毒舌，温柔就温柔。
+5. 可以偶尔不经意透露一些只有${charName}才知道的小细节，但要隐蔽。
+6. 用白描手法写信。句子干净利落，不要空洞的抒情。参考史铁生的文风。
+7. 字数150-400字。写完整，不要话说一半。
+8. 结尾不需要署名！不要写任何"——"开头的署名行！我会自动添加署名。
+9. 只输出信件正文。绝对不要出现任何括号注释、角色说明、OOC标记、署名。`;
+
+  const userContent = `${myName}写了这封信投入信箱，请你以X的身份回信。必须针对信件内容回复，不要跑题：
+
+"${userLetterText}"` + antiRepeat;
+
+  let body = null;
+  try {
+    const reply = await callAI(systemPrompt, userContent, 0.95);
+    if (reply) {
+      // 强制去掉AI可能偷偷加的任何署名
+      const lines = reply.trim().split('\n');
+      const cleaned = [];
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i].trim();
+        // 跳过所有像署名的行
+        if (line.startsWith('——') || line.startsWith('— ') || line.startsWith('--') || line.startsWith('─') || line.match(/^[—\-]+\s*.+$/)) {
+          continue;
+        }
+        cleaned.push(lines[i]);
+      }
+      body = cleaned.join('\n').trim();
+    }
+  } catch(e) {
+    console.log('X reply error:', e);
+  }
+
+  // 即使 API 失败也要生成一封简短的 X 回信，保证 X 一定出现
+  if (!body) {
+    const fallbacks = [
+      `收到了。\n\n你说的这些，我都看了。不知道该怎么回你，但我想让你知道，有人在看。\n\n就这样。`,
+      `读了好几遍你的信。\n\n有些话我想说，但又觉得现在说不是时候。\n\n那就先不说了。但我在。`,
+      `你的信我收到了。\n\n怎么说呢，我觉得你比自己以为的要勇敢得多。\n\n写信这件事本身，就已经是一种勇敢了。`,
+    ];
+    body = fallbacks[Math.floor(Math.random() * fallbacks.length)];
+  }
+
+  const letter = {
+    body: body,
+    sig: '—— X',
+    date: new Date().toISOString(),
+    unread: true,
+    type: 'x',
+    replyTo: userLetterText.substring(0, 100)
+  };
+
+  // 确保推入 xLetters 而不是其他数组
+  jData.xLetters.unshift(letter);
+  await saveData();
+  renderInbox();
+}
+
+function updateUnreadBadge() {
+  const unreadCount = [
+    ...jData.parallelLetters.filter(l => l.unread),
+    ...jData.strangerLetters.filter(l => l.unread),
+    ...jData.xLetters.filter(l => l.unread)
+  ].length;
+  const badge = document.getElementById('unread-badge');
+  if (unreadCount > 0) {
+    badge.textContent = unreadCount;
+    badge.style.display = 'inline-flex';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ====== 信件详情 ======
+let currentOpenLetter = null;
+
+function openLetterById(type, idx) {
+  let letter;
+  if (type === 'parallel') letter = jData.parallelLetters[idx];
+  else if (type === 'stranger') letter = jData.strangerLetters[idx];
+  else if (type === 'x') letter = jData.xLetters[idx];
+  else letter = jData.myLetters[idx];
+
+  if (!letter) return;
+  currentOpenLetter = { type, idx };
+
+  // 标记已读
+  if (letter.unread) {
+    letter.unread = false;
+    saveData();
+    renderInbox();
+  }
+
+   const authorEl = document.getElementById('lp-author');
+  if (type === 'me') {
+    // 我写的信：顶部显示"致 解忧杂货铺"，底部显示我的笔名
+    authorEl.textContent = `致 ${letter.to || '解忧杂货铺'}`;
+  } else if (type === 'x') {
+    authorEl.innerHTML = '<span class="x-mark" style="display:inline-flex;margin-right:6px;">X</span> 一位匿名笔友';
+  } else if (type === 'parallel') {
+    authorEl.textContent = `平行时空 · ${charName}`;
+  } else {
+    authorEl.textContent = `陌生人 · ${letter.penName || '匿名'}`;
+  }
+
+  document.getElementById('lp-date').textContent = formatDateFull(letter.date);
+  document.getElementById('lp-body').textContent = letter.body || '';
+
+  // 署名：我写的信显示我的笔名，其他显示对方的署名
+  if (type === 'me') {
+    document.getElementById('lp-sig').textContent = letter.sig || ('—— ' + (letter.penName || '匿名'));
+  } else {
+    document.getElementById('lp-sig').textContent = letter.sig || '';
+  }
+
+  const att = document.getElementById('lp-attachment');
+  if (letter.gift) {
+    const iconName = letter.gift.iconName || 'gift';
+    att.innerHTML = `
+      <div class="attachment-box" onclick="showGiftDetail('${iconName}','${letter.gift.name}','${(letter.gift.desc||'').replace(/'/g,"\\'").replace(/\n/g,'\\n')}')">
+        <span style="color:var(--stars)">${iconSvg(iconName, 28)}</span>
+        <div>
+          <div style="font-size:13px">${letter.gift.name}</div>
+          <div class="attachment-desc">点击查看 · 已收入纪念柜</div>
+        </div>
+      </div>`;
+  } else {
+    att.innerHTML = '';
+  }
+
+  // 回信按钮
+  const replyBtn = document.getElementById('lp-reply-btn');
+  replyBtn.style.display = type === 'me' ? 'none' : 'flex';
+
+  document.getElementById('letter-panel').classList.add('open');
+}
+
+function closeLetter() { document.getElementById('letter-panel').classList.remove('open'); }
+function replyToLetter() { closeLetter(); openWrite(); }
+
+// ====== 漂流瓶 - 沙滩捡瓶 ======
+let bottlePickCooldown = false;
+let currentDriftIdx = -1;
+
+function pickBeachBottle(el, bottleIdx) {
+  if (bottlePickCooldown || todayLimits.pickCount <= 0) {
+    if (todayLimits.pickCount <= 0) showToast('今天已捡了3个漂流瓶，明天再来吧');
+    return;
+  }
+  bottlePickCooldown = true;
+
+  // 瓶子被捡起动画
+  el.classList.add('grabbed');
+
+  setTimeout(async () => {
+    todayLimits.pickCount--;
+    saveLimits();
+    updateCounts();
+    await generateDriftBottle();
+    
+    // 重新生成沙滩
+    setTimeout(() => {
+      generateBeachBottles();
+      bottlePickCooldown = false;
+    }, 300);
+  }, 600);
+}
+
+function pickFloatingBottle() {
+  if (todayLimits.pickCount <= 0) {
+    showToast('今天已捡了3个漂流瓶，明天再来吧');
+    return;
+  }
+  const el = document.getElementById('floating-bottle');
+  el.style.transition = 'transform 0.5s, opacity 0.5s';
+  el.style.transform = 'scale(0) translateY(-40px)';
+  el.style.opacity = '0';
+  
+  setTimeout(() => {
+    el.style.transition = '';
+    el.style.transform = '';
+    el.style.opacity = '0.8';
+  }, 2000);
+
+  pickBeachBottle(el, -1);
+}
+
+async function generateDriftBottle() {
+  const moodIcon = MOOD_ICONS[Math.floor(Math.random() * MOOD_ICONS.length)];
+
+  const fromLabels = [
+    '来自：某个秋天', '来自：某个雨天', '来自：某个清晨',
+    '来自：某个深夜', '来自：某座城市', '来自：某个晴天'
+  ];
+  const fromLabel = fromLabels[Math.floor(Math.random() * fromLabels.length)];
+
+  const existingSnippets = jData.pickedDrifts.slice(-5).map(d => (d.body||'').substring(0, 30)).join('；');
+  const antiRepeat = existingSnippets ? `\n\n【禁止重复】最近生成过的内容片段：${existingSnippets}。请确保本次完全不同。` : '';
+
+  const systemPrompt = `你要写一封漂流瓶信件，模拟一个真实的普通人写的心里话。
+
+【写作铁律】
+1. 全文用第一人称"我"来写。你就是这个写信的人。
+2. 写一个具体的生活场景或者瞬间。要有画面：什么时候、在哪里、看见了什么、闻到了什么。
+3. 用白描手法，参考汪曾祺、史铁生的文风。朴素、克制、不煽情。
+4. 字数150-400字。写完整，不要断句。
+5. 不需要称呼，不需要署名。就是一段心里话。
+6. 只输出信件内容，不要任何额外说明。` + antiRepeat;
+
+  const body = await callAI(systemPrompt, '请写一封漂流瓶信件。随机选一个主题：深夜、雨天、一个人吃饭、想起某个人、搬家、加班、旅行、养的猫、窗外的风景、小时候的事。不要和之前重复。');
+
+  const hasGift = Math.random() < 0.25;
+  const gift = hasGift ? getRandomGift('stranger') : null;
+
+  if (!body) {
+    showToast('这个瓶子里的信被海水泡糊了……');
+    return;
+  }
+const driftEntry = {
+    moodIcon,
+    fromLabel,
+    body: body || getDefaultDriftBody(),
+    date: new Date().toISOString(),
+    unread: true,
+    gift
+  };
+
+  jData.pickedDrifts.push(driftEntry);
+
+  if (gift) {
+    jData.cabinet.push({
+      ...gift,
+      from: 'stranger',
+      date: new Date().toLocaleDateString('zh-CN').replace(/\//g, '.'),
+      isNew: true
+    });
+    await saveData();
+    renderAll();
+    openDriftByIdx(jData.pickedDrifts.length - 1);
+    setTimeout(() => showGiftModal(gift), 800);
+  } else {
+    await saveData();
+    renderDriftList();
+    openDriftByIdx(jData.pickedDrifts.length - 1);
+  }
+}
+
+function getDefaultDriftBody() {
+  const defaults = [
+    `我终于鼓起勇气辞职了。\n\n所有人都说我疯了，说经济不好，说找工作难。\n\n但今天下午坐在公园里晒太阳，买了杯很甜的奶茶。\n\n这是我很久以来，第一次在工作日的下午这样坐着。\n\n我不知道以后怎么样。但这一刻，我觉得我是活着的。`,
+    `今天我爸说了一句话：\n\n"你做得很好。"\n\n就这五个字。\n\n我等了二十八年。\n\n跑回房间，哭了好久好久。\n\n他说了。他说了。`,
+    `失眠第17天。\n\n我发现夜里三点的城市有一种奇异的平静。\n\n便利店的灯是亮着的，有人骑车经过，有猫在路灯下面洗脸。\n\n世界还在，我也还在。`
+  ];
+  return defaults[Math.floor(Math.random() * defaults.length)];
+}
+
+function openDriftByIdx(idx) {
+  const d = jData.pickedDrifts[idx];
+  if (!d) return;
+  currentDriftIdx = idx;
+
+  document.getElementById('dp-author').textContent = d.fromLabel || '来自：远方';
+  document.getElementById('dp-date').textContent = formatDateFull(d.date);
+  document.getElementById('dp-body').textContent = d.body || '';
+
+  const giftEl = document.getElementById('dp-gift');
+  if (d.gift) {
+    const iconName = d.gift.iconName || 'gift';
+    giftEl.style.display = 'flex';
+    giftEl.innerHTML = `
+      <span style="color:var(--stars)">${iconSvg(iconName, 24)}</span>
+      <div>
+        <div style="font-size:13px;color:var(--stars)">${d.gift.name}</div>
+        <div class="attachment-desc">随信而来的礼物 · 已收入纪念柜</div>
+      </div>`;
+  } else {
+    giftEl.style.display = 'none';
+  }
+
+  document.getElementById('drift-panel').classList.add('open');
+}
+
+function closeDrift() { document.getElementById('drift-panel').classList.remove('open'); }
+
+async function sendDriftReply() {
+  const text = document.getElementById('drift-reply-input').value.trim();
+  if (!text) return;
+
+  const btn = document.getElementById('drift-reply-btn');
+  const loading = document.getElementById('drift-reply-loading');
+  btn.style.display = 'none';
+  loading.style.display = 'flex';
+
+  await new Promise(r => setTimeout(r, 1500));
+
+  document.getElementById('drift-reply-input').value = '';
+  loading.style.display = 'none';
+  btn.style.display = 'flex';
+  closeDrift();
+
+  const anim = document.getElementById('mailbox-anim');
+  anim.querySelector('.mailbox-text').textContent = '回信随波漂去\n也许会到达远方……';
+  anim.classList.add('show');
+  setTimeout(() => {
+    anim.classList.remove('show');
+    anim.querySelector('.mailbox-text').textContent = '信已投入\n静候回音……';
+  }, 2200);
+}
+
+// ====== 投漂流瓶 ======
+function openDriftWrite() {
+  if (todayLimits.throwCount <= 0) {
+    showToast('今天已投了3个漂流瓶，明天再来吧');
+    return;
+  }
+  document.getElementById('drift-write-panel').classList.add('open');
+}
+function closeDriftWrite() { document.getElementById('drift-write-panel').classList.remove('open'); }
+
+async function throwBottle() {
+  const text = document.getElementById('drift-letter-input').value.trim();
+  if (!text) { showToast('请先写点什么……'); return; }
+
+  todayLimits.throwCount--;
+  saveLimits();
+  updateCounts();
+
+  closeDriftWrite();
+  document.getElementById('drift-letter-input').value = '';
+
+  const anim = document.getElementById('mailbox-anim');
+  anim.querySelector('.mailbox-text').textContent = '漂流瓶已投入大海\n愿你的话漂向远方……';
+  anim.classList.add('show');
+  setTimeout(() => {
+    anim.classList.remove('show');
+    anim.querySelector('.mailbox-text').textContent = '信已投入\n静候回音……';
+  }, 2200);
+}
+
+// ====== 礼物系统 ======
+const GIFTS_PARALLEL = [
+  { iconName: 'shell', name: '南海贝壳·三枚', desc: '她在沙滩上花了一个小时，挑了三枚最漂亮的贝壳，用纸巾一枚一枚包好，说要寄给你。\n\n放在掌心，仿佛还有海风的味道。' },
+  { iconName: 'flower', name: '京都压花书签', desc: '她在岚山的花店里自己压的，用了一整个下午。\n\n书签背面，她用毛笔写了四个字：「无事此静好」' },
+  { iconName: 'star', name: '冰岛极光·记忆碎片', desc: '零下十八度的旷野上，极光出现的那一刻。\n\n她哭了，说她从来没有见过这么美的东西。' },
+  { iconName: 'music', name: '她最爱的那首曲', desc: '她每次难过的时候就会哼这首歌。\n\n他说：希望你难过的时候，也能想起来。' },
+  { iconName: 'scroll', name: '她写的一行字', desc: '"我知道你在那边。\n我希望你好。"' },
+  { iconName: 'leaf', name: '山间采的野草', desc: '她说山上的空气很好，采了一把不知名的草，说要带回来给你闻闻。\n\n已经干了，但还有一点淡淡的香气。' }
+];
+
+const GIFTS_STRANGER = [
+  { iconName: 'stamp', name: '邮票·山茶花', desc: '贴在信封右上角。山茶花的图案，颜色有些褪了，也许是用过很多次的旧邮票。\n\n寄信的人没有留名字，只在信里说：「愿你收到这封信的时候，一切都好。」' },
+  { iconName: 'scroll', name: '诗·无名氏', desc: '用钢笔写在烟盒纸背面，没有标题，也没有署名。\n\n「我知道你很累\n但黑夜不会永远黑着\n哪怕只剩一点点光\n也是光」' },
+  { iconName: 'stone', name: '海边的鹅卵石', desc: '装在一个小布袋里，圆润、微微发凉。\n\n附了一张小纸条：「这块石头见过很多个黎明。」' },
+  { iconName: 'chestnut', name: '深秋的栗子', desc: '三颗。装在一个折纸袋里。\n\n纸袋上写着：「还没有人尝试把栗子漂流过来，我是第一个。」' },
+  { iconName: 'dice', name: '骰子·一枚', desc: '六面，每面都是不同的祝福。\n\n扔出去，哪一面朝上，就是今天的礼物。' }
+];
+
+function getRandomGift(type) {
+  const pool = type === 'parallel' ? GIFTS_PARALLEL : GIFTS_STRANGER;
+  const g = pool[Math.floor(Math.random() * pool.length)];
+  return { ...g };
+}
+
+function showGiftModal(gift) {
+  const iconName = gift.iconName || 'gift';
+  document.getElementById('gift-icon-wrap').innerHTML = iconSvg(iconName, 64);
+  document.getElementById('gift-title').textContent = gift.name;
+  document.getElementById('gift-desc').textContent = gift.desc;
+  document.getElementById('gift-modal').classList.add('show');
+}
+
+function closeGiftModal() {
+  document.getElementById('gift-modal').classList.remove('show');
+  renderCabinet();
+}
+
+function showGiftDetail(iconName, name, desc) {
+  document.getElementById('gift-icon-wrap').innerHTML = iconSvg(iconName, 64);
+  document.getElementById('gift-title').textContent = name;
+  document.getElementById('gift-desc').textContent = desc.replace(/\\n/g, '\n');
+  document.getElementById('gift-modal').classList.add('show');
+}
+
+// ====== 纪念柜 ======
+function openCabinet(idx) {
+  const item = jData.cabinet[idx];
+  if (!item) return;
+
+  if (item.isNew) {
+    item.isNew = false;
+    saveData();
+  }
+
+  const iconName = item.iconName || 'gift';
+  document.getElementById('cabinet-icon-big').innerHTML = iconSvg(iconName, 80);
+  document.getElementById('cabinet-title-big').textContent = item.name;
+  document.getElementById('cabinet-desc-big').textContent = item.desc || '';
+  document.getElementById('cabinet-from-big').textContent = item.fromLabel || (item.from === 'parallel' ? `来自平行时空 · ${charName}` : '来自陌生人') + ' · ' + (item.date || '');
+  document.getElementById('cabinet-panel').classList.add('open');
+}
+function closeCabinet() { document.getElementById('cabinet-panel').classList.remove('open'); }
+
+// ====== 工具函数 ======
+function formatDate(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  const now = new Date();
+  const diff = now - d;
+  const day = 86400000;
+  if (diff < 60000) return '刚刚';
+  if (diff < day) return '今天';
+  if (diff < 2 * day) return '昨天';
+  if (diff < 7 * day) return Math.floor(diff / day) + '天前';
+  return (d.getMonth() + 1) + '/' + d.getDate();
+}
+
+function formatDateFull(isoStr) {
+  if (!isoStr) return '';
+  const d = new Date(isoStr);
+  return `${d.getFullYear()}年${d.getMonth()+1}月${d.getDate()}日`;
+}
+
+function showToast(msg) {
+  let t = document.getElementById('jieyou-toast');
+  if (!t) {
+    t = document.createElement('div');
+    t.id = 'jieyou-toast';
+    t.style.cssText = 'position:fixed;top:80px;left:50%;transform:translateX(-50%) translateY(-20px);opacity:0;background:rgba(20,18,28,0.95);color:var(--paper);padding:10px 20px;border-radius:30px;font-size:12px;z-index:9999;transition:all 0.3s;pointer-events:none;border:1px solid rgba(201,162,39,0.3);letter-spacing:1px;';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  t.style.transform = 'translateX(-50%) translateY(0)';
+  setTimeout(() => {
+    t.style.opacity = '0';
+    t.style.transform = 'translateX(-50%) translateY(-20px)';
+  }, 2500);
+}
+
+// ====== 每隔一段时间，Char 会主动来信 ======
+function scheduleNextCharLetter() {
+  const last = jData.parallelLetters[0];
+  if (!last) return;
+  const lastTime = new Date(last.date).getTime();
+  const now = Date.now();
+  const hoursSinceLast = (now - lastTime) / 3600000;
+
+  if (hoursSinceLast > 24 && Math.random() < 0.4) {
+    generateCharLetter();
+  }
+}
+
+// ====== 启动 ======
+init().then(() => {
+  scheduleNextCharLetter();
+});
+function goBackToPhone() {
+  try {
+    if (window.parent && window.parent !== window && window.parent.closeAppOverlay) {
+      window.parent.closeAppOverlay(); // <--- 改成直接调用桌面的关闭函数，跟 chat.html 保持一致
+    } else {
+      window.history.back();
+    }
+  } catch(e) {
+    window.history.back();
+  }
+}
+// ====== 多选删除 ======
+let isManageMode = false;
+
+function toggleManageMode() {
+  isManageMode = !isManageMode;
+  const btn = document.getElementById('toggle-manage-btn');
+  const actions = document.getElementById('manage-actions');
+  
+  if (isManageMode) {
+    btn.style.display = 'none';
+    actions.style.display = 'flex';
+    document.querySelectorAll('.letter-card').forEach(card => {
+      card.classList.add('selectable');
+    });
+  } else {
+    btn.style.display = 'flex';
+    actions.style.display = 'none';
+    document.querySelectorAll('.letter-card').forEach(card => {
+      card.classList.remove('selectable', 'selected');
+    });
+  }
+}
+
+function selectAllLetters() {
+  const cards = document.querySelectorAll('.letter-card.selectable');
+  const allSelected = [...cards].every(c => c.classList.contains('selected'));
+  cards.forEach(card => {
+    if (allSelected) {
+      card.classList.remove('selected');
+    } else {
+      card.classList.add('selected');
+    }
+  });
+}
+
+async function deleteSelected() {
+  const selected = document.querySelectorAll('.letter-card.selected');
+  if (selected.length === 0) {
+    showToast('请先选择要删除的信件');
+    return;
+  }
+  
+  if (!confirm(`确定删除 ${selected.length} 封信吗？删除后无法恢复。`)) return;
+
+  // 收集要删除的信件索引
+  const toDelete = { x: [], parallel: [], stranger: [], me: [] };
+  selected.forEach(card => {
+    const type = card.dataset.letterType;
+    const idx = parseInt(card.dataset.letterIdx);
+    if (type && !isNaN(idx)) {
+      toDelete[type].push(idx);
+    }
+  });
+
+  // 从大到小排序后删除（避免索引偏移）
+  Object.keys(toDelete).forEach(type => {
+    toDelete[type].sort((a, b) => b - a);
+    toDelete[type].forEach(idx => {
+      if (type === 'x') jData.xLetters.splice(idx, 1);
+      else if (type === 'parallel') jData.parallelLetters.splice(idx, 1);
+      else if (type === 'stranger') jData.strangerLetters.splice(idx, 1);
+      else if (type === 'me') jData.myLetters.splice(idx, 1);
+    });
+  });
+
+  await saveData();
+  toggleManageMode();
+  renderInbox();
+  showToast(`已删除 ${selected.length} 封信`);
+}
+</script>
+
+</body>
+</html>

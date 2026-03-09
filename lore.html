@@ -1,0 +1,920 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>世界书</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Noto+Sans+KR:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+/* ── RESET ── */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+button,input,textarea,select{font-family:inherit;border:none;outline:none;background:none}
+
+/* ── TOKENS ── */
+:root{
+  --bg:        #f6f4f0;
+  --bg2:       #eeebe5;
+  --surface:   rgba(255,255,255,0.82);
+  --surface2:  rgba(255,255,255,0.55);
+  --glass:     rgba(246,244,240,0.78);
+  --border:    rgba(0,0,0,0.06);
+  --border2:   rgba(0,0,0,0.10);
+  --ink:       #1c1a17;
+  --ink2:      #6b6358;
+  --ink3:      #b0a89c;
+  --gold:      #b8895a;
+  --gold-lt:   rgba(184,137,90,0.09);
+  --gold-md:   rgba(184,137,90,0.20);
+  --sage:      #7a9a88;
+  --sage-lt:   rgba(122,154,136,0.09);
+  --lavender:  #9488b0;
+  --lav-lt:    rgba(148,136,176,0.09);
+  --danger:    #b85a4a;
+  --r:         16px;
+  --r-sm:      10px;
+  --r-pill:    100px;
+  --shadow:    0 1px 12px rgba(0,0,0,0.07);
+  --shadow2:   0 6px 30px rgba(0,0,0,0.11);
+}
+
+/* ── BASE ── */
+html,body{height:100%;width:100%;overflow:hidden}
+body{
+  background:var(--bg);
+  color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:300;
+  font-size:14px;
+  -webkit-font-smoothing:antialiased;
+  display:flex;flex-direction:column;
+}
+
+/* ── SCROLL CONTAINER ── */
+.scroll-view{
+  flex:1;overflow-y:auto;overflow-x:hidden;
+  padding-bottom:100px;
+  -webkit-overflow-scrolling:touch;
+}
+.scroll-view::-webkit-scrollbar{display:none}
+
+/* ── NAV ── */
+.nav{
+  flex-shrink:0;
+  padding:env(safe-area-inset-top,0px) 0 0;
+  background:var(--glass);
+  backdrop-filter:blur(28px) saturate(180%);
+  -webkit-backdrop-filter:blur(28px) saturate(180%);
+  border-bottom:1px solid var(--border);
+  z-index:100;
+}
+.nav-row{
+  display:flex;align-items:center;
+  padding:14px 18px 10px;gap:10px;
+}
+.nav-brand{
+  flex:1;display:flex;align-items:baseline;gap:8px;
+}
+.nav-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:23px;font-weight:400;font-style:italic;
+  color:var(--ink);letter-spacing:.3px;line-height:1;
+}
+.nav-sub{
+  font-size:9.5px;color:var(--ink3);
+  letter-spacing:2.5px;text-transform:uppercase;
+  font-weight:400;
+}
+.nav-btn{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;transition:background .15s;
+}
+.nav-btn:active{background:var(--bg2)}
+.nav-btn svg{stroke:var(--ink2);display:block}
+
+/* Search bar */
+.search-row{
+  padding:0 18px 11px;
+  position:relative;
+}
+.search-ico{
+  position:absolute;left:30px;top:50%;transform:translateY(-50%);
+  pointer-events:none;
+}
+.search-inp{
+  width:100%;height:36px;
+  background:var(--surface);
+  border:1px solid var(--border2);
+  border-radius:var(--r-pill);
+  padding:0 14px 0 36px;
+  font-size:12.5px;color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:300;
+  transition:border .2s,box-shadow .2s;
+}
+.search-inp:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-lt);
+}
+.search-inp::placeholder{color:var(--ink3)}
+
+/* ── STATS BAR ── */
+.stats{
+  display:flex;
+  margin:14px 18px 0;
+  border-radius:var(--r);
+  border:1px solid var(--border);
+  overflow:hidden;
+  background:var(--surface);
+}
+.stat{
+  flex:1;padding:10px 0;text-align:center;
+  position:relative;
+}
+.stat+.stat::before{
+  content:'';position:absolute;left:0;top:20%;bottom:20%;
+  width:1px;background:var(--border);
+}
+.stat-n{
+  font-family:'Cormorant Garamond',serif;
+  font-size:21px;font-weight:400;color:var(--ink);
+  line-height:1;
+}
+.stat-l{
+  font-size:8.5px;letter-spacing:1.8px;
+  text-transform:uppercase;color:var(--ink3);
+  margin-top:3px;font-weight:400;
+}
+
+/* ── FILTER PILLS ── */
+.filters{
+  display:flex;gap:5px;
+  padding:12px 18px 0;
+  overflow-x:auto;scrollbar-width:none;
+}
+.filters::-webkit-scrollbar{display:none}
+.fp{
+  flex-shrink:0;height:27px;
+  padding:0 11px;border-radius:var(--r-pill);
+  border:1px solid var(--border2);
+  background:var(--surface2);
+  font-size:11px;font-weight:400;color:var(--ink2);
+  cursor:pointer;
+  display:flex;align-items:center;gap:5px;
+  transition:all .18s;
+  font-family:'Noto Sans KR',sans-serif;
+}
+.fp svg{stroke:currentColor;flex-shrink:0}
+.fp.on{
+  background:var(--ink);color:#fff;
+  border-color:var(--ink);
+}
+
+/* ── SECTION LABEL ── */
+.sec{
+  display:flex;align-items:center;gap:10px;
+  padding:18px 18px 8px;
+}
+.sec-txt{
+  font-size:9px;letter-spacing:2.5px;
+  text-transform:uppercase;
+  font-weight:500;white-space:nowrap;
+}
+.sec-line{flex:1;height:1px;background:var(--border)}
+.sec-cnt{
+  font-family:'Cormorant Garamond',serif;
+  font-size:14px;color:var(--ink3);
+}
+
+/* ── ENTRY CARD ── */
+.list{padding:0 18px 0}
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--r);
+  margin-bottom:9px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  position:relative;
+  transition:transform .14s,box-shadow .14s;
+  cursor:pointer;
+}
+.card:active{transform:scale(.987);box-shadow:none}
+.card-bar{
+  position:absolute;left:0;top:0;bottom:0;width:3px;
+  border-radius:2px 0 0 2px;
+}
+.card.global .card-bar{background:var(--sage)}
+.card.local  .card-bar{background:var(--lavender)}
+
+.card-body{padding:13px 14px 11px 17px}
+.card-top{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:8px;margin-bottom:7px;
+}
+.card-name{
+  font-size:14.5px;font-weight:500;color:var(--ink);
+  line-height:1.3;flex:1;letter-spacing:-.1px;
+}
+.badges{display:flex;gap:4px;flex-shrink:0;align-items:center}
+.badge{
+  font-size:8.5px;letter-spacing:1px;
+  text-transform:uppercase;
+  padding:2.5px 7px;border-radius:var(--r-pill);
+  font-weight:500;
+}
+.badge.global{background:var(--sage-lt);color:var(--sage);border:1px solid rgba(122,154,136,.22)}
+.badge.local {background:var(--lav-lt); color:var(--lavender);border:1px solid rgba(148,136,176,.22)}
+.badge.off   {background:var(--bg2);color:var(--ink3);border:1px solid var(--border)}
+
+.keys{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:7px}
+.key{
+  height:18px;padding:0 7px;
+  background:var(--gold-lt);
+  border:1px solid var(--gold-md);
+  border-radius:var(--r-pill);
+  font-size:9.5px;color:var(--gold);
+  display:flex;align-items:center;gap:3px;
+}
+.key svg{flex-shrink:0}
+
+.preview{
+  font-size:12px;color:var(--ink2);line-height:1.7;
+  display:-webkit-box;-webkit-line-clamp:2;
+  -webkit-box-orient:vertical;overflow:hidden;
+}
+
+.card-foot{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:8px 13px 9px 17px;
+  border-top:1px solid var(--border);
+  background:rgba(246,244,240,.5);
+}
+/* mini toggle */
+.tgl-wrap{display:flex;align-items:center;gap:7px}
+.tgl{
+  width:36px;height:20px;border-radius:var(--r-pill);
+  background:var(--border2);position:relative;
+  cursor:pointer;transition:background .22s;flex-shrink:0;
+}
+.tgl.on{background:var(--gold)}
+.tgl::after{
+  content:'';position:absolute;
+  top:2px;left:2px;width:16px;height:16px;
+  background:#fff;border-radius:50%;
+  transition:transform .22s cubic-bezier(.34,1.4,.64,1);
+  box-shadow:0 1px 3px rgba(0,0,0,.18);
+}
+.tgl.on::after{transform:translateX(16px)}
+.tgl-lbl{font-size:10.5px;color:var(--ink3)}
+
+.row-btns{display:flex;gap:5px}
+.ico-btn{
+  width:27px;height:27px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;border:1px solid var(--border);
+  background:var(--surface);
+  transition:all .14s;
+}
+.ico-btn:active{transform:scale(.85)}
+.ico-btn.edit svg{stroke:var(--gold)}
+.ico-btn.del  svg{stroke:var(--danger)}
+
+/* ── EMPTY ── */
+.empty{
+  display:flex;flex-direction:column;align-items:center;
+  padding:70px 30px;text-align:center;
+}
+.empty-ico{
+  width:58px;height:58px;border-radius:18px;
+  background:var(--surface);border:1px solid var(--border);
+  display:flex;align-items:center;justify-content:center;
+  margin-bottom:16px;box-shadow:var(--shadow);
+}
+.empty-t{font-size:14px;color:var(--ink2);margin-bottom:5px;font-weight:400}
+.empty-s{font-size:11.5px;color:var(--ink3);line-height:1.75}
+
+/* ── FAB ── */
+.fab{
+  position:fixed;
+  bottom:calc(28px + env(safe-area-inset-bottom,0px));
+  right:22px;z-index:200;
+  width:50px;height:50px;border-radius:50%;
+  background:var(--ink);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 5px 22px rgba(0,0,0,.22);
+  cursor:pointer;
+  transition:transform .16s,box-shadow .16s;
+}
+.fab:active{transform:scale(.91);box-shadow:0 2px 10px rgba(0,0,0,.15)}
+.fab svg{stroke:#fff}
+
+/* ── SHEET ── */
+.backdrop{
+  position:fixed;inset:0;
+  background:rgba(20,18,14,.40);
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  z-index:300;
+  opacity:0;pointer-events:none;
+  transition:opacity .26s;
+}
+.backdrop.open{opacity:1;pointer-events:auto}
+
+.sheet{
+  position:fixed;bottom:0;left:0;right:0;z-index:400;
+  background:var(--bg);
+  border-radius:24px 24px 0 0;
+  padding-bottom:calc(20px + env(safe-area-inset-bottom,0px));
+  max-height:92dvh;overflow-y:auto;
+  transform:translateY(100%);
+  transition:transform .34s cubic-bezier(.2,1,.3,1);
+  box-shadow:0 -4px 40px rgba(0,0,0,.12);
+}
+.sheet.open{transform:translateY(0)}
+.sheet::-webkit-scrollbar{display:none}
+
+.s-handle{
+  width:30px;height:3px;background:var(--border2);
+  border-radius:2px;margin:13px auto 0;
+}
+.s-head{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 22px 0;
+}
+.s-title{
+  font-family:'Cormorant Garamond',serif;
+  font-size:21px;font-weight:400;font-style:italic;color:var(--ink);
+}
+.s-close{
+  width:28px;height:28px;border-radius:50%;
+  background:var(--bg2);
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+}
+.s-close svg{stroke:var(--ink2)}
+
+/* Form */
+.field{padding:18px 22px 0}
+.flabel{
+  font-size:9px;letter-spacing:2px;
+  text-transform:uppercase;color:var(--ink3);
+  margin-bottom:7px;
+  display:flex;align-items:center;gap:5px;
+}
+.flabel svg{flex-shrink:0;stroke:var(--ink3)}
+.finput{
+  width:100%;height:42px;
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:0 13px;font-size:13.5px;color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;font-weight:300;
+  transition:border .18s,box-shadow .18s;
+}
+.finput:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-lt);
+  background:#fff;
+}
+.finput::placeholder{color:var(--ink3)}
+
+.ftextarea{
+  width:100%;min-height:108px;
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border2);border-radius:var(--r-sm);
+  padding:11px 13px;font-size:13.5px;color:var(--ink);
+  font-family:'Noto Sans KR',sans-serif;font-weight:300;
+  line-height:1.8;resize:vertical;
+  transition:border .18s,box-shadow .18s;
+}
+.ftextarea:focus{
+  border-color:var(--gold);
+  box-shadow:0 0 0 3px var(--gold-lt);
+  background:#fff;
+}
+.ftextarea::placeholder{color:var(--ink3)}
+.fhint{font-size:10.5px;color:var(--ink3);margin-top:5px;line-height:1.6}
+
+/* Scope selector */
+.scope-grid{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:8px;margin-top:8px;
+}
+.scope-opt{
+  padding:13px 12px;border-radius:var(--r);
+  border:1.5px solid var(--border2);
+  background:rgba(255,255,255,.55);
+  cursor:pointer;transition:all .18s;
+}
+.scope-opt:active{transform:scale(.96)}
+.scope-opt.sel-g{border-color:var(--sage);background:var(--sage-lt)}
+.scope-opt.sel-l{border-color:var(--lavender);background:var(--lav-lt)}
+.scope-ico{
+  width:30px;height:30px;border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(255,255,255,.7);margin-bottom:8px;
+}
+.scope-opt.sel-g .scope-ico{background:rgba(122,154,136,.14)}
+.scope-opt.sel-l .scope-ico{background:rgba(148,136,176,.14)}
+.scope-name{font-size:12.5px;font-weight:500;color:var(--ink);margin-bottom:2px}
+.scope-desc{font-size:10px;color:var(--ink3);line-height:1.5}
+
+/* Save btn */
+.save-btn{
+  margin:22px 22px 0;
+  width:calc(100% - 44px);height:48px;
+  background:var(--ink);color:#fff;
+  border-radius:var(--r);
+  font-size:13.5px;font-weight:500;
+  font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:7px;
+  transition:opacity .15s;
+}
+.save-btn:active{opacity:.8}
+.save-btn svg{stroke:#fff}
+.cancel-btn{
+  width:100%;padding:13px;
+  font-size:12.5px;color:var(--ink3);
+  cursor:pointer;
+  font-family:'Noto Sans KR',sans-serif;
+  font-weight:300;
+}
+
+/* ── DETAIL SHEET ── */
+.d-hero{
+  padding:20px 22px 15px;
+  border-bottom:1px solid var(--border);
+}
+.d-scope-row{display:flex;gap:5px;margin-bottom:10px}
+.d-name{
+  font-family:'Cormorant Garamond',serif;
+  font-size:26px;font-weight:400;color:var(--ink);line-height:1.2;
+}
+.d-body{padding:15px 22px}
+.d-keys{display:flex;flex-wrap:wrap;gap:5px;margin-bottom:12px}
+.d-no-keys{
+  font-size:11px;color:var(--ink3);
+  font-style:italic;margin-bottom:12px;
+}
+.d-content{
+  background:rgba(255,255,255,.72);
+  border:1px solid var(--border);
+  border-radius:var(--r);padding:15px;
+  font-size:12.5px;line-height:1.9;color:var(--ink2);
+  white-space:pre-wrap;word-break:break-word;
+}
+.d-actions{
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:7px;margin:14px 22px 0;
+}
+.d-btn{
+  height:44px;border-radius:var(--r-sm);
+  font-size:12.5px;font-weight:500;
+  font-family:'Noto Sans KR',sans-serif;
+  cursor:pointer;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  transition:opacity .14s;
+}
+.d-btn:active{opacity:.7}
+.d-btn.edit-btn{
+  background:rgba(255,255,255,.72);
+  color:var(--ink);border:1px solid var(--border2);
+}
+.d-btn.del-btn{
+  background:rgba(184,90,74,.07);
+  color:var(--danger);border:1px solid rgba(184,90,74,.15);
+}
+.d-btn svg{flex-shrink:0}
+
+/* ── ANIMS ── */
+@keyframes fadeUp{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+.card{animation:fadeUp .25s ease both}
+.card:nth-child(1){animation-delay:.02s}
+.card:nth-child(2){animation-delay:.05s}
+.card:nth-child(3){animation-delay:.08s}
+.card:nth-child(4){animation-delay:.11s}
+.card:nth-child(5){animation-delay:.14s}
+.card:nth-child(6){animation-delay:.17s}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<div class="nav">
+  <div class="nav-row">
+    <div class="nav-brand">
+      <span class="nav-title">Lore</span>
+      <span class="nav-sub">세계관</span>
+    </div>
+    <!-- back to phone if in iframe -->
+    <div id="back-btn" onclick="goBack()" style="display:none" class="nav-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+    </div>
+    <div class="nav-btn" onclick="openAdd()">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+    </div>
+  </div>
+  <div class="search-row">
+    <svg class="search-ico" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#b0a89c" stroke-width="1.9" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="m21 21-4.3-4.3"/></svg>
+    <input class="search-inp" id="search-inp" placeholder="搜索条目名称、关键词…" oninput="render()">
+  </div>
+</div>
+
+<!-- SCROLL -->
+<div class="scroll-view">
+
+  <!-- STATS -->
+  <div style="padding:14px 18px 0">
+    <div class="stats" id="stats"></div>
+  </div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <button class="fp on" data-f="all" onclick="setF('all',this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg>
+      전체
+    </button>
+    <button class="fp" data-f="global" onclick="setF('global',this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+      全局
+    </button>
+    <button class="fp" data-f="local" onclick="setF('local',this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      单独
+    </button>
+    <button class="fp" data-f="on" onclick="setF('on',this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round"><path d="M12 22C6.5 22 2 17.5 2 12S6.5 2 12 2s10 4.5 10 10"/><path d="m9 12 2 2 4-4"/><path d="M19 16v6M22 19h-6"/></svg>
+      启用
+    </button>
+    <button class="fp" data-f="off" onclick="setF('off',this)">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke-width="1.9" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M15 9l-6 6M9 9l6 6"/></svg>
+      禁用
+    </button>
+  </div>
+
+  <!-- LIST -->
+  <div class="list" id="list" style="margin-top:2px"></div>
+
+</div><!-- /scroll -->
+
+<!-- FAB -->
+<button class="fab" onclick="openAdd()">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+</button>
+
+<!-- ══ EDIT SHEET ══ -->
+<div class="backdrop" id="ebk" onclick="closeEdit()"></div>
+<div class="sheet" id="esh">
+  <div class="s-handle"></div>
+  <div class="s-head">
+    <div class="s-title" id="s-title">새 항목</div>
+    <button class="s-close" onclick="closeEdit()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+    </button>
+  </div>
+
+  <!-- 名称 -->
+  <div class="field">
+    <div class="flabel">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M12 2l9 7-9 7-9-7 9-7z"/><path d="M3 9v7l9 6 9-6V9"/></svg>
+      条目名称
+    </div>
+    <input class="finput" id="f-name" placeholder="例：白鹿神社  ／  魔法体系  ／  某角色的秘密">
+  </div>
+
+  <!-- 关键词 -->
+  <div class="field">
+    <div class="flabel">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/><line x1="7" y1="7" x2="7.01" y2="7"/></svg>
+      触发关键词
+    </div>
+    <input class="finput" id="f-keys" placeholder="多个词用逗号分隔，如：神社, 白鹿, 结界">
+    <div class="fhint">留空 → 全局必读 &nbsp;·&nbsp; 填词 → 命中时 100% 触发，未命中 90%</div>
+  </div>
+
+  <!-- 内容 -->
+  <div class="field">
+    <div class="flabel">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      世界观内容
+    </div>
+    <textarea class="ftextarea" id="f-content" placeholder="可以是：地点描述、时代背景、角色设定、魔法规则……&#10;AI 每次对话时都会参考这里写的内容。"></textarea>
+  </div>
+
+  <!-- 范围 -->
+  <div class="field">
+    <div class="flabel">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M8 12h8M12 8v8"/></svg>
+      应用范围
+    </div>
+    <div class="scope-grid">
+      <div class="scope-opt sel-g" id="sg" onclick="selScope('global')">
+        <div class="scope-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#7a9a88" stroke-width="1.7" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><path d="M2 12h20M12 2a15 15 0 0 1 0 20M12 2a15 15 0 0 0 0 20"/></svg>
+        </div>
+        <div class="scope-name">全局应用</div>
+        <div class="scope-desc">所有对话均会读取此条目</div>
+      </div>
+      <div class="scope-opt" id="sl" onclick="selScope('local')">
+        <div class="scope-ico">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="#9488b0" stroke-width="1.7" stroke-linecap="round"><path d="M12 2C8.1 2 5 5.1 5 9c0 5.3 7 13 7 13s7-7.7 7-13c0-3.9-3.1-7-7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+        </div>
+        <div class="scope-name">单独应用</div>
+        <div class="scope-desc">需在角色面板中绑定后生效</div>
+      </div>
+    </div>
+  </div>
+
+  <button class="save-btn" onclick="doSave()">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+    保存条目
+  </button>
+  <button class="cancel-btn" onclick="closeEdit()">取消</button>
+</div>
+
+<!-- ══ DETAIL SHEET ══ -->
+<div class="backdrop" id="dbk" onclick="closeDetail()"></div>
+<div class="sheet" id="dsh">
+  <div class="s-handle"></div>
+  <div class="d-hero">
+    <div class="d-scope-row" id="d-scope"></div>
+    <div class="d-name" id="d-name"></div>
+  </div>
+  <div class="d-body">
+    <div id="d-keys"></div>
+    <div class="d-content" id="d-content"></div>
+  </div>
+  <div class="d-actions">
+    <button class="d-btn edit-btn" onclick="editFromDetail()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      编辑
+    </button>
+    <button class="d-btn del-btn" onclick="delFromDetail()">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      删除
+    </button>
+  </div>
+  <button class="cancel-btn" onclick="closeDetail()">关闭</button>
+</div>
+
+<script>
+/* ─── DATA ─── */
+const KEY = 'worldbook_entries_v1';
+let db = [];
+let filt = 'all';
+let editId = null;
+let detId  = null;
+let curScope = 'global';
+
+function load(){ try{ db = JSON.parse(localStorage.getItem(KEY)||'[]') }catch(e){ db=[] } }
+function persist(){ localStorage.setItem(KEY, JSON.stringify(db)) }
+
+/* ─── FILTER ─── */
+function setF(f, btn){
+  filt = f;
+  document.querySelectorAll('.fp').forEach(p=>p.classList.remove('on'));
+  btn.classList.add('on');
+  render();
+}
+
+/* ─── RENDER ─── */
+function render(){
+  const q = (document.getElementById('search-inp').value||'').trim().toLowerCase();
+
+  let list = db.filter(e=>{
+    if(filt==='global') return e.scope==='global';
+    if(filt==='local')  return e.scope==='local';
+    if(filt==='on')     return e.enabled;
+    if(filt==='off')    return !e.enabled;
+    return true;
+  }).filter(e=>{
+    if(!q) return true;
+    return e.name.toLowerCase().includes(q)
+      ||(e.keys||[]).some(k=>k.toLowerCase().includes(q))
+      ||e.content.toLowerCase().includes(q);
+  });
+
+  // stats
+  const g  = db.filter(e=>e.scope==='global').length;
+  const l  = db.filter(e=>e.scope==='local').length;
+  const en = db.filter(e=>e.enabled).length;
+  document.getElementById('stats').innerHTML = `
+    <div class="stat"><div class="stat-n">${db.length}</div><div class="stat-l">Total</div></div>
+    <div class="stat"><div class="stat-n">${g}</div><div class="stat-l">Global</div></div>
+    <div class="stat"><div class="stat-n">${l}</div><div class="stat-l">Local</div></div>
+    <div class="stat"><div class="stat-n">${en}</div><div class="stat-l">Active</div></div>`;
+
+  const container = document.getElementById('list');
+
+  if(!list.length){
+    container.innerHTML = `
+      <div class="empty">
+        <div class="empty-ico">
+          <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="#b0a89c" stroke-width="1.4" stroke-linecap="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+            <polyline points="14 2 14 8 20 8"/>
+            <line x1="16" y1="13" x2="8" y2="13"/>
+            <line x1="16" y1="17" x2="8" y2="17"/>
+          </svg>
+        </div>
+        <div class="empty-t">${q?'没有匹配的条目':'还没有世界书条目'}</div>
+        <div class="empty-s">${q?'换个关键词试试~':'点击右下角 ＋ 创建第一条世界观设定'}</div>
+      </div>`;
+    return;
+  }
+
+  const globals = list.filter(e=>e.scope==='global');
+  const locals  = list.filter(e=>e.scope==='local');
+  let html = '';
+
+  if(globals.length){
+    html += secLabel('全局 Global', globals.length, 'var(--sage)');
+    globals.forEach(e=>{ html += cardHTML(e); });
+  }
+  if(locals.length){
+    html += secLabel('单独 Local', locals.length, 'var(--lavender)');
+    locals.forEach(e=>{ html += cardHTML(e); });
+  }
+  container.innerHTML = html;
+}
+
+function secLabel(txt, cnt, color){
+  return `<div class="sec">
+    <div class="sec-txt" style="color:${color}">${txt}</div>
+    <div class="sec-line"></div>
+    <div class="sec-cnt" style="color:${color}">${cnt}</div>
+  </div>`;
+}
+
+function cardHTML(e){
+  const keysHTML = (e.keys||[]).length
+    ? `<div class="keys">${(e.keys||[]).map(k=>`
+        <span class="key">
+          <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+            <line x1="7" y1="7" x2="7.01" y2="7"/>
+          </svg>${k}</span>`).join('')}</div>`
+    : '';
+
+  const prev = e.content.replace(/\n/g,' ').slice(0,75)+(e.content.length>75?'…':'');
+
+  return `<div class="card ${e.scope}" onclick="openDetail('${e.id}')">
+    <div class="card-bar"></div>
+    <div class="card-body">
+      <div class="card-top">
+        <div class="card-name">${e.name}</div>
+        <div class="badges">
+          <span class="badge ${e.scope}">${e.scope==='global'?'Global':'Local'}</span>
+          ${!e.enabled?'<span class="badge off">Off</span>':''}
+        </div>
+      </div>
+      ${keysHTML}
+      <div class="preview">${prev}</div>
+    </div>
+    <div class="card-foot">
+      <div class="tgl-wrap" onclick="event.stopPropagation()">
+        <div class="tgl ${e.enabled?'on':''}" onclick="toggleE('${e.id}')"></div>
+        <span class="tgl-lbl">${e.enabled?'启用中':'已禁用'}</span>
+      </div>
+      <div class="row-btns">
+        <div class="ico-btn edit" onclick="event.stopPropagation();openEdit('${e.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+          </svg>
+        </div>
+        <div class="ico-btn del" onclick="event.stopPropagation();delEntry('${e.id}')">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="3 6 5 6 21 6"/>
+            <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ─── TOGGLE / DELETE ─── */
+function toggleE(id){
+  const e = db.find(x=>x.id===id);
+  if(e){ e.enabled=!e.enabled; persist(); render(); }
+}
+function delEntry(id){
+  if(!confirm('确定删除这条世界书条目？')) return;
+  db = db.filter(x=>x.id!==id);
+  persist(); render();
+}
+
+/* ─── DETAIL ─── */
+function openDetail(id){
+  detId = id;
+  const e = db.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('d-name').textContent = e.name;
+  document.getElementById('d-scope').innerHTML = `
+    <span class="badge ${e.scope}">${e.scope==='global'?'🌐 全局':'📍 单独'}</span>
+    <span class="badge ${e.enabled?'global':'off'}">${e.enabled?'启用中':'已禁用'}</span>`;
+
+  if((e.keys||[]).length){
+    document.getElementById('d-keys').innerHTML = `<div class="d-keys">${(e.keys||[]).map(k=>`
+      <span class="key">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"/>
+          <line x1="7" y1="7" x2="7.01" y2="7"/>
+        </svg>${k}</span>`).join('')}</div>`;
+  } else {
+    document.getElementById('d-keys').innerHTML = '<div class="d-no-keys">无关键词 — 全局必读</div>';
+  }
+  document.getElementById('d-content').textContent = e.content;
+  showSheet('d');
+}
+function closeDetail(){ hideSheet('d') }
+function editFromDetail(){ closeDetail(); setTimeout(()=>openEdit(detId),130) }
+function delFromDetail(){ closeDetail(); setTimeout(()=>delEntry(detId),130) }
+
+/* ─── ADD / EDIT ─── */
+function openAdd(){
+  editId = null;
+  document.getElementById('s-title').textContent = '新建条目';
+  document.getElementById('f-name').value = '';
+  document.getElementById('f-keys').value = '';
+  document.getElementById('f-content').value = '';
+  selScope('global');
+  showSheet('e');
+  setTimeout(()=>document.getElementById('f-name').focus(),380);
+}
+function openEdit(id){
+  editId = id;
+  const e = db.find(x=>x.id===id);
+  if(!e) return;
+  document.getElementById('s-title').textContent = '编辑条目';
+  document.getElementById('f-name').value = e.name;
+  document.getElementById('f-keys').value = (e.keys||[]).join(', ');
+  document.getElementById('f-content').value = e.content;
+  selScope(e.scope);
+  showSheet('e');
+}
+function closeEdit(){ hideSheet('e') }
+
+function selScope(s){
+  curScope = s;
+  document.getElementById('sg').className = 'scope-opt'+(s==='global'?' sel-g':'');
+  document.getElementById('sl').className = 'scope-opt'+(s==='local'?' sel-l':'');
+}
+
+function doSave(){
+  const name    = document.getElementById('f-name').value.trim();
+  const keysRaw = document.getElementById('f-keys').value.trim();
+  const content = document.getElementById('f-content').value.trim();
+  if(!name){ document.getElementById('f-name').focus(); return; }
+  if(!content){ document.getElementById('f-content').focus(); return; }
+  const keys = keysRaw ? keysRaw.split(',').map(k=>k.trim()).filter(Boolean) : [];
+  if(editId){
+    const e = db.find(x=>x.id===editId);
+    if(e){ e.name=name; e.keys=keys; e.content=content; e.scope=curScope; }
+  } else {
+    db.unshift({ id:'e'+Date.now(), name, keys, content, scope:curScope, enabled:true, created:Date.now() });
+  }
+  persist(); closeEdit(); render();
+}
+
+/* ─── SHEET HELPERS ─── */
+function showSheet(w){
+  const bk = document.getElementById(w+'bk');
+  const sh = document.getElementById(w+'sh');
+  bk.classList.add('open');
+  requestAnimationFrame(()=>sh.classList.add('open'));
+}
+function hideSheet(w){
+  const bk = document.getElementById(w+'bk');
+  const sh = document.getElementById(w+'sh');
+  sh.classList.remove('open');
+  setTimeout(()=>bk.classList.remove('open'),280);
+}
+
+/* ─── BACK ─── */
+function goBack(){
+  try{
+    if(window.parent&&window.parent!==window&&window.parent.closeAppOverlay){
+      window.parent.closeAppOverlay();
+    }
+  }catch(e){}
+}
+
+/* ─── INIT ─── */
+(function(){
+  load(); render();
+  try{
+    if(window.self!==window.top)
+      document.getElementById('back-btn').style.display='flex';
+  }catch(e){
+    document.getElementById('back-btn').style.display='flex';
+  }
+})();
+</script>
+</body>
+</html>
