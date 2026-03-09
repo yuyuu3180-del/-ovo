@@ -12,7 +12,7 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <!-- Android Chrome 状态栏颜色与背景一致 -->
-<meta name="theme-color" content="#fff9e6">
+<meta name="theme-color" content="#ffffff">
 
 <style>
     :root {
@@ -37,8 +37,8 @@
 /* html 和 body 背景必须与手机壳一致，防止任何缝隙透色 */
 html, body {
     width: 100%; height: 100%;
-    /* 关键：背景色与 wrapper 一致，不用黑色/灰色 */
-    background-color: var(--bg);
+    /* 白色背景：任何缝隙/透明区域全部显示白色，不显示黄色 */
+    background-color: #ffffff;
     overflow: hidden;
     margin: 0; padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -63,13 +63,11 @@ html, body {
     inset: 0;
     z-index: 100; 
     display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
-    /* 安全区 padding 加在内容层，不加在 wrapper */
     padding-top: max(env(safe-area-inset-top, 0px), 80px);
     padding-bottom: max(env(safe-area-inset-bottom, 0px), 20px);
     padding-left: env(safe-area-inset-left, 0px);
     padding-right: env(safe-area-inset-right, 0px);
     background-color: var(--bg);
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
     background-size: cover; background-position: center;
     transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1);
     touch-action: none;
@@ -114,10 +112,8 @@ html, body {
 .desktop-content { 
     position: relative; 
     width: 100%; 
-    /* 顶部：安全区 + 约60px(导航) */
     margin-top: calc(max(env(safe-area-inset-top, 0px), 10px) + 60px);
-    /* 底部：留给 dock + 安全区 */
-    height: calc(100% - max(env(safe-area-inset-top, 0px), 10px) - 60px - 120px - max(env(safe-area-inset-bottom, 0px), 0px));
+    height: calc(100% - max(env(safe-area-inset-top, 0px), 10px) - 60px - 90px - env(safe-area-inset-bottom, 0px));
 }
 
 /* ===== App 图标 ===== */
@@ -222,25 +218,28 @@ html, body {
 .dragging { z-index: 1000 !important; transform: scale(1.05) !important; opacity: 0.9; transition: none !important; }
 @keyframes shake { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
 
-/* ===== Dock：底部安全区自适应 ===== */
+/* ===== Dock：紧贴底部，彻底填满安全区 ===== */
 .dock-container { 
     position: absolute; 
-    bottom: max(env(safe-area-inset-bottom, 0px), 12px);
-    left: 20px; right: 20px; 
-    height: 90px; 
-    background: rgba(255,255,255,0.4); border-radius: 32px; 
+    bottom: 0;
+    left: 0; right: 0; 
+    height: calc(90px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    padding-left: 20px; padding-right: 20px;
+    /* 完全透明：壁纸从底部一直铺到边，真正全屏 */
+    background: transparent;
+    border-radius: 0;
     display: flex; justify-content: space-around; align-items: center; 
-    backdrop-filter: blur(10px); 
     z-index: 200; 
 }
 
 /* ===== Home bar ===== */
 .home-bar { 
     position: absolute; 
-    bottom: max(calc(env(safe-area-inset-bottom, 0px) - 4px), 4px);
+    bottom: max(calc(env(safe-area-inset-bottom, 0px) / 2 - 2px), 6px);
     left: 50%; transform: translateX(-50%); 
     width: 130px; height: 5px; 
-    background: rgba(0,0,0,0.1); border-radius: 10px; cursor: pointer; z-index: 300; 
+    background: rgba(0,0,0,0.15); border-radius: 10px; cursor: pointer; z-index: 300; 
 }
 
 /* ===== 底部面板 ===== */
@@ -346,8 +345,8 @@ html, body {
 /* ===== 横屏手机 ===== */
 @media (orientation: landscape) and (max-height: 500px) {
     #phone-wrapper { inset: 0; position: fixed; border-radius: 0; }
-    .desktop-content { margin-top: 50px; height: calc(100% - 50px - 80px); }
-    .dock-container { height: 70px; bottom: max(env(safe-area-inset-bottom, 0px), 5px); }
+    .desktop-content { margin-top: 50px; height: calc(100% - 50px - 70px); }
+    .dock-container { height: 70px; border-radius: 20px 20px 0 0; padding-bottom: 0; }
 }
 </style>
 
@@ -948,8 +947,7 @@ html, body {
                     else if(currentImgKey.includes('island')) { const id = currentImgKey.split('_')[0]; const el = document.querySelector(`.widget-island[data-id="${id}"] .island-avatar`); if(el) el.style.backgroundImage = cssUrl; }
                 } 
                 else if (activeEditType === 'wallpaper-lock') { globalImageCache['wallpaper_lock'] = cssUrl; lockScreen.style.backgroundImage = cssUrl; document.getElementById('wp-lock-preview').style.backgroundImage = cssUrl; }
-                else if (activeEditType === 'wallpaper-home') { globalImageCache['wallpaper_home'] = cssUrl; document.getElementById('home-screen').style.backgroundImage = cssUrl; document.getElementById('wp-home-preview').style.backgroundImage = cssUrl; }
-                else if (activeEditType === 'app-icon') { globalImageCache['icon_' + activeAppId] = cssUrl; customAppIcons[activeAppId] = true; const desktopApp = document.querySelector(`.app-item[data-id="${activeAppId}"] .app-icon`); if (desktopApp) { desktopApp.innerText = ''; desktopApp.style.backgroundImage = cssUrl; } const dockApp = document.querySelector(`.app-icon[data-dock-id="${activeAppId}"]`); if(dockApp) { dockApp.innerText = ''; dockApp.style.backgroundImage = cssUrl; } updateDiyGrid(); }
+                else if (activeEditType === 'wallpaper-home') { globalImageCache['wallpaper_home'] = cssUrl; document.getElementById('home-screen').style.backgroundImage = cssUrl; document.getElementById('wp-home-preview').style.backgroundImage = cssUrl; }                else if (activeEditType === 'app-icon') { globalImageCache['icon_' + activeAppId] = cssUrl; customAppIcons[activeAppId] = true; const desktopApp = document.querySelector(`.app-item[data-id="${activeAppId}"] .app-icon`); if (desktopApp) { desktopApp.innerText = ''; desktopApp.style.backgroundImage = cssUrl; } const dockApp = document.querySelector(`.app-icon[data-dock-id="${activeAppId}"]`); if(dockApp) { dockApp.innerText = ''; dockApp.style.backgroundImage = cssUrl; } updateDiyGrid(); }
                 saveLayout(); 
             };
         }
@@ -996,6 +994,37 @@ html, body {
     document.querySelectorAll('.app-icon[data-dock-id]').forEach(el => {
         el.addEventListener('click', () => { const dockId = el.dataset.dockId; if (APP_URLS[dockId]) openApp(dockId); });
     });
+
+    // ===== 全屏逻辑 =====
+    function tryFullscreen() {
+        const el = document.documentElement;
+        const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+        if (req) req.call(el).catch(() => {});
+    }
+
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isStandalone = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+
+    // 安卓：首次触摸触发全屏（必须由用户手势触发）
+    if (!isIOS && !isStandalone) {
+        document.addEventListener('touchstart', function triggerFS() {
+            tryFullscreen();
+            document.removeEventListener('touchstart', triggerFS);
+        }, { once: true });
+    }
+
+    // iOS：未添加到主屏幕时，显示引导提示
+    if (isIOS && !isStandalone) {
+        if (!localStorage.getItem('pwa_tip_shown')) {
+            const tip = document.createElement('div');
+            tip.innerHTML = `<div style="display:flex;align-items:center;gap:10px;"><span style="font-size:22px;">📲</span><div><div style="font-weight:bold;font-size:13px;">添加到主屏幕即可全屏使用</div><div style="font-size:11px;opacity:0.8;margin-top:2px;">点击底部 <b>分享</b> 按钮 → 添加到主屏幕</div></div><span id="pwa-close" style="margin-left:auto;font-size:22px;cursor:pointer;padding:4px 10px;">×</span></div>`;
+            tip.style.cssText = 'position:fixed;bottom:110px;left:16px;right:16px;background:rgba(0,0,0,0.88);color:white;padding:14px 16px;border-radius:16px;z-index:99999;backdrop-filter:blur(10px);box-shadow:0 4px 20px rgba(0,0,0,0.3);';
+            document.body.appendChild(tip);
+            localStorage.setItem('pwa_tip_shown', '1');
+            document.getElementById('pwa-close').onclick = () => tip.remove();
+            setTimeout(() => { if(tip.parentNode) tip.remove(); }, 9000);
+        }
+    }
 </script>
 
 </body>
