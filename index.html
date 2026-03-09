@@ -21,57 +21,51 @@
     --twitter-blue: #1d9bf0;
     --bunny-pink: #ffb6c1;
     --island-bg: #000;
-    --real-vh: 1vh;
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
+/* ===== 和 lore.html / jieyou.html 完全一样的写法 ===== */
 html, body {
     width: 100%;
-    margin: 0; padding: 0;
+    height: 100%;
     overflow: hidden;
-    overscroll-behavior: none;
+    margin: 0;
+    padding: 0;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-    /* 关键：背景色延伸到屏幕最底部（包括安全区域） */
-    background: #d2d2d7;
-    /* 用 100vh 而非 100% —— 在 iOS 上 100vh 包含安全区域 */
-    height: 100vh;
-    height: -webkit-fill-available;
+    overscroll-behavior: none;
 }
 
+/* #phone-wrapper 就是整个屏幕，和 jieyou.html 的 body 一样直接 100% */
 #phone-wrapper {
     width: 100%;
-    height: 100vh;
-    height: -webkit-fill-available;
-    background-color: #d2d2d7;
+    height: 100%;
     background-size: cover;
     background-position: center;
     overflow: hidden;
-    transition: background 0.3s;
     position: relative;
 }
 
 #lock-screen {
-    position: absolute; width: 100%; height: 100%; z-index: 100;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 100;
     display: flex; flex-direction: column; align-items: center; justify-content: space-between;
-    padding-top: max(100px, env(safe-area-inset-top, 100px));
-    padding-bottom: max(30px, env(safe-area-inset-bottom, 30px));
-    background-color: #d2d2d7;
-    background-image: linear-gradient(180deg, rgba(255,255,255,0.6), transparent);
+    padding-top: max(100px, calc(env(safe-area-inset-top, 50px) + 50px));
+    padding-bottom: max(30px, calc(env(safe-area-inset-bottom, 10px) + 20px));
     background-size: cover; background-position: center;
     transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1);
     touch-action: none;
 }
 
 #home-screen {
-    position: absolute; width: 100%; height: 100%; z-index: 50;
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 50;
     background: var(--glass);
     backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur);
     background-size: cover; background-position: center;
 }
 
 .top-nav {
-    position: absolute; top: max(50px, env(safe-area-inset-top, 50px)); left: 0; width: 100%; padding: 0 20px;
+    position: absolute; top: max(50px, calc(env(safe-area-inset-top, 0px) + 10px));
+    left: 0; width: 100%; padding: 0 20px;
     display: flex; justify-content: space-between; align-items: flex-start; z-index: 1000;
     pointer-events: none;
 }
@@ -87,9 +81,11 @@ html, body {
 #done-btn { pointer-events: auto; background: #333; color: white; }
 
 .desktop-content {
-    position: relative; width: 100%;
-    height: calc(100% - 16dvh);
-    margin-top: 3dvh;
+    position: absolute;
+    top: max(90px, calc(env(safe-area-inset-top, 0px) + 60px));
+    left: 0; right: 0;
+    bottom: calc(env(safe-area-inset-bottom, 20px) + 115px);
+    overflow: hidden;
 }
 
 .app-item, .widget-item { position: absolute; z-index: 10; transition: transform 0.2s, left 0.3s, top 0.3s; }
@@ -210,11 +206,9 @@ html, body {
 
 /* ===== App Overlay ===== */
 #app-overlay {
-    position: fixed;
+    position: absolute;
     top: 0; left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: -webkit-fill-available;
+    width: 100%; height: 100%;
     z-index: 99999;
     background: #fff;
     overflow: hidden;
@@ -319,18 +313,6 @@ html, body {
 <audio id="bg-audio" playsinline style="display: none;"></audio>
 
 <script>
-// ===== 终极全屏修复：用JS强制设置真实视口高度 =====
-function setRealVH() {
-    const vh = window.innerHeight;
-    document.documentElement.style.setProperty('--real-vh', vh + 'px');
-    document.getElementById('phone-wrapper').style.height = vh + 'px';
-    // app-overlay 也强制设高度
-    document.getElementById('app-overlay').style.height = vh + 'px';
-}
-setRealVH();
-window.addEventListener('resize', setRealVH);
-window.addEventListener('orientationchange', () => setTimeout(setRealVH, 100));
-
 const DB_NAME = 'Rabbit_Ultra_Island_V15_LocalAudio';
 const DB_STORE = 'layout_data';
 let db;
@@ -427,7 +409,6 @@ const APP_URLS = {
     'app-jieyou': 'jieyou.html',
 };
 
-// ===== 打开/关闭 App =====
 function openApp(appId) {
     const url = APP_URLS[appId];
     if (!url) return;
@@ -436,7 +417,6 @@ function openApp(appId) {
     iframe.src = url;
     overlay.style.display = 'block';
     overlay.classList.add('open');
-    setRealVH(); // 重新计算高度
 }
 function closeAppOverlay() {
     const overlay = document.getElementById('app-overlay');
@@ -446,7 +426,6 @@ function closeAppOverlay() {
     iframe.src = '';
 }
 
-// ===== 整机备份 =====
 async function exportAll() {
     try {
         audioText.innerText = "正在打包...";
@@ -501,7 +480,6 @@ async function importAll(e) {
     reader.readAsText(file); e.target.value = '';
 }
 
-// ===== 保存/加载布局 =====
 async function saveLayout() {
     const items = [];
     desktop.querySelectorAll('.app-item, .widget-item').forEach(el => {
@@ -538,7 +516,7 @@ async function loadLayout() {
             savedLayout.forEach(item => {
                 if(item.type === 'twitter') { globalImageCache[item.id+'_bg'] = item.data.bg; globalImageCache[item.id+'_avatar'] = item.data.avatar; createTwitterWidget(item.col, item.row, item.id, item.data); }
                 else if(item.type === 'island') { globalImageCache[item.id+'_island'] = item.data.avatar; createIslandWidget(item.col, item.row, item.id, item.data); }
-                else if(item.type === 'music' || item.type === 'memo') { /* 已删除 */ }
+                else if(item.type === 'music' || item.type === 'memo') { /* skip */ }
                 else if(item.type === 'app') { createAppElement(item.id, item.col, item.row); }
             });
         } else {
@@ -562,7 +540,6 @@ audioFileInput.onchange = async (e) => {
     if(file) { audioText.innerText = "保存中..."; await saveToDB('island_audio_blob', file); islandAudioUrl = URL.createObjectURL(file); audioText.innerText = "上传成功！"; alert('MP3上传成功！'); }
 };
 
-// ===== 组件创建 =====
 function createIslandWidget(col, row, id, data = null) {
     const div = document.createElement('div');
     div.className = 'widget-item widget-island'; div.dataset.id = id || 'island-'+Date.now(); div.dataset.type = 'island';
@@ -611,7 +588,6 @@ function createAppElement(id, col, row) {
     desktop.appendChild(div); initDrag(div);
 }
 
-// ===== 拖拽 =====
 function findEmptySpot() {
     const grid = Array(7).fill().map(() => Array(4).fill(false));
     document.querySelectorAll('.app-item, .widget-item').forEach(el => {
@@ -664,7 +640,6 @@ function initDrag(el) {
     el.addEventListener('mousedown',start); el.addEventListener('touchstart',start);
 }
 
-// ===== 面板 =====
 function updateAppStore() {
     appStoreGrid.innerHTML = '';
     const installed = Array.from(document.querySelectorAll('.app-item')).map(el => el.dataset.id);
@@ -694,7 +669,7 @@ function addNewWidget(type) {
     const s = findEmptySpot();
     if(type === 'twitter') createTwitterWidget(s.c, s.r);
     else if(type === 'island') createIslandWidget(0, 0);
-    if(isEditing) desktop.lastChild.classList.add('jiggling');
+    if(isEditing && desktop.lastChild) desktop.lastChild.classList.add('jiggling');
     closePanels(); saveLayout();
 }
 function closePanels() { widgetPanel.classList.remove('active'); diyPanel.classList.remove('active'); }
@@ -729,7 +704,6 @@ imgInput.onchange = (e) => {
     imgInput.value = '';
 };
 
-// ===== 交互 =====
 let longPressTimer;
 desktop.addEventListener('touchstart', (e) => {
     if(isEditing || e.target.closest('.remove-btn') || e.target.closest('[contenteditable]') || e.target.closest('.icon-btn') || e.target.classList.contains('widget-island')) return;
