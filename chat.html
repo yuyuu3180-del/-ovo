@@ -2,8 +2,8 @@
 
 <html lang="zh-CN">
 <head>
-    <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Ins Chat</title>
     <style>
         /* 原有样式保持不变，仅添加评论相关样式 */
@@ -23,25 +23,30 @@
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
 
 
-/* ===== 全屏撑满（iframe兼容版） ===== */
+/* ===== 全设备自适应魔法 ===== */
 html {
-    width: 100%;
     height: 100%;
-    overflow: hidden;
-    background-color: var(--bg-color);
+    background-color: #f2f2f7; /* 在电脑/平板上显示的高级灰色背景 */
+    display: flex;
+    justify-content: center;
 }
 
 body { 
     width: 100%; 
-    height: 100%;
-    margin: 0;
+    max-width: 480px; /* 限制最大宽度，保持完美手机比例 */
+    height: 100dvh; /* 完美适配各种手机浏览器的动态底栏 */
     background: var(--bg-color); 
     color: var(--text-main); 
     overflow: hidden; 
     display: flex; 
-    flex-direction: column;
-    overscroll-behavior: none;
+    flex-direction: column; 
+    position: relative;
+    box-shadow: 0 0 30px rgba(0,0,0,0.06); /* 大屏下的高级悬浮阴影 */
+    
+    /* 核心魔法：把所有底部菜单、下拉弹窗统统困在 480px 的壳子里，绝不跑偏 */
+    transform: translateZ(0); 
 }
+
 
 .nav-bar {
     height: 50px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
@@ -61,13 +66,7 @@ body {
 .nav-right { position: absolute; right: 20px; font-size: 14px; color: var(--text-main); font-weight: 500; cursor: pointer; }
 .nav-right.active { color: var(--accent); font-weight: 600; }
 
-.content { 
-    flex: 1; 
-    overflow-y: auto; 
-    position: relative; 
-    scroll-behavior: smooth; 
-    padding-bottom: 0;     /* 90px → 0 */
-}
+.content { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; padding-bottom: 90px; }
 .page { display: none; width: 100%; min-height: 100%; height: 100%; animation: fadeIn 0.3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -115,16 +114,10 @@ body {
 .range-slider { width: 100%; margin-top: 10px; accent-color: var(--accent); }
 
 .tab-bar {
-    height: 60px;             /* 去掉 safe-bottom 计算，iframe里不需要 */
-    background: rgba(255,255,255,0.9);
-    border-top: 1px solid rgba(0,0,0,0.03); 
-    display: flex; 
-    justify-content: space-around;
-    width: 100%; 
-    z-index: 100; 
-    backdrop-filter: blur(20px);
-    flex-shrink: 0;           /* 防止被压缩 */
-    transition: transform 0.3s;
+    height: calc(60px + var(--safe-bottom)); background: rgba(255,255,255,0.9);
+    border-top: 1px solid rgba(0,0,0,0.03); display: flex; justify-content: space-around;
+    position: fixed; bottom: 0; width: 100%; z-index: 100; backdrop-filter: blur(20px);
+    padding-bottom: 5px; transition: transform 0.3s;
 }
 .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc; cursor: pointer; transition: color 0.2s; }
 .tab-item.active { color: var(--text-main); }
