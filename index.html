@@ -43,7 +43,7 @@
             position: fixed;
         }
 
-        /* 主容器：利用安全区域自动避开刘海和下巴 */
+        /* 主容器：不设内边距，内容填满整个屏幕 */
         #phone-wrapper {
             position: fixed;
             top: 0;
@@ -57,12 +57,9 @@
             background-position: center;
             overflow: hidden;
             transition: background 0.3s;
-            padding-top: env(safe-area-inset-top, 0);
-            padding-bottom: env(safe-area-inset-bottom, 0);
-            box-sizing: border-box;
         }
 
-        /* 锁屏界面：内边距适配安全区，内容自动撑开 */
+        /* 锁屏界面：利用安全区域内边距避开刘海和下巴 */
         #lock-screen {
             position: absolute;
             width: 100%;
@@ -78,7 +75,8 @@
             background-position: center;
             transition: transform 0.4s cubic-bezier(0.2, 1, 0.2, 1);
             touch-action: none;
-            padding: max(80px, env(safe-area-inset-top)) 0 max(20px, env(safe-area-inset-bottom));
+            padding-top: env(safe-area-inset-top, 40px);
+            padding-bottom: env(safe-area-inset-bottom, 40px);
             box-sizing: border-box;
         }
 
@@ -95,18 +93,21 @@
             background-position: center;
         }
 
-        /* 顶部导航栏：紧贴安全区顶部 */
+        /* 顶部导航栏：紧贴屏幕顶部，用内边距避开安全区域 */
         .top-nav {
             position: absolute;
-            top: env(safe-area-inset-top, 20px);
+            top: 0;
             left: 0;
             width: 100%;
-            padding: 0 20px;
+            padding-top: env(safe-area-inset-top, 20px);
+            padding-left: 20px;
+            padding-right: 20px;
             display: flex;
             justify-content: space-between;
             align-items: flex-start;
             z-index: 1000;
             pointer-events: none;
+            box-sizing: border-box;
         }
 
         .nav-left-group {
@@ -133,13 +134,13 @@
         #diy-btn { background: var(--bunny-pink); color: white; }
         #done-btn { pointer-events: auto; background: #333; color: white; }
 
-        /* 桌面内容区域：绝对定位，为底部 Dock 留出空间 */
+        /* 桌面内容区域：为底部 Dock 留出空间（包括安全区域） */
         .desktop-content {
             position: absolute;
             top: 0;
             left: 0;
             right: 0;
-            bottom: 95px; /* 与 dock 高度一致 */
+            bottom: calc(95px + env(safe-area-inset-bottom)); /* 底部留出 Dock 高度+安全区域 */
             overflow: hidden;
         }
 
@@ -192,7 +193,7 @@
             background: #fff;
         }
 
-        /* 灵动岛样式 */
+        /* 灵动岛样式：向下移动一点，确保可点击 */
         .widget-island {
             width: 120px;
             height: 30px;
@@ -205,6 +206,10 @@
             transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             z-index: 3000;
             box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+            /* 修改：向下移动 15px，避开顶部导航栏 */
+            top: 15px !important; 
+            left: 50% !important;
+            transform: translateX(-50%);
         }
         .widget-island.expanded {
             width: 370px !important;
@@ -467,13 +472,13 @@
             50% { transform: rotate(1deg); }
         }
 
-        /* Dock 栏：紧贴底部，位于安全区内 */
+        /* Dock 栏：背景填满底部，内边距避开安全区域，高度固定+安全区域 */
         .dock-container {
             position: absolute;
             bottom: 0;
             left: 20px;
             right: 20px;
-            height: 95px;
+            height: calc(95px + env(safe-area-inset-bottom));
             background: rgba(255,255,255,0.4);
             border-radius: 32px;
             display: flex;
@@ -481,6 +486,8 @@
             align-items: center;
             backdrop-filter: blur(10px);
             z-index: 200;
+            padding-bottom: env(safe-area-inset-bottom);
+            box-sizing: border-box;
         }
 
         .home-bar {
@@ -1185,9 +1192,11 @@
         div.dataset.id = id || 'island-' + Date.now();
         div.dataset.type = 'island';
 
+        // 注意：灵动岛位置已在 CSS 中通过 .widget-island 固定，这里不再设置行内样式
+        // 但为了保证唯一，仍然设置 left/transform
         div.style.left = '50%';
         div.style.transform = 'translateX(-50%)';
-        div.style.top = '-8px';
+        div.style.top = '15px'; // 与 CSS 一致
 
         const d = data || { title: "垂耳兔", subtitle: "希望垂耳兔小手机可以给你带来快乐^ ^" };
 
