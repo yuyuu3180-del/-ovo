@@ -281,67 +281,6 @@ body, html {
 .music-controls .icon-svg { width: 16px; height: 16px; fill: #333; }
 .music-heart { color: #999; margin-left: 0; }
 .music-heart .icon-svg { fill: none; stroke: rgba(0,0,0,0.3); stroke-width: 2; width: 14px; height: 14px; }
-    color: #333;
-    padding: 0 10px 0 0;
-    display: flex;
-    align-items: center;
-    gap: 10px;
-    border-radius: 26px !important;
-    box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 0.5px 0 rgba(255,255,255,0.6);
-    overflow: hidden;
-}
-.music-vinyl-container {
-    width: 42px; height: 42px;
-    flex-shrink: 0; cursor: pointer;
-    margin-left: 5px;
-    position: relative;
-}
-.music-vinyl {
-    width: 100%; height: 100%;
-    border-radius: 12px;
-    background: #ddd;
-    padding: 0;
-    box-shadow: none;
-    animation: none;
-    background-image: none;
-    position: relative;
-    overflow: hidden;
-}
-.music-vinyl::after { display: none; }
-.music-cover {
-    width: 100%; height: 100%;
-    border-radius: 12px;
-    background: #ccc center/cover;
-    border: none;
-}
-.music-info {
-    flex: 1; min-width: 0;
-    display: flex; flex-direction: column;
-    gap: 1px; overflow: hidden;
-}
-.music-title {
-    font-size: 13px; font-weight: 600;
-    color: rgba(30,30,30,0.85);
-    overflow: hidden; white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 1.3;
-}
-.music-artist {
-    font-size: 10px; color: rgba(80,80,80,0.5);
-    opacity: 1; margin-bottom: 0;
-    overflow: hidden; white-space: nowrap;
-    text-overflow: ellipsis;
-    line-height: 1.2;
-}
-.music-controls {
-    display: flex; align-items: center;
-    gap: 6px; flex-shrink: 0;
-}
-.music-controls .icon-btn { opacity: 0.4; }
-.music-controls .icon-btn:active { opacity: 0.8; }
-.music-controls .icon-svg { width: 16px; height: 16px; fill: #333; }
-.music-heart { color: #999; margin-left: 0; }
-.music-heart .icon-svg { fill: none; stroke: rgba(0,0,0,0.3); stroke-width: 2; width: 14px; height: 14px; }
 .widget-twitter { width: calc(var(--cell-w) * 2 - 12px); height: calc(var(--cell-h) * 2 - 12px); }
 .tw-header { height: 40%; background: #eee center/cover; cursor: pointer; }
 .tw-content { position: relative; padding: 8px 12px; display: flex; flex-direction: column; height: 60%; }
@@ -457,7 +396,6 @@ body, html {
     box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
 .love-center { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
-.love-hearts { color: #dbd5d5; font-size: 12px; letter-spacing: 3px; }
 .love-label { font-size: 9px; color: #b8b2b2; outline: none; }
 .love-days { font-size: 14px; color: #a69f9f; font-weight: 500; outline: none; }
 
@@ -655,32 +593,53 @@ body, html {
     -webkit-mask-position: center;
     cursor: pointer;
 }
-/* 3. 毛玻璃信息条 */
+/* 爱心高光层（同吧唧组件效果）*/
+.widget-photo-heart::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, rgba(255,255,255,0.45) 0%, rgba(255,255,255,0.05) 45%, transparent 55%, rgba(0,0,0,0.15) 100%);
+    box-shadow: inset 4px 6px 15px -3px rgba(255,255,255,0.95), inset -4px -6px 12px rgba(0,0,0,0.35);
+    pointer-events: none;
+    z-index: 3;
+}
+.widget-photo-heart::before {
+    content: '';
+    position: absolute;
+    top: 5%; left: 12%; right: 12%;
+    height: 38%;
+    border-radius: 50% 50% 20% 20% / 60% 60% 20% 20%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.88) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+    z-index: 4;
+}
+/* 3. 毛玻璃信息条 — ins 半透明磨砂风 */
 .widget-text-glass {
-    width: calc(var(--cell-w) * 3 - 16px) !important;
-    height: 38px !important;
-    background: rgba(215, 218, 224, 0.82) !important;
-    backdrop-filter: blur(28px) saturate(1.8);
-    -webkit-backdrop-filter: blur(28px) saturate(1.8);
-    border-radius: 19px !important;
-    border: 0.5px solid rgba(255,255,255,0.75);
+    width: calc(var(--cell-w) * 3.6 - 10px) !important;
+    height: 44px !important;
+    background: rgba(255, 255, 255, 0.22) !important;
+    backdrop-filter: blur(22px) saturate(1.5) brightness(1.08);
+    -webkit-backdrop-filter: blur(22px) saturate(1.5) brightness(1.08);
+    border-radius: 22px !important;
+    border: 0.5px solid rgba(255,255,255,0.45);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.5), inset 0 -1px 0 rgba(0,0,0,0.04);
     position: absolute !important;
     display: flex;
     align-items: center;
     justify-content: center;
-    padding: 0 16px;
-    box-shadow: 0 2px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+    padding: 0 18px;
 }
 .widget-text-glass-content {
     width: 100%;
-    color: rgba(50,50,60,0.75);
-    font-size: 14px;
-    font-weight: 400;
+    color: rgba(255,255,255,0.92);
+    font-size: 13.5px;
+    font-weight: 500;
     text-align: center;
     outline: none;
-    text-shadow: none;
+    letter-spacing: 0.8px;
+    text-shadow: 0 1px 4px rgba(0,0,0,0.18);
+    font-family: "PingFang SC", "SF Pro Text", -apple-system, sans-serif;
     word-break: break-word;
-    letter-spacing: 0.2px;
 }
 /* 4. 圆形头像 */
 .widget-photo-circle {
@@ -727,6 +686,209 @@ body, html {
 .msg-bubble.left { align-self: flex-start; background: #3a3a3c; color: #fff; border-bottom-left-radius: 4px; }
 .msg-bubble.right { align-self: flex-end; background: #e5e5ea; color: #000; border-bottom-right-radius: 4px; }
 .msg-read-status { align-self: flex-end; font-size: 11px; color: #888; margin-top: -4px; outline: none; display: flex; gap: 4px; }
+
+/* ===== iMessage 日间版（白色背景）===== */
+.widget-message-day {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 3 - 12px) !important;
+    background: #f2f2f7 !important;
+    border-radius: 28px !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute !important;
+    color: #000;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+}
+.widget-message-day .msg-header {
+    background: rgba(242,242,247,0.95);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+.widget-message-day .msg-header svg { stroke: #007aff !important; }
+.widget-message-day .msg-unread { background: rgba(0,0,0,0.08); color: #007aff; }
+.widget-message-day .msg-avatar { background: #e5e5ea; color: #333; }
+.widget-message-day .msg-body { background: #f2f2f7; }
+.widget-message-day .msg-time-header { color: #666; }
+.widget-message-day .msg-bubble.left { background: #e5e5ea; color: #000; }
+.widget-message-day .msg-bubble.right { background: #007aff; color: #fff; border-bottom-right-radius: 4px; }
+.widget-message-day .msg-read-status { color: #888; }
+
+/* ===== 全新：社交名片组件 ===== */
+.widget-profile {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 2.2 - 12px) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    border-radius: 30px !important;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 12px;
+    position: absolute !important;
+    gap: 8px;
+}
+.profile-pills-col {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    flex: 1;
+}
+.profile-pill {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255,255,255,0.75);
+    border: 0.5px solid rgba(220,220,230,0.8);
+    border-radius: 14px;
+    padding: 7px 10px;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.05), inset 0 1px 0 rgba(255,255,255,0.9);
+    min-height: 32px;
+}
+.profile-pill-icon {
+    font-size: 14px;
+    outline: none;
+    min-width: 16px;
+    text-align: center;
+    flex-shrink: 0;
+}
+.profile-pill-text {
+    font-size: 11px;
+    font-weight: 500;
+    color: #555;
+    outline: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    flex: 1;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.profile-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 7px;
+    flex-shrink: 0;
+}
+.profile-avatar {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    background: #ddd center/cover no-repeat;
+    cursor: pointer;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.15), 0 0 0 2.5px rgba(255,255,255,0.9);
+    flex-shrink: 0;
+}
+.profile-caption {
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    outline: none;
+    letter-spacing: 1px;
+    white-space: nowrap;
+    font-family: "PingFang SC", -apple-system, sans-serif;
+    max-width: 80px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* ===== 全新：INS 对话气泡组件 ===== */
+.widget-ins-chat {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 2.4 - 12px) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: absolute !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 18px;
+    padding: 8px 4px;
+}
+.ins-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.ins-row.right {
+    flex-direction: row-reverse;
+}
+.ins-avatar {
+    width: 46px;
+    height: 46px;
+    border-radius: 50%;
+    background: #ccc center/cover no-repeat;
+    flex-shrink: 0;
+    cursor: pointer;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+}
+.ins-bubble-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    flex: 1;
+}
+.ins-row.right .ins-bubble-wrap {
+    align-items: flex-end;
+}
+/* 立体玻璃水滴气泡 */
+.ins-bubble {
+    position: relative;
+    display: inline-block;
+    max-width: 100%;
+    padding: 11px 22px;
+    border-radius: 50px;
+    background: rgba(255,255,255,0.82);
+    backdrop-filter: blur(18px) saturate(1.4);
+    -webkit-backdrop-filter: blur(18px) saturate(1.4);
+    border: 0.5px solid rgba(255,255,255,0.95);
+    box-shadow:
+        0 4px 18px rgba(0,0,0,0.10),
+        0 1.5px 4px rgba(0,0,0,0.07),
+        inset 0 1.5px 0 rgba(255,255,255,1),
+        inset 0 -1px 0 rgba(0,0,0,0.04);
+    font-size: 13px;
+    font-weight: 500;
+    color: #222;
+    letter-spacing: 0.5px;
+    outline: none;
+    word-break: break-word;
+    font-family: "PingFang SC", -apple-system, sans-serif;
+    transition: transform 0.1s;
+}
+/* 顶部月牙高光 */
+.ins-bubble::before {
+    content: '';
+    position: absolute;
+    top: 5px; left: 14%; right: 14%;
+    height: 35%;
+    border-radius: 50%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+}
+/* 底层微投影增加厚度感 */
+.ins-bubble::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50px;
+    background: linear-gradient(160deg, rgba(255,255,255,0.35) 0%, rgba(255,255,255,0) 40%, rgba(0,0,0,0.03) 100%);
+    pointer-events: none;
+}
+.ins-time {
+    font-size: 10px;
+    color: rgba(150,150,160,0.85);
+    padding: 0 6px;
+    outline: none;
+    letter-spacing: 0.5px;
+    font-family: -apple-system, sans-serif;
+}
 /* 组件独立调节面板样式 */
 #size-control-panel {
     position: absolute;
@@ -762,6 +924,114 @@ body, html {
 }
 .slider-row span.value {
     color: #666; font-size: 13px; min-width: 40px; text-align: right;
+}
+
+/* ===== 社交名片组件 ===== */
+.widget-social-card {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 3 - 12px) !important;
+    background: rgba(245, 245, 247, 0.90) !important;
+    backdrop-filter: blur(22px) saturate(1.4);
+    -webkit-backdrop-filter: blur(22px) saturate(1.4);
+    border-radius: 28px !important;
+    border: 0.5px solid rgba(255,255,255,0.75);
+    box-shadow: 0 8px 30px rgba(0,0,0,0.08);
+    display: flex !important;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    padding: 14px 10px;
+    position: absolute !important;
+    overflow: hidden;
+    gap: 8px;
+}
+.sc-side { display: flex; flex-direction: column; gap: 10px; flex-shrink: 0; }
+.sc-pill {
+    width: 86px; height: 38px;
+    background: rgba(255,255,255,0.92);
+    border-radius: 19px;
+    border: 0.5px solid rgba(0,0,0,0.06);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06), inset 0 1px 0 rgba(255,255,255,0.9);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11.5px; color: #555;
+    padding: 0 8px; text-align: center; outline: none; cursor: text;
+    word-break: break-word; overflow: hidden; line-height: 1.3;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+.sc-center { display: flex; flex-direction: column; align-items: center; gap: 8px; flex: 1; min-width: 0; }
+.sc-avatar {
+    width: 70px; height: 70px; border-radius: 50%;
+    background: #ddd center/cover; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.14);
+    border: 2.5px solid rgba(255,255,255,0.95);
+    flex-shrink: 0; transition: transform 0.1s;
+}
+.sc-avatar:active { transform: scale(0.93); }
+.sc-caption {
+    font-size: 11px; color: #777; text-align: center;
+    outline: none; max-width: 80px; word-break: break-word;
+    line-height: 1.45; letter-spacing: 0.3px;
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", sans-serif;
+}
+
+/* ===== iMessage 日间版 ===== */
+.widget-message.theme-light {
+    background: #f2f2f7 !important;
+    color: #000;
+}
+.widget-message.theme-light .msg-header {
+    background: rgba(242,242,247,0.96) !important;
+    border-bottom: 0.5px solid rgba(0,0,0,0.08);
+}
+.widget-message.theme-light .msg-header svg { stroke: #333 !important; }
+.widget-message.theme-light .msg-unread { background: rgba(0,0,0,0.08); color: #333; }
+.widget-message.theme-light .msg-avatar { color: #222; background: rgba(0,0,0,0.06) !important; }
+.widget-message.theme-light .msg-body { background: #f2f2f7 !important; }
+.widget-message.theme-light .msg-bubble.left { background: #e9e9eb; color: #000; }
+.widget-message.theme-light .msg-bubble.right { background: #007aff; color: #fff; border-bottom-right-radius: 4px; }
+.widget-message.theme-light .msg-time-header { color: #8e8e93; }
+.widget-message.theme-light .msg-read-status { color: #8e8e93; }
+.widget-message.theme-light .msg-time-header span:first-child { color: #8e8e93; font-weight: 600; }
+
+/* ===== 爱心3D高光 ===== */
+.love-hearts { display: flex; gap: 6px; align-items: center; }
+.love-heart-3d {
+    position: relative;
+    display: inline-block;
+    width: 22px; height: 22px;
+    flex-shrink: 0;
+}
+.love-heart-3d .heart-icon {
+    position: absolute; inset: 0;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 19px;
+    color: #f0b0bb;
+    filter: drop-shadow(0 2px 5px rgba(235,90,110,0.35));
+    z-index: 1;
+    line-height: 1;
+}
+/* 爱心高光月牙 */
+.love-heart-3d::before {
+    content: '';
+    position: absolute;
+    top: 3px; left: 4px;
+    width: 8px; height: 6px;
+    background: radial-gradient(ellipse at center, rgba(255,255,255,0.92) 0%, rgba(255,255,255,0) 75%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 3;
+}
+/* 爱心底部阴影增加立体感 */
+.love-heart-3d::after {
+    content: '';
+    position: absolute;
+    bottom: 1px; left: 50%;
+    transform: translateX(-50%);
+    width: 12px; height: 4px;
+    background: radial-gradient(ellipse, rgba(220,80,100,0.18) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 0;
 }
 
 </style>
@@ -842,7 +1112,10 @@ body, html {
         <div onclick="addNewWidget('love')" style="width: 90px; height: 80px; background: #fff; border: 1px solid #f6f6f6; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #a39c9c; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">🤍 恋爱纪念</div>
         <div onclick="addNewWidget('badge')" style="width: 90px; height: 80px; background: rgba(225,225,240,0.5); border: 1.5px solid rgba(210,210,228,0.8); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; color: #888; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);"><span style="font-size:12px; margin-top:3px;">猫耳吧唧</span></div>
         <div onclick="addNewWidget('voice')" style="width: 90px; height: 80px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #333; cursor: pointer;"><span style="font-size:12px; margin-top:5px;">语音四宫格</span></div>
-        <div onclick="addNewWidget('message')" style="width: 90px; height: 80px; background: #2c2c2e; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">💬 iMessage</span></div>
+        <div onclick="addNewWidget('message')" style="width: 90px; height: 80px; background: #2c2c2e; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">💬 iMessage夜</span></div>
+        <div onclick="addNewWidget('message-day')" style="width: 90px; height: 80px; background: #f2f2f7; border-radius: 15px; border:1px solid #e0e0e5; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #007aff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"><span style="font-size:12px; margin-top:5px; color:#333;">☀️ iMessage日</span></div>
+        <div onclick="addNewWidget('profile')" style="width: 90px; height: 80px; background: rgba(245,245,247,0.9); border-radius: 15px; border:1px solid rgba(220,220,230,0.8); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.06);"><span style="font-size:12px; margin-top:4px; color:#555;">🪪 社交名片</span></div>
+        <div onclick="addNewWidget('ins-chat')" style="width: 130px; height: 80px; background: linear-gradient(135deg,#f8f8fa,#e8e8ee); border-radius: 15px; border:1px solid rgba(220,220,230,0.9); display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 18px; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.9), 0 2px 8px rgba(0,0,0,0.06);"><span style="font-size:12px; margin-top:4px; color:#555;">🫧 INS对话气泡</span></div>
         <div onclick="addNewWidget('photo-square')" style="width: 90px; height: 80px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #333; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">正方形照片</span></div>
         <div onclick="addNewWidget('photo-heart')" style="width: 90px; height: 80px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">心形照片</span></div>
         <div onclick="addNewWidget('photo-circle')" style="width: 90px; height: 80px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">圆形照片</span></div>
@@ -1247,14 +1520,57 @@ else if (item.type === 'voice') {
                 };
             }
             else if (item.type === 'message') {
+                const bubbles = el.querySelectorAll('.msg-bubble');
                 item.data = {
                     unread: el.querySelector('.msg-unread').innerText,
                     avatarName: el.querySelector('.msg-avatar').innerText,
                     time: el.querySelectorAll('.msg-time-header span')[1].innerText,
-                    left1: el.querySelectorAll('.msg-bubble.left')[0].innerText,
-                    left2: el.querySelectorAll('.msg-bubble.left')[1].innerText,
-                    right: el.querySelector('.msg-bubble.right').innerText,
+                    left1:  bubbles[0] ? bubbles[0].innerText : '',
+                    right1: bubbles[1] ? bubbles[1].innerText : '',
+                    left2:  bubbles[2] ? bubbles[2].innerText : '',
+                    right2: bubbles[3] ? bubbles[3].innerText : '',
                     readTime: el.querySelector('.msg-read-status span').innerText
+                };
+            }
+            else if (item.type === 'message-day') {
+                const bubbles = el.querySelectorAll('.msg-bubble');
+                item.data = {
+                    unread: el.querySelector('.msg-unread').innerText,
+                    avatarName: el.querySelector('.msg-avatar').innerText,
+                    time: el.querySelectorAll('.msg-time-header span')[1].innerText,
+                    left1:  bubbles[0] ? bubbles[0].innerText : '',
+                    right1: bubbles[1] ? bubbles[1].innerText : '',
+                    left2:  bubbles[2] ? bubbles[2].innerText : '',
+                    right2: bubbles[3] ? bubbles[3].innerText : '',
+                    readTime: el.querySelector('.msg-read-status span').innerText
+                };
+            }
+            else if (item.type === 'profile') {
+                const icons = el.querySelectorAll('.profile-pill-icon');
+                const texts = el.querySelectorAll('.profile-pill-text');
+                item.data = {
+                    avatar: globalImageCache[item.id + '_avatar'],
+                    caption: el.querySelector('.profile-caption').innerText,
+                    icon1: icons[0] ? icons[0].innerText : '',
+                    text1: texts[0] ? texts[0].innerText : '',
+                    icon2: icons[1] ? icons[1].innerText : '',
+                    text2: texts[1] ? texts[1].innerText : '',
+                    icon3: icons[2] ? icons[2].innerText : '',
+                    text3: texts[2] ? texts[2].innerText : '',
+                    icon4: icons[3] ? icons[3].innerText : '',
+                    text4: texts[3] ? texts[3].innerText : '',
+                };
+            }
+            else if (item.type === 'ins-chat') {
+                const bubbles = el.querySelectorAll('.ins-bubble');
+                const times = el.querySelectorAll('.ins-time');
+                item.data = {
+                    avatarL: globalImageCache[item.id + '_ins_l'],
+                    avatarR: globalImageCache[item.id + '_ins_r'],
+                    text1: bubbles[0] ? bubbles[0].innerText : '',
+                    time1: times[0] ? times[0].innerText : '',
+                    text2: bubbles[1] ? bubbles[1].innerText : '',
+                    time2: times[1] ? times[1].innerText : '',
                 };
             }
             else if (['photo-square', 'photo-heart', 'photo-circle'].includes(item.type)) {
@@ -1377,6 +1693,20 @@ else if(item.type === 'voice') {
                     }
                     else if(item.type === 'message') {
                         createMessageWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'message-day') {
+                        createMessageDayWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'profile') {
+                        globalImageCache[item.id + '_avatar'] = item.data ? item.data.avatar : null;
+                        createProfileWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'ins-chat') {
+                        if(item.data) {
+                            globalImageCache[item.id + '_ins_l'] = item.data.avatarL;
+                            globalImageCache[item.id + '_ins_r'] = item.data.avatarR;
+                        }
+                        createInsChatWidget(item.col, item.row, item.id, item.data);
                     }
                     else if(item.type === 'photo-square') createPhotoSquareWidget(item.col, item.row, item.id, item.data);
                     else if(item.type === 'photo-heart') createPhotoHeartWidget(item.col, item.row, item.id, item.data);
@@ -1723,8 +2053,9 @@ function createVoiceWidget(col, row, id, data = null) {
             avatarName: "",
             time: "今天 17:20",
             left1: "",
+            right1: "",
             left2: "",
-            right: "",
+            right2: "",
             readTime: "17:21"
         };
 
@@ -1746,20 +2077,203 @@ function createVoiceWidget(col, row, id, data = null) {
                     <span>iMessage</span>
                     <span contenteditable="true" spellcheck="false">${d.time}</span>
                 </div>
-                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left1}</div>
-                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left2}</div>
-                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right}</div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left1 || ''}</div>
+                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right1 || ''}</div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left2 || (data ? '' : '')}</div>
+                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right2 || ''}</div>
                 <div class="msg-read-status"><span contenteditable="true" spellcheck="false">${d.readTime}</span> 已读</div>
             </div>
             <div class="remove-btn">×</div>
         `;
 
-        // 阻止单行文本框回车换行，防止排版乱掉
         div.querySelectorAll('.msg-unread, .msg-avatar, .msg-time-header span:last-child, .msg-read-status span').forEach(el => {
             el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
         });
 
         div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+
+    function createMessageDayWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-message widget-message-day';
+        div.dataset.id = id || 'msgd-' + Date.now();
+        div.dataset.type = 'message-day';
+        div.dataset.col = col; div.dataset.row = row;
+
+        const d = data || {
+            unread: "",
+            avatarName: "",
+            time: "今天 17:20",
+            left1: "",
+            right1: "",
+            left2: "",
+            right2: "",
+            readTime: "17:21"
+        };
+
+        div.innerHTML = `
+            <div class="msg-header">
+                <div class="msg-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span class="msg-unread" contenteditable="true" spellcheck="false">${d.unread}</span>
+                </div>
+                <div class="msg-avatar-container">
+                    <div class="msg-avatar" contenteditable="true" spellcheck="false">${d.avatarName}</div>
+                </div>
+                <div class="msg-video-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#007aff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                </div>
+            </div>
+            <div class="msg-body">
+                <div class="msg-time-header">
+                    <span>iMessage</span>
+                    <span contenteditable="true" spellcheck="false">${d.time}</span>
+                </div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left1 || ''}</div>
+                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right1 || ''}</div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left2 || ''}</div>
+                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right2 || ''}</div>
+                <div class="msg-read-status"><span contenteditable="true" spellcheck="false">${d.readTime}</span> 已读</div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
+
+        div.querySelectorAll('.msg-unread, .msg-avatar, .msg-time-header span:last-child, .msg-read-status span').forEach(el => {
+            el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
+        });
+
+        div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+
+    function createProfileWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-profile';
+        div.dataset.id = id || 'profile-' + Date.now();
+        div.dataset.type = 'profile';
+        div.dataset.col = col; div.dataset.row = row;
+
+        const d = data || {
+            icon1: '🥢', text1: 'eating',
+            icon2: '🎀', text2: 'TikTok',
+            icon3: '☆ 🦴 🐾', text3: '微博',
+            icon4: '🐱', text4: 'Wechat',
+            caption: '✦ ♩ ♪ · · ✦'
+        };
+
+        div.innerHTML = `
+            <div class="profile-pills-col">
+                <div class="profile-pill">
+                    <span class="profile-pill-icon" contenteditable="true" spellcheck="false">${d.icon1}</span>
+                    <span class="profile-pill-text" contenteditable="true" spellcheck="false">${d.text1}</span>
+                </div>
+                <div class="profile-pill">
+                    <span class="profile-pill-icon" contenteditable="true" spellcheck="false">${d.icon2}</span>
+                    <span class="profile-pill-text" contenteditable="true" spellcheck="false">${d.text2}</span>
+                </div>
+            </div>
+            <div class="profile-center">
+                <div class="profile-avatar"></div>
+                <div class="profile-caption" contenteditable="true" spellcheck="false">${d.caption}</div>
+            </div>
+            <div class="profile-pills-col">
+                <div class="profile-pill">
+                    <span class="profile-pill-icon" contenteditable="true" spellcheck="false">${d.icon3}</span>
+                    <span class="profile-pill-text" contenteditable="true" spellcheck="false">${d.text3}</span>
+                </div>
+                <div class="profile-pill">
+                    <span class="profile-pill-icon" contenteditable="true" spellcheck="false">${d.icon4}</span>
+                    <span class="profile-pill-text" contenteditable="true" spellcheck="false">${d.text4}</span>
+                </div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
+
+        const avatarKey = div.dataset.id + '_avatar';
+        const avatarEl = div.querySelector('.profile-avatar');
+
+        if (data && data.avatar) {
+            avatarEl.style.backgroundImage = data.avatar;
+            globalImageCache[avatarKey] = data.avatar;
+        } else if (globalImageCache[avatarKey]) {
+            avatarEl.style.backgroundImage = globalImageCache[avatarKey];
+        } else {
+            const def = "url('https://picsum.photos/seed/profile/200')";
+            avatarEl.style.backgroundImage = def;
+            globalImageCache[avatarKey] = def;
+        }
+
+        avatarEl.onclick = () => {
+            if (!isEditing) { activeEditType = 'widget'; currentImgKey = avatarKey; imgInput.click(); }
+        };
+
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.onclick = (e) => e.stopPropagation();
+            el.onblur = () => saveLayout();
+            el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
+        });
+
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+
+    function createInsChatWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-ins-chat';
+        div.dataset.id = id || 'ins-' + Date.now();
+        div.dataset.type = 'ins-chat';
+        div.dataset.col = col; div.dataset.row = row;
+
+        const d = data || {
+            text1: '☆LOOK~ elf',
+            time1: '00:05:20',
+            text2: '.....HAHA......',
+            time2: '00:05:21'
+        };
+
+        div.innerHTML = `
+            <div class="ins-row left">
+                <div class="ins-avatar ins-avatar-l"></div>
+                <div class="ins-bubble-wrap">
+                    <div class="ins-bubble" contenteditable="true" spellcheck="false">${d.text1}</div>
+                    <div class="ins-time" contenteditable="true" spellcheck="false">${d.time1}</div>
+                </div>
+            </div>
+            <div class="ins-row right">
+                <div class="ins-avatar ins-avatar-r"></div>
+                <div class="ins-bubble-wrap">
+                    <div class="ins-bubble" contenteditable="true" spellcheck="false">${d.text2}</div>
+                    <div class="ins-time" contenteditable="true" spellcheck="false">${d.time2}</div>
+                </div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
+
+        const avatarLKey = div.dataset.id + '_ins_l';
+        const avatarRKey = div.dataset.id + '_ins_r';
+        const avatarL = div.querySelector('.ins-avatar-l');
+        const avatarR = div.querySelector('.ins-avatar-r');
+
+        if (data && data.avatarL) { avatarL.style.backgroundImage = data.avatarL; globalImageCache[avatarLKey] = data.avatarL; }
+        else if (globalImageCache[avatarLKey]) { avatarL.style.backgroundImage = globalImageCache[avatarLKey]; }
+        else { const def = "url('https://picsum.photos/seed/insl/100')"; avatarL.style.backgroundImage = def; globalImageCache[avatarLKey] = def; }
+
+        if (data && data.avatarR) { avatarR.style.backgroundImage = data.avatarR; globalImageCache[avatarRKey] = data.avatarR; }
+        else if (globalImageCache[avatarRKey]) { avatarR.style.backgroundImage = globalImageCache[avatarRKey]; }
+        else { const def = "url('https://picsum.photos/seed/insr/100')"; avatarR.style.backgroundImage = def; globalImageCache[avatarRKey] = def; }
+
+        avatarL.onclick = () => { if (!isEditing) { activeEditType = 'widget'; currentImgKey = avatarLKey; imgInput.click(); } };
+        avatarR.onclick = () => { if (!isEditing) { activeEditType = 'widget'; currentImgKey = avatarRKey; imgInput.click(); } };
+
+        div.querySelectorAll('[contenteditable]').forEach(el => {
+            el.onclick = (e) => e.stopPropagation();
+            el.onblur = () => saveLayout();
+            el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
+        });
+
         div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
         desktop.appendChild(div); initDrag(div);
     }
@@ -1783,7 +2297,7 @@ function createVoiceWidget(col, row, id, data = null) {
             <div class="love-main">
                 <div class="love-side">${svgHeart}<div class="love-name" contenteditable="true">${d.name_l}</div><div class="love-detail" contenteditable="true">${d.detail1_l}</div><div class="love-detail" contenteditable="true">${d.detail2_l}</div></div>
                 <div class="love-avatar left"></div>
-                <div class="love-center"><div class="love-hearts">♥ ♥ ♥</div><div class="love-label" contenteditable="true">${d.label}</div><div class="love-days" contenteditable="true">${d.days}</div></div>
+                <div class="love-center"><div class="love-hearts"><span class="love-heart-3d"><span class="heart-icon">♥</span></span><span class="love-heart-3d"><span class="heart-icon">♥</span></span><span class="love-heart-3d"><span class="heart-icon">♥</span></span></div><div class="love-label" contenteditable="true">${d.label}</div><div class="love-days" contenteditable="true">${d.days}</div></div>
                 <div class="love-avatar right"></div>
                 <div class="love-side">${svgHeart}<div class="love-name" contenteditable="true">${d.name_r}</div><div class="love-detail" contenteditable="true">${d.detail1_r}</div><div class="love-detail" contenteditable="true">${d.detail2_r}</div></div>
             </div>
@@ -1949,7 +2463,7 @@ function createVoiceWidget(col, row, id, data = null) {
                 grid[r][c] = true;
                 
                 // 第一行占位
-                if(['music', 'love', 'voice', 'message', 'text-glass'].includes(type)) { 
+                if(['music', 'love', 'voice', 'message', 'message-day', 'profile', 'ins-chat', 'text-glass'].includes(type)) { 
                     if(c+1<8) grid[r][c+1]=true; 
                     if(c+2<8) grid[r][c+2]=true; 
                     if(c+3<8) grid[r][c+3]=true; 
@@ -1959,10 +2473,10 @@ function createVoiceWidget(col, row, id, data = null) {
                 }
                 
                 // 第二行占位
-                if(['twitter', 'love', 'music', 'memo', 'voice', 'message', 'photo-square', 'photo-heart', 'photo-circle'].includes(type)) { 
+                if(['twitter', 'love', 'music', 'memo', 'voice', 'message', 'message-day', 'profile', 'ins-chat', 'photo-square', 'photo-heart', 'photo-circle'].includes(type)) { 
                     if(r+1 < 7) { 
                         grid[r+1][c] = true; 
-                        if(['love', 'music', 'voice', 'message'].includes(type)){
+                        if(['love', 'music', 'voice', 'message', 'message-day', 'profile', 'ins-chat'].includes(type)){
                             if(c+1<8) grid[r+1][c+1]=true; 
                             if(c+2<8) grid[r+1][c+2]=true; 
                             if(c+3<8) grid[r+1][c+3]=true;
@@ -1974,7 +2488,7 @@ function createVoiceWidget(col, row, id, data = null) {
                 }
                 
                 // 第三行占位
-                if(type === 'message') { 
+                if(type === 'message' || type === 'message-day') { 
                     if(r+2 < 7) {
                         grid[r+2][c] = true;
                         if(c+1<8) grid[r+2][c+1]=true; 
@@ -2094,8 +2608,6 @@ function createVoiceWidget(col, row, id, data = null) {
                 if (activeEl && isEditing) {
                     // 放下时默认保持当前页，不根据 X 坐标 round
                     let page = currentPage;
-
-                    // 只有手指真的贴着物理边缘才翻页
                     if (lastClientX > window.innerWidth - 6) page = Math.min(1, currentPage + 1);
                     if (lastClientX < 6) page = Math.max(0, currentPage - 1);
                     page = Math.max(0, Math.min(1, page));
@@ -2164,7 +2676,7 @@ function createVoiceWidget(col, row, id, data = null) {
     }
 
                 function addNewWidget(type) {
-        const isWide = ['music', 'love', 'voice', 'message', 'text-glass'].includes(type);
+        const isWide = ['music', 'love', 'voice', 'message', 'message-day', 'profile', 'ins-chat', 'text-glass'].includes(type);
         const spot = findEmptySpot(isWide);
         if(type === 'twitter') createTwitterWidget(spot.c, spot.r); 
         else if(type === 'island') createIslandWidget(0, 0); 
@@ -2172,6 +2684,9 @@ function createVoiceWidget(col, row, id, data = null) {
         else if(type === 'badge') createBadgeWidget(spot.c, spot.r);
         else if(type === 'voice') createVoiceWidget(spot.c, spot.r);
         else if(type === 'message') createMessageWidget(spot.c, spot.r);
+        else if(type === 'message-day') createMessageDayWidget(spot.c, spot.r);
+        else if(type === 'profile') createProfileWidget(spot.c, spot.r);
+        else if(type === 'ins-chat') createInsChatWidget(spot.c, spot.r);
         else if(type === 'photo-square') createPhotoSquareWidget(spot.c, spot.r);
         else if(type === 'photo-heart') createPhotoHeartWidget(spot.c, spot.r);
         else if(type === 'photo-circle') createPhotoCircleWidget(spot.c, spot.r);
@@ -2201,50 +2716,65 @@ function createVoiceWidget(col, row, id, data = null) {
             const reader = new FileReader();
             reader.readAsDataURL(file);
             reader.onload = (event) => {
-                const cssUrl = `url("${event.target.result}")`;
+                const base64 = event.target.result;
+                const cssUrl = `url("${base64}")`;
 
                 if (activeEditType === 'widget') {
                     globalImageCache[currentImgKey] = cssUrl;
-                    if(currentImgKey.includes('cover')) {
-                        const id = currentImgKey.split('_')[0];
+                    const key = currentImgKey;
+                    const id = key.split('_')[0];
+
+                    if (key.includes('_cover')) {
                         const el = document.querySelector(`.widget-music[data-id="${id}"] .music-cover`);
                         if(el) el.style.backgroundImage = cssUrl;
-                    } else if(currentImgKey.includes('bg')) {
-                        const id = currentImgKey.split('_')[0];
+
+                    } else if (key.includes('_bg')) {
                         const el = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-header`);
                         if(el) el.style.backgroundImage = cssUrl;
-                    } else if(currentImgKey.includes('avatar')) {
-                        const id = currentImgKey.split('_')[0];
-                        const el = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-avatar`);
+
+                    } else if (key.endsWith('_avatar_l')) {
+                        const el = document.querySelector(`.widget-love[data-id="${id}"] .love-avatar.left`);
                         if(el) el.style.backgroundImage = cssUrl;
-                        // 备忘录头像
+
+                    } else if (key.endsWith('_avatar_r')) {
+                        const el = document.querySelector(`.widget-love[data-id="${id}"] .love-avatar.right`);
+                        if(el) el.style.backgroundImage = cssUrl;
+
+                    } else if (key.includes('_avatar')) {
+                        // twitter / memo / island / profile fallback
+                        const twEl = document.querySelector(`.widget-twitter[data-id="${id}"] .tw-avatar`);
+                        if(twEl) twEl.style.backgroundImage = cssUrl;
                         const memoEl = document.querySelector(`.widget-memo[data-id="${id}"] .memo-avatar`);
                         if(memoEl) memoEl.style.backgroundImage = cssUrl;
-                    } else if(currentImgKey.includes('island')) {
-                        const id = currentImgKey.split('_')[0];
+                        const profileEl = document.querySelector(`.widget-profile[data-id="${id}"] .profile-avatar`);
+                        if(profileEl) profileEl.style.backgroundImage = cssUrl;
+
+                    } else if (key.includes('_island')) {
                         const el = document.querySelector(`.widget-island[data-id="${id}"] .island-avatar`);
                         if(el) el.style.backgroundImage = cssUrl;
-                    }
-} else if (currentImgKey.includes('_img_')) {
-                    // 让四宫格长条相册可以单独换图
-                    const parts = currentImgKey.split('_');
-                    const id = parts[0]; 
-                    const idx = parts[2];
-                    const el = document.querySelector(`.widget-voice[data-id="${id}"] .voice-card[data-idx="${idx}"] .vc-bg`);
-                    if(el) el.style.backgroundImage = cssUrl;
-                } 
 
-                else if (activeEditType === 'wallpaper-lock') {
+                    } else if (key.endsWith('_badge')) {
+                        const el = document.querySelector(`.widget-badge[data-id="${id}"] .badge-core`);
+                        if(el) el.style.backgroundImage = cssUrl;
+
+                    } else if (key.includes('_img_')) {
+                        const parts = key.split('_img_');
+                        const idx = parts[1];
+                        const el = document.querySelector(`.widget-voice[data-id="${id}"] .voice-card[data-idx="${idx}"] .vc-bg`);
+                        if(el) el.style.backgroundImage = cssUrl;
+                    }
+
+                } else if (activeEditType === 'wallpaper-lock') {
                     globalImageCache['wallpaper_lock'] = cssUrl;
                     lockScreen.style.backgroundImage = cssUrl;
                     document.getElementById('wp-lock-preview').style.backgroundImage = cssUrl;
-                }
-                else if (activeEditType === 'wallpaper-home') {
+
+                } else if (activeEditType === 'wallpaper-home') {
                     globalImageCache['wallpaper_home'] = cssUrl;
                     document.getElementById('home-screen').style.backgroundImage = cssUrl;
                     document.getElementById('wp-home-preview').style.backgroundImage = cssUrl;
-                }
-                else if (activeEditType === 'app-icon') {
+
+                } else if (activeEditType === 'app-icon') {
                     globalImageCache['icon_' + activeAppId] = cssUrl;
                     customAppIcons[activeAppId] = true; 
                     const desktopApp = document.querySelector(`.app-item[data-id="${activeAppId}"] .app-icon`);
