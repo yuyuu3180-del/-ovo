@@ -68,7 +68,27 @@ body, html {
     touch-action: none;
 }
 
-#home-screen { position: absolute; width: 100%; height: 100%; z-index: 50; background: var(--glass); backdrop-filter: var(--blur); -webkit-backdrop-filter: var(--blur); background-size: cover; background-position: center; }
+#home-screen { 
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 50;
+    background: var(--glass);
+    backdrop-filter: var(--blur);
+    -webkit-backdrop-filter: var(--blur);
+    background-size: cover;
+    background-position: center;
+    pointer-events: none;
+}
+
+#home-screen .widget-island,
+#home-screen .app-item,
+#home-screen .widget-item,
+#home-screen .dock-container,
+#home-screen .top-nav,
+#home-screen #desktop {
+    pointer-events: auto;
+}
 
 .top-nav {
     position: absolute; top: 50px; left: 0; width: 100%; padding: 0 20px;
@@ -89,8 +109,64 @@ body, html {
 #diy-btn { background: var(--bunny-pink); color: white; }
 #done-btn { pointer-events: auto; background: #333; color: white;}
 
-.desktop-content { position: relative; width: 100%; height: calc(100% - 16dvh); margin-top: 3dvh; }
+/* ===== 支持多页滑动的桌面容器 ===== */
+#desktop-clip {
+    position: absolute;
+    left: 0; right: 0;
+    top: 3dvh;
+    height: calc(100% - 16dvh);
+    overflow: hidden;
+    touch-action: pan-x;
+}
 
+#desktop {
+    position: relative;
+    width: 200vw;
+    height: 100%;
+    display: flex;
+    will-change: transform;
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+#desktop::-webkit-scrollbar {
+    display: none;
+}
+/* 允许灵动岛、应用和导航按钮接收交互事件 */
+.widget-island,
+.app-item,
+.widget-item,
+.nav-btn {
+    pointer-events: auto;
+}
+
+#desktop {
+    pointer-events: auto;
+}
+
+#desktop-clip::-webkit-scrollbar { display: none; }
+
+/* 无形的吸附锚点，一页一个 */
+.page-container {
+    width: 100vw; 
+    flex-shrink: 0;
+    height: 100%;
+    position: relative;
+    pointer-events: auto;
+}
+
+.page-1 {
+    background: transparent;
+}
+
+.page-2 {
+    background: transparent;
+}
+
+/* 页面指示器 (小圆点) */
+.page-dots { position: absolute; bottom: 15dvh; left: 0; width: 100%; display: flex; justify-content: center; gap: 8px; z-index: 100; pointer-events: none; }
+.page-dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.4); transition: 0.3s; }
+.page-dot.active { background: rgba(255,255,255,0.9); }
 /* App 与小组件自适应样式 */
 .app-item, .widget-item { position: absolute; z-index: 10; transition: transform 0.2s, left 0.3s, top 0.3s; }
 .app-item { width: var(--cell-w); height: var(--cell-h); display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -136,17 +212,136 @@ body, html {
 .icon-btn { cursor: pointer; opacity: 0.9; transition: transform 0.1s; }
 .icon-btn:active { transform: scale(0.85); }
 
-.widget-music { width: calc(var(--cell-w) * 4 - 12px); height: calc(var(--cell-h) * 2 - 12px); background: linear-gradient(145deg, #555, #222); color: white; padding: 5%; display: flex; align-items: center; gap: 5%; }
-.music-vinyl-container { position: relative; width: calc(var(--cell-h) * 1.3); height: calc(var(--cell-h) * 1.3); flex-shrink: 0; cursor: pointer; }
-.music-vinyl { width: 100%; height: 100%; border-radius: 50%; background: #111; padding: 25px; box-shadow: 0 0 25px rgba(0,0,0,0.4); animation: rotate 12s linear infinite; background-image: repeating-radial-gradient(circle, #222 0, #111 1px, #222 2px); position: relative; }
-.music-vinyl::after { content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%; border-radius: 50%; background: linear-gradient(135deg, transparent 40%, rgba(255,255,255,0.1) 50%, transparent 60%); pointer-events: none; }
-.music-cover { width: 100%; height: 100%; border-radius: 50%; background: #333 center/cover; border: 2px solid #000; }
-.music-info { flex: 1; display: flex; flex-direction: column; gap: 4px; overflow: hidden; }
-.music-title { font-size: clamp(14px, 4vw, 20px); font-weight: bold; overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
-.music-artist { font-size: clamp(10px, 3vw, 13px); opacity: 0.6; margin-bottom: 8%; }
-.music-controls { display: flex; align-items: center; gap: 20px; }
-.music-heart { color: var(--music-red); margin-left: auto; }
-
+/* ===== 网易云迷你播放条 · 毛玻璃线性 ===== */
+.widget-music {
+    width: calc(var(--cell-w) * 4 - 12px);
+    height: 52px;
+    background: rgba(255, 255, 255, 0.35);
+    backdrop-filter: blur(40px) saturate(1.6);
+    -webkit-backdrop-filter: blur(40px) saturate(1.6);
+    border: 0.5px solid rgba(255, 255, 255, 0.5);
+    color: #333;
+    padding: 0 10px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 26px !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 0.5px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
+}
+.music-vinyl-container {
+    width: 42px; height: 42px;
+    flex-shrink: 0; cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+}
+.music-vinyl {
+    width: 100%; height: 100%;
+    border-radius: 12px;
+    background: #ddd;
+    padding: 0;
+    box-shadow: none;
+    animation: none;
+    background-image: none;
+    position: relative;
+    overflow: hidden;
+}
+.music-vinyl::after { display: none; }
+.music-cover {
+    width: 100%; height: 100%;
+    border-radius: 12px;
+    background: #ccc center/cover;
+    border: none;
+}
+.music-info {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column;
+    gap: 1px; overflow: hidden;
+}
+.music-title {
+    font-size: 13px; font-weight: 600;
+    color: rgba(30,30,30,0.85);
+    overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+.music-artist {
+    font-size: 10px; color: rgba(80,80,80,0.5);
+    opacity: 1; margin-bottom: 0;
+    overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+.music-controls {
+    display: flex; align-items: center;
+    gap: 6px; flex-shrink: 0;
+}
+.music-controls .icon-btn { opacity: 0.4; }
+.music-controls .icon-btn:active { opacity: 0.8; }
+.music-controls .icon-svg { width: 16px; height: 16px; fill: #333; }
+.music-heart { color: #999; margin-left: 0; }
+.music-heart .icon-svg { fill: none; stroke: rgba(0,0,0,0.3); stroke-width: 2; width: 14px; height: 14px; }
+    color: #333;
+    padding: 0 10px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-radius: 26px !important;
+    box-shadow: 0 2px 16px rgba(0,0,0,0.06), inset 0 0.5px 0 rgba(255,255,255,0.6);
+    overflow: hidden;
+}
+.music-vinyl-container {
+    width: 42px; height: 42px;
+    flex-shrink: 0; cursor: pointer;
+    margin-left: 5px;
+    position: relative;
+}
+.music-vinyl {
+    width: 100%; height: 100%;
+    border-radius: 12px;
+    background: #ddd;
+    padding: 0;
+    box-shadow: none;
+    animation: none;
+    background-image: none;
+    position: relative;
+    overflow: hidden;
+}
+.music-vinyl::after { display: none; }
+.music-cover {
+    width: 100%; height: 100%;
+    border-radius: 12px;
+    background: #ccc center/cover;
+    border: none;
+}
+.music-info {
+    flex: 1; min-width: 0;
+    display: flex; flex-direction: column;
+    gap: 1px; overflow: hidden;
+}
+.music-title {
+    font-size: 13px; font-weight: 600;
+    color: rgba(30,30,30,0.85);
+    overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 1.3;
+}
+.music-artist {
+    font-size: 10px; color: rgba(80,80,80,0.5);
+    opacity: 1; margin-bottom: 0;
+    overflow: hidden; white-space: nowrap;
+    text-overflow: ellipsis;
+    line-height: 1.2;
+}
+.music-controls {
+    display: flex; align-items: center;
+    gap: 6px; flex-shrink: 0;
+}
+.music-controls .icon-btn { opacity: 0.4; }
+.music-controls .icon-btn:active { opacity: 0.8; }
+.music-controls .icon-svg { width: 16px; height: 16px; fill: #333; }
+.music-heart { color: #999; margin-left: 0; }
+.music-heart .icon-svg { fill: none; stroke: rgba(0,0,0,0.3); stroke-width: 2; width: 14px; height: 14px; }
 .widget-twitter { width: calc(var(--cell-w) * 2 - 12px); height: calc(var(--cell-h) * 2 - 12px); }
 .tw-header { height: 40%; background: #eee center/cover; cursor: pointer; }
 .tw-content { position: relative; padding: 8px 12px; display: flex; flex-direction: column; height: 60%; }
@@ -168,7 +363,8 @@ body, html {
 .dragging { z-index: 1000 !important; transform: scale(1.05) !important; opacity: 0.9; transition: none !important; }
 @keyframes shake { 0%, 100% { transform: rotate(-1deg); } 50% { transform: rotate(1deg); } }
 
-.dock-container { position: absolute; bottom: 3dvh; left: 20px; right: 20px; height: 95px; background: rgba(255,255,255,0.4); border-radius: 32px; display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(10px); z-index: 200; }
+.dock-container { position: absolute; bottom: 3dvh; left: 20px; right: 20px; height: 95px; background: rgba(255,255,255,0.4); border-radius: 32px; display: flex; justify-content: space-around; align-items: center; backdrop-filter: blur(10px); z-index: 200; touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
+.dock-container .app-icon { touch-action: none; -webkit-touch-callout: none; user-select: none; -webkit-user-select: none; }
 .home-bar { position: absolute; bottom: 8px; left: 50%; transform: translateX(-50%); width: 130px; height: 5px; background: rgba(0,0,0,0.1); border-radius: 10px; cursor: pointer; z-index: 300; }
 
 .bottom-panel {
@@ -231,39 +427,342 @@ body, html {
     height: 100%;
     display: block;
 }
-/* ===== 软萌备忘录小组件 ===== */
-.widget-memo {
-    width: calc(var(--cell-w) * 2 - 12px);
-    height: calc(var(--cell-h) * 2 - 12px);
-    background: #fffafa;
-    border-radius: 20px;
-    padding: 12px;
+/* ================= 全新：恋爱纪念小组件 ================= */
+.widget-love {
+    width: calc(var(--cell-w) * 4 - 12px);
+    height: 150px; /* 高度调小了，更精致 */
+    background: rgba(240, 240, 240, 0.45); /* 灰白半透明底色 */
+    backdrop-filter: blur(20px); /* 苹果系统毛玻璃模糊效果 */
+    -webkit-backdrop-filter: blur(20px);
+    border-radius: 26px;
+    padding: 12px 15px;
     display: flex;
     flex-direction: column;
-    position: relative;
-    background-image: radial-gradient(#ffe0e6 1.5px, transparent 1.5px);
-    background-size: 10px 10px; 
-    border: 2px solid #fff0f3;
-    box-shadow: 0 4px 10px rgba(255,182,193,0.15);
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.5); /* 玻璃边缘高光 */
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05);
+    color: #aca3a3;
 }
-.memo-top {
-    display: flex; justify-content: space-between; align-items: flex-start;
-    height: 50px; margin-bottom: 5px;
+.love-top { text-align: center; font-size: 11px; letter-spacing: 1.5px; margin-bottom: 8px; line-height: 1.5; font-weight: 500; outline: none; }
+.love-main { display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 5px; }
+.love-side { position: relative; width: 55px; display: flex; flex-direction: column; align-items: center; gap: 3px; z-index: 2; }
+.love-bg-heart { position: absolute; top: 45%; left: 50%; transform: translate(-50%, -50%); width: 75px; height: 75px; z-index: -1; fill: #f5f1f1; }
+.love-name { font-size: 13px; color: #a39c9c; font-weight: 600; outline: none; }
+.love-detail { font-size: 9px; color: #bab4b4; white-space: nowrap; transform: scale(0.95); outline: none; }
+.love-avatar {
+    width: 50px; height: 50px; /* 头像稍微调小 */
+    background: #f0f0f0 center/cover;
+    cursor: pointer; 
+    border-radius: 50%; /* 变成完美的正圆形 */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
-.memo-avatar {
-    width: 45px; height: 45px; border-radius: 50%;
-    background: #ddd center/cover; border: 2px solid #fff;
-    cursor: pointer; z-index: 5; box-shadow: 0 2px 6px rgba(0,0,0,0.1);
-}
-.memo-decor { font-size: 14px; color: #ffb6c1; font-weight: bold; text-shadow: 1px 1px 0 #fff; margin-top: 5px; }
-.memo-lines { display: flex; flex-direction: column; gap: 8px; flex: 1; }
-.memo-line { display: flex; align-items: flex-end; gap: 8px; }
-.memo-icon { font-size: 16px; margin-bottom: 2px; }
-.memo-text {
-    flex: 1; border-bottom: 2px dashed #ffc0cb; font-size: 12px; color: #666;
-    padding-bottom: 2px; outline: none; white-space: nowrap; overflow: hidden;
+.love-center { display: flex; flex-direction: column; align-items: center; gap: 4px; flex: 1; }
+.love-hearts { color: #dbd5d5; font-size: 12px; letter-spacing: 3px; }
+.love-label { font-size: 9px; color: #b8b2b2; outline: none; }
+.love-days { font-size: 14px; color: #a69f9f; font-weight: 500; outline: none; }
+
+/* ===== 终极 1:1 切图复刻法：照片上浮 + 3D滴胶厚吧唧 ===== */
+.widget-badge {
+    width: calc(var(--cell-w) * 2 - 12px) !important;
+    height: calc(var(--cell-w) * 2 - 12px) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    position: absolute !important;
+    overflow: visible !important;
 }
 
+.badge-wrapper {
+    position: relative;
+    width: 100%; height: 100%;
+}
+
+/* 这次相框在下层充当底板！ */
+.badge-frame {
+    position: absolute;
+    top: -15%; left: -15%;
+    width: 130%; height: 130%;
+    /* 你抠好的底板图 */
+    background-image: url('https://free.boltp.com/2026/03/10/69afee24bcbb5.webp'); 
+    background-size: contain;
+    background-position: center;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    z-index: 1; /* 【关键修改：退居 1 层】 */
+    filter: drop-shadow(0px 8px 15px rgba(0,0,0,0.12));
+}
+
+/* 头像本体浮在上层，刚好盖住那块白斑 */
+.badge-core {
+    position: absolute;
+    z-index: 2; /* 【关键修改：浮到 2 层，盖住白斑！】 */
+    
+    /* ======================================= */
+    /* ⚠️ 坐标精调：确保刚好盖住原图里的那个白色圆圈 */
+    top: 53.5%;        /* 上下居中微调 */
+    left: 62.5%;       /* 因为有“犭”旁，圆圈偏右 */
+    width: 66%;        /* 大小刚好露出原图边缘的一点点银边 */
+    /* ======================================= */
+    
+    aspect-ratio: 1/1;
+    transform: translate(-50%, -50%);
+    border-radius: 50%;
+    background: #ccc center/cover no-repeat;
+    cursor: pointer;
+    
+    /* 给贴在表面的头像加一点边缘厚度，让它看起来像个实体吧唧 */
+    box-shadow: 
+        0 0 0 1px rgba(255,255,255,0.6), /* 极细反光高光边 */
+        0 0 0 2.5px rgba(180,180,190,0.8), /* 模拟银灰色铁皮包边 */
+        0 4px 8px rgba(0,0,0,0.25); /* 压在底板上的实体阴影 */
+    transition: transform 0.1s;
+}
+
+/* ======================================= */
+/* 灵魂封层 1：全覆盖的树脂弧面渐变反光 + 边缘暗角 */
+/* ======================================= */
+.badge-core::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    box-shadow: 
+        inset 4px 6px 15px -3px rgba(255, 255, 255, 0.95), 
+        inset -4px -6px 12px rgba(0, 0, 0, 0.4);
+    background: linear-gradient(
+        135deg, 
+        rgba(255,255,255,0.45) 0%, 
+        rgba(255,255,255,0.05) 45%, 
+        transparent 55%, 
+        rgba(0,0,0,0.15) 100%
+    );
+    pointer-events: none; /* 绝对不能挡住点击事件 */
+}
+
+/* ======================================= */
+/* 灵魂封层 2：顶部极其锐利的月牙形高光片（极致还原） */
+/* ======================================= */
+.badge-core::before {
+    content: '';
+    position: absolute;
+    top: 3%; left: 10%; right: 10%;
+    height: 40%;
+    border-radius: 50% 50% 20% 20% / 60% 60% 20% 20%;
+    background: linear-gradient(180deg, rgba(255,255,255,0.85) 0%, rgba(255,255,255,0) 100%);
+    pointer-events: none;
+    z-index: 4;
+}
+
+.badge-core:active { transform: translate(-50%, -50%) scale(0.94); }
+
+.widget-badge .remove-btn { top: 0; right: 0; left: auto; z-index: 10; }
+/* ===== 全新：四宫格专属语音相册组件 ===== */
+.widget-voice {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 2 - 12px) !important;
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    padding: 0 !important;
+}
+
+.voice-container {
+    width: 100%; height: 100%;
+    display: flex; gap: 10px; /* 4张卡片之间的间距 */
+}
+
+.voice-card {
+    flex: 1; height: 100%;
+    border-radius: 18px; /* 圆角长条 */
+    position: relative; 
+    overflow: hidden;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+    cursor: pointer;
+}
+
+.vc-bg {
+    width: 100%; height: 100%;
+    background: #333 center/cover no-repeat;
+    transition: transform 0.2s;
+}
+.voice-card:active .vc-bg { transform: scale(1.05); }
+
+/* 底部那个黑底白线的语音小条 */
+.vc-badge {
+    position: absolute; 
+    bottom: 10px; left: 50%; transform: translateX(-50%);
+    background: rgba(20,20,20,0.65); 
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    padding: 5px 12px; border-radius: 15px;
+    display: flex; align-items: center; gap: 3px;
+    border: 0.5px solid rgba(255,255,255,0.25);
+    pointer-events: none; /* 让双击事件穿透到底图上 */
+}
+
+/* 语音条的跳动波纹动画（修复版：默认静止，播放时才跳） */
+.vc-wave-bar {
+    width: 2.5px; background: white; border-radius: 2px;
+    transition: height 0.2s ease; /* 平滑过渡 */
+}
+
+/* 默认安静时的长短不一的静止状态 */
+.vc-wave-bar:nth-child(1) { height: 4px; }
+.vc-wave-bar:nth-child(2) { height: 8px; }
+.vc-wave-bar:nth-child(3) { height: 5px; }
+.vc-wave-bar:nth-child(4) { height: 6px; }
+
+/* 只有当卡片被加上 playing 这个 class 时，才开始跳动！ */
+.voice-card.playing .vc-wave-bar {
+    animation: vc-wave 0.8s infinite ease-in-out alternate;
+}
+.voice-card.playing .vc-wave-bar:nth-child(1) { animation-delay: 0s; }
+.voice-card.playing .vc-wave-bar:nth-child(2) { animation-delay: 0.2s; }
+.voice-card.playing .vc-wave-bar:nth-child(3) { animation-delay: 0.4s; }
+.voice-card.playing .vc-wave-bar:nth-child(4) { animation-delay: 0.1s; }
+
+@keyframes vc-wave { 0% { height: 3px; } 100% { height: 14px; } }
+
+/* ===== 4个万能基础小组件 ===== */
+/* 1. 圆角正方形照片 */
+.widget-photo-square {
+    width: calc(var(--cell-w) * 1.5 - 12px) !important;
+    height: calc(var(--cell-h) * 1.5 - 12px) !important;
+    border-radius: 25px !important;
+    background-color: rgba(255,255,255,0.2);
+    background-size: cover;
+    background-position: center;
+    position: absolute !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+/* 2. 爱心形照片 */
+.widget-photo-heart {
+    width: calc(var(--cell-w) * 1.5 - 12px) !important;
+    height: calc(var(--cell-w) * 1.5 - 12px) !important; 
+    background-color: rgba(255,255,255,0.2);
+    background-size: cover;
+    background-position: center;
+    position: absolute !important;
+    mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 90 C 0 55, 0 20, 25 10 C 40 4, 50 15, 50 15 C 50 15, 60 4, 75 10 C 100 20, 100 55, 50 90 Z' fill='black'/%3E%3C/svg%3E");
+    mask-size: contain;
+    mask-repeat: no-repeat;
+    mask-position: center;
+    -webkit-mask-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M50 90 C 0 55, 0 20, 25 10 C 40 4, 50 15, 50 15 C 50 15, 60 4, 75 10 C 100 20, 100 55, 50 90 Z' fill='black'/%3E%3C/svg%3E");
+    -webkit-mask-size: contain;
+    -webkit-mask-repeat: no-repeat;
+    -webkit-mask-position: center;
+    cursor: pointer;
+}
+/* 3. 毛玻璃信息条 */
+.widget-text-glass {
+    width: calc(var(--cell-w) * 3 - 16px) !important;
+    height: 38px !important;
+    background: rgba(215, 218, 224, 0.82) !important;
+    backdrop-filter: blur(28px) saturate(1.8);
+    -webkit-backdrop-filter: blur(28px) saturate(1.8);
+    border-radius: 19px !important;
+    border: 0.5px solid rgba(255,255,255,0.75);
+    position: absolute !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.08), inset 0 1px 0 rgba(255,255,255,0.6);
+}
+.widget-text-glass-content {
+    width: 100%;
+    color: rgba(50,50,60,0.75);
+    font-size: 14px;
+    font-weight: 400;
+    text-align: center;
+    outline: none;
+    text-shadow: none;
+    word-break: break-word;
+    letter-spacing: 0.2px;
+}
+/* 4. 圆形头像 */
+.widget-photo-circle {
+    width: calc(var(--cell-w) * 1 - 8px) !important;
+    height: calc(var(--cell-w) * 1 - 8px) !important; 
+    border-radius: 50% !important;
+    background-color: rgba(255,255,255,0.2);
+    background-size: cover;
+    background-position: center;
+    position: absolute !important;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    cursor: pointer;
+}
+
+/* ===== 全新：iMessage 组件 ===== */
+.widget-message {
+    width: calc(var(--cell-w) * 4 - 12px) !important;
+    height: calc(var(--cell-h) * 3 - 12px) !important;
+    background: #000 !important;
+    border-radius: 28px !important;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    position: absolute !important;
+    color: #fff;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+}
+.msg-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 15px 15px 10px 15px; background: rgba(25,25,25,0.8);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 10;
+}
+.msg-back { display: flex; align-items: center; gap: 2px; }
+.msg-unread { background: rgba(255,255,255,0.2); padding: 2px 8px; border-radius: 12px; font-size: 13px; color: #fff; outline: none; min-width: 20px; text-align: center; }
+.msg-avatar-container { display: flex; flex-direction: column; align-items: center; position: absolute; left: 50%; transform: translateX(-50%); }
+.msg-avatar { width: 45px; height: 45px; border-radius: 50%; background: #999; display: flex; justify-content: center; align-items: center; font-size: 14px; color: #fff; font-weight: bold; cursor: pointer; outline: none; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; padding: 0 5px; }
+.msg-video-icon { display: flex; align-items: center; justify-content: center; }
+.msg-body { flex: 1; padding: 10px 15px; display: flex; flex-direction: column; gap: 8px; overflow-y: auto; background: #000; }
+.msg-time-header { text-align: center; font-size: 11px; color: #888; margin-bottom: 5px; display: flex; flex-direction: column; gap: 2px; }
+.msg-time-header span:first-child { font-weight: bold; outline: none; }
+.msg-time-header span:last-child { outline: none; }
+.msg-bubble { max-width: 80%; padding: 8px 14px; border-radius: 18px; font-size: 14px; line-height: 1.4; word-break: break-word; outline: none; }
+.msg-bubble.left { align-self: flex-start; background: #3a3a3c; color: #fff; border-bottom-left-radius: 4px; }
+.msg-bubble.right { align-self: flex-end; background: #e5e5ea; color: #000; border-bottom-right-radius: 4px; }
+.msg-read-status { align-self: flex-end; font-size: 11px; color: #888; margin-top: -4px; outline: none; display: flex; gap: 4px; }
+/* 组件独立调节面板样式 */
+#size-control-panel {
+    position: absolute;
+    bottom: -120px; /* 默认藏在屏幕下方 */
+    left: 5%;
+    width: 90%;
+    background: rgba(255, 255, 255, 0.85);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
+    padding: 15px 20px;
+    border-radius: 25px;
+    z-index: 4000;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+    display: flex;
+    flex-direction: column; /* 改为纵向排列 */
+    gap: 15px;
+    transition: bottom 0.4s cubic-bezier(0.2, 1, 0.2, 1);
+}
+#size-control-panel.show {
+    bottom: 20px; /* 弹出时的高度 */
+}
+.slider-row {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+.slider-row input[type="range"] {
+    flex: 1;
+}
+.slider-row span.label {
+    color: #333; font-weight: bold; font-size: 14px; white-space: nowrap;
+}
+.slider-row span.value {
+    color: #666; font-size: 13px; min-width: 40px; text-align: right;
+}
 
 </style>
 
@@ -271,6 +770,19 @@ body, html {
 <body>
 
 <div id="phone-wrapper">
+<div id="size-control-panel">
+    <div class="slider-row">
+        <span class="label">大小</span>
+        <input type="range" id="item-size-slider" min="0.5" max="1.5" step="0.05" value="1">
+        <span class="value" id="item-size-text">100%</span>
+    </div>
+    <div class="slider-row">
+        <span class="label">长短</span>
+        <input type="range" id="item-length-slider" min="0.5" max="2.0" step="0.05" value="1">
+        <span class="value" id="item-length-text">100%</span>
+    </div>
+</div>
+
     <div id="db-loading" class="show">正在校准灵动岛...</div>
 
 
@@ -295,7 +807,18 @@ body, html {
         </div>
         <button class="nav-btn" id="done-btn">完成</button>
     </div>
-    <div class="desktop-content" id="desktop"></div>
+    <div id="desktop-clip">
+       <div id="desktop">
+        <!-- 第一页容器 -->
+        <div class="page-container page-1"></div>
+        <!-- 第二页容器 -->
+        <div class="page-container page-2"></div>
+    </div>
+    </div>
+    <div class="page-dots" id="page-dots">
+        <div class="page-dot active"></div>
+        <div class="page-dot"></div>
+    </div>
     <div class="dock-container">
         <div class="app-icon" data-dock-id="dock-phone">📞</div>
         <div class="app-icon" data-dock-id="dock-msg">💬</div>
@@ -312,13 +835,18 @@ body, html {
         🏝️ 添加灵动岛
     </div>
     <div class="section-title">媒体与社交</div>
-    <div style="display: flex; gap: 15px;">
-               <div style="display: flex; gap: 15px;">
-        <div onclick="addNewWidget('music')" style="width: 150px; height: 90px; background: #333; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; cursor: pointer;">🎵 网易云音乐</div>
-        <div onclick="addNewWidget('twitter')" style="width: 100px; height: 90px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--twitter-blue); cursor: pointer;">𝕏 推特</div>
-        <div onclick="addNewWidget('memo')" style="width: 100px; height: 90px; background: #fffafa; border: 1px solid #ffe0e6; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #ff8da1; cursor: pointer;">备忘录</div>
-    </div>
-
+    <!-- 加入了 flex-wrap: wrap 允许自动换行，按钮不会再挤扁了 -->
+    <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 15px;">
+        <div onclick="addNewWidget('music')" style="width: 130px; height: 80px; background: #222; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: white; cursor: pointer;">🎵 网易云音乐</div>
+        <div onclick="addNewWidget('twitter')" style="width: 90px; height: 80px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--twitter-blue); cursor: pointer;">𝕏 推特</div>
+        <div onclick="addNewWidget('love')" style="width: 90px; height: 80px; background: #fff; border: 1px solid #f6f6f6; border-radius: 15px; display: flex; align-items: center; justify-content: center; font-size: 13px; color: #a39c9c; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.05);">🤍 恋爱纪念</div>
+        <div onclick="addNewWidget('badge')" style="width: 90px; height: 80px; background: rgba(225,225,240,0.5); border: 1.5px solid rgba(210,210,228,0.8); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 22px; color: #888; cursor: pointer; box-shadow: inset 0 1px 0 rgba(255,255,255,0.7);"><span style="font-size:12px; margin-top:3px;">猫耳吧唧</span></div>
+        <div onclick="addNewWidget('voice')" style="width: 90px; height: 80px; background: #fff; border: 1px solid #eee; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #333; cursor: pointer;"><span style="font-size:12px; margin-top:5px;">语音四宫格</span></div>
+        <div onclick="addNewWidget('message')" style="width: 90px; height: 80px; background: #2c2c2e; border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">💬 iMessage</span></div>
+        <div onclick="addNewWidget('photo-square')" style="width: 90px; height: 80px; background: linear-gradient(135deg, #fdfbfb 0%, #ebedee 100%); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #333; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">正方形照片</span></div>
+        <div onclick="addNewWidget('photo-heart')" style="width: 90px; height: 80px; background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">心形照片</span></div>
+        <div onclick="addNewWidget('photo-circle')" style="width: 90px; height: 80px; background: linear-gradient(120deg, #a1c4fd 0%, #c2e9fb 100%); border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 24px; color: #fff; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">圆形照片</span></div>
+        <div onclick="addNewWidget('text-glass')" style="width: 90px; height: 80px; background: rgba(255,255,255,0.5); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.8); border-radius: 15px; display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 20px; color: #333; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.1);"><span style="font-size:12px; margin-top:5px;">毛玻璃文字</span></div>
     </div>
     <div class="section-title">精选 App</div>
     <div id="app-store-grid" style="display: flex; gap: 15px; flex-wrap: wrap;"></div>
@@ -343,6 +871,15 @@ body, html {
             🎵 <span id="audio-upload-text">点击选择 MP3 文件...</span>
         </div>
         <div style="font-size: 10px; color: #999; margin-top: 8px;">文件将自动保存在浏览器中，刷新不丢失。</div>
+<div class="section-title">四宫格相册音频 (双击卡片播放)</div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+        <div class="upload-btn-large" style="margin-top:0;" onclick="triggerVoiceUpload(1)">🎵 卡片1: <span id="voice-btn-text-1">上传</span></div>
+        <div class="upload-btn-large" style="margin-top:0;" onclick="triggerVoiceUpload(2)">🎵 卡片2: <span id="voice-btn-text-2">上传</span></div>
+        <div class="upload-btn-large" style="margin-top:0;" onclick="triggerVoiceUpload(3)">🎵 卡片3: <span id="voice-btn-text-3">上传</span></div>
+        <div class="upload-btn-large" style="margin-top:0;" onclick="triggerVoiceUpload(4)">🎵 卡片4: <span id="voice-btn-text-4">上传</span></div>
+    </div>
+    <!-- 隐藏的四宫格专用音频输入框 -->
+    <input type="file" id="voice-audio-input" accept="audio/*" style="display: none;">
     </div>
 
     <div class="section-title">壁纸设置</div>
@@ -382,6 +919,12 @@ body, html {
     let activeEditType = ''; 
     let activeAppId = '';
     let islandAudioUrl = ''; 
+let voiceUrls = { 1: '', 2: '', 3: '', 4: '' }; 
+    let voicePlayer = new Audio();
+voicePlayer.addEventListener('ended', () => {
+        document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('playing'));
+    });
+    let activeVoiceSlot = 1;
 
     function initDB() {
         return new Promise((resolve, reject) => {
@@ -434,6 +977,7 @@ body, html {
 
     // SVG 资源
     const SVGS = {
+pause: '<svg viewBox="0 0 24 24" class="icon-svg"><rect x="6" y="5" width="4" height="14" rx="1"/><rect x="14" y="5" width="4" height="14" rx="1"/></svg>',
         play: '<svg viewBox="0 0 24 24" class="icon-svg"><path d="M8 5v14l11-7z"/></svg>',
         prev: '<svg viewBox="0 0 24 24" class="icon-svg"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>',
         next: '<svg viewBox="0 0 24 24" class="icon-svg"><path d="M6 18l8.5-6L6 6v12zM16 6v12h2V6h-2z"/></svg>',
@@ -450,7 +994,7 @@ body, html {
         const phoneW = wrapper.clientWidth || window.innerWidth;
         // 自动平分宽度
         CELL_W = Math.floor((phoneW - layoutMarginX * 2) / 4);
-        CELL_H = Math.floor(CELL_W * 1.15); 
+        CELL_H = Math.floor(CELL_W * 1.15); // 原始比例
         // 赋予 CSS 灵魂
         document.documentElement.style.setProperty('--cell-w', CELL_W + 'px');
         document.documentElement.style.setProperty('--cell-h', CELL_H + 'px');
@@ -460,20 +1004,42 @@ body, html {
     window.addEventListener('resize', () => {
         updateGridSize();
         refreshAllPositions();
+        snapToPage(currentPage, false);
     });
 
     function refreshAllPositions() {
         document.querySelectorAll('.app-item, .widget-item').forEach(el => {
             if(el.dataset.type === 'island') return;
-            let col = parseInt(el.dataset.col) || 0;
-            let row = parseInt(el.dataset.row) || 0;
-            el.style.left = (layoutMarginX + col * CELL_W) + 'px';
-            el.style.top = (0 + row * CELL_H) + 'px';
+            // 自由定位模式：有 fx/fy 就用百分比换算
+            if(el.dataset.fx !== undefined && el.dataset.fy !== undefined) {
+                el.style.left = (parseFloat(el.dataset.fx) * window.innerWidth) + 'px';
+                el.style.top  = (parseFloat(el.dataset.fy) * document.getElementById('desktop-clip').clientHeight) + 'px';
+            } else {
+                let col = parseInt(el.dataset.col) || 0;
+                let row = parseInt(el.dataset.row) || 0;
+                let page = Math.floor(col / 4);
+                el.style.left = (page * window.innerWidth + layoutMarginX + (col % 4) * CELL_W) + 'px';
+                el.style.top = (row * CELL_H) + 'px';
+            }
         });
     }
     let isEditing = false;
     let activeEl = null;
     let currentImgKey = null;
+    let longPressTimer = null;
+    // ===== 丝滑翻页核心 =====
+    let currentPage = 0;
+
+    function snapToPage(page, animated = true) {
+        page = Math.max(0, Math.min(1, page));
+        currentPage = page;
+        desktop.style.transition = animated
+            ? 'transform 0.42s cubic-bezier(0.25, 0.46, 0.45, 0.94)'
+            : 'none';
+        desktop.style.transform = `translateX(${-currentPage * window.innerWidth}px)`;
+        document.querySelectorAll('.page-dot').forEach((dot, i) =>
+            dot.classList.toggle('active', i === currentPage));
+    }
 
     // ===== APP 数据库：王者荣耀 → 解忧杂货铺 =====
     const APP_DATABASE = {
@@ -630,11 +1196,17 @@ body, html {
 
     async function saveLayout() {
         const items = [];
-        desktop.querySelectorAll('.app-item, .widget-item').forEach(el => {
+        document.querySelectorAll('#desktop .app-item, #desktop .widget-item, #home-screen > .widget-island').forEach(el => {
             const item = {
                 id: el.dataset.id, type: el.dataset.type,
-                col: el.dataset.col, row: el.dataset.row
+                col: el.dataset.col, row: el.dataset.row,
+                // 自由定位坐标（优先使用）
+                fx: el.dataset.fx, fy: el.dataset.fy
             };
+        item.customScale = el.dataset.customScale || 1;
+        item.customScale = el.dataset.customScale || 1;
+        item.customLength = el.dataset.customLength || 1;
+
             if (item.type === 'twitter') {
                 item.data = { 
                     bg: globalImageCache[item.id + '_bg'], 
@@ -663,15 +1235,46 @@ body, html {
                     line2: texts[1] ? texts[1].innerText : '',
                     line3: texts[2] ? texts[2].innerText : ''
                 };
+            } else if (item.type === 'badge') {
+                item.data = { img: globalImageCache[item.id + '_badge'] };
+            }
+else if (item.type === 'voice') {
+                item.data = {
+                    img1: globalImageCache[item.id + '_img_1'],
+                    img2: globalImageCache[item.id + '_img_2'],
+                    img3: globalImageCache[item.id + '_img_3'],
+                    img4: globalImageCache[item.id + '_img_4']
+                };
+            }
+            else if (item.type === 'message') {
+                item.data = {
+                    unread: el.querySelector('.msg-unread').innerText,
+                    avatarName: el.querySelector('.msg-avatar').innerText,
+                    time: el.querySelectorAll('.msg-time-header span')[1].innerText,
+                    left1: el.querySelectorAll('.msg-bubble.left')[0].innerText,
+                    left2: el.querySelectorAll('.msg-bubble.left')[1].innerText,
+                    right: el.querySelector('.msg-bubble.right').innerText,
+                    readTime: el.querySelector('.msg-read-status span').innerText
+                };
+            }
+            else if (['photo-square', 'photo-heart', 'photo-circle'].includes(item.type)) {
+                item.data = { image: el.dataset.image || '' };
+            }
+            else if (item.type === 'text-glass') {
+                item.data = { text: el.querySelector('.widget-text-glass-content').innerText };
             }
             items.push(item);
         });
         await saveToDB('layout', items);
         
+        // 保存 Dock 顺序
+        const dockOrder = Array.from(document.querySelectorAll('.dock-container .app-icon[data-dock-id]')).map(ic => ic.dataset.dockId);
+        
         const settings = {
             lockBg: globalImageCache['wallpaper_lock'],
             homeBg: globalImageCache['wallpaper_home'],
-            customIcons: customAppIcons
+            customIcons: customAppIcons,
+            dockOrder: dockOrder
         };
         for(let appId in customAppIcons) {
             settings['icon_img_' + appId] = globalImageCache['icon_' + appId];
@@ -685,8 +1288,17 @@ body, html {
             const savedLayout = await getFromDB('layout');
             const savedSettings = await getFromDB('settings');
             const audioBlob = await getFromDB('island_audio_blob');
+// 开机自动加载4宫格的MP3音频
+            for(let i=1; i<=4; i++) {
+                let blob = await getFromDB('voice_audio_' + i);
+                if(blob) {
+                    voiceUrls[i] = URL.createObjectURL(blob);
+                    let btn = document.getElementById(`voice-btn-text-${i}`);
+                    if(btn) btn.innerText = "已加载";
+                }
+            }
             
-            loading.classList.remove('show');
+       loading.classList.remove('show');
 
             if(savedSettings) {
                 if(savedSettings.lockBg) {
@@ -705,6 +1317,14 @@ body, html {
                         globalImageCache['icon_' + appId] = savedSettings['icon_img_' + appId];
                     }
                 }
+                // 恢复 Dock 顺序
+                if(savedSettings.dockOrder && savedSettings.dockOrder.length === 4) {
+                    const dockCont = document.querySelector('.dock-container');
+                    savedSettings.dockOrder.forEach(dockId => {
+                        const ic = dockCont.querySelector(`.app-icon[data-dock-id="${dockId}"]`);
+                        if(ic) dockCont.appendChild(ic);
+                    });
+                }
             }
 
             if(audioBlob) {
@@ -721,6 +1341,14 @@ body, html {
             });
 
             desktop.innerHTML = '';
+            // 关键修复：重建页面容器，否则 scroll-snap 失效，第二页无法滑入
+            const p1 = document.createElement('div');
+            p1.className = 'page-container page-1';
+            desktop.appendChild(p1);
+            const p2 = document.createElement('div');
+            p2.className = 'page-container page-2';
+            desktop.appendChild(p2);
+
             if (savedLayout && savedLayout.length > 0) {
                 savedLayout.forEach(item => {
                     if(item.type === 'twitter') {
@@ -740,6 +1368,20 @@ body, html {
                         globalImageCache[item.id + '_avatar'] = item.data ? item.data.avatar : null;
                         createMemoWidget(item.col, item.row, item.id, item.data);
                     }
+                    else if(item.type === 'badge') {
+                        globalImageCache[item.id + '_badge'] = item.data ? item.data.img : null;
+                        createBadgeWidget(item.col, item.row, item.id, item.data);
+                    }
+else if(item.type === 'voice') {
+                        createVoiceWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'message') {
+                        createMessageWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'photo-square') createPhotoSquareWidget(item.col, item.row, item.id, item.data);
+                    else if(item.type === 'photo-heart') createPhotoHeartWidget(item.col, item.row, item.id, item.data);
+                    else if(item.type === 'photo-circle') createPhotoCircleWidget(item.col, item.row, item.id, item.data);
+                    else if(item.type === 'text-glass') createTextGlassWidget(item.col, item.row, item.id, item.data);
                     else if (item.type === 'app') {
                         createAppElement(item.id, item.col, item.row);
                     }
@@ -762,6 +1404,30 @@ body, html {
                 });
             }, 50);
 
+            // 恢复所有组件的独立缩放大小和长短
+                        // 恢复所有组件的独立缩放大小和长短
+            setTimeout(() => {
+                const clipH = document.getElementById('desktop-clip').clientHeight;
+                if(savedLayout) savedLayout.forEach(item => {
+                    const el = document.querySelector(`[data-id="${item.id}"]`);
+                    if(el) {
+                        // 恢复自由定位坐标
+                        if(item.fx !== undefined && item.fy !== undefined) {
+                            el.dataset.fx = item.fx;
+                            el.dataset.fy = item.fy;
+                            el.style.left = (parseFloat(item.fx) * window.innerWidth) + 'px';
+                            el.style.top  = (parseFloat(item.fy) * clipH) + 'px';
+                        }
+                        const size = item.customScale || 1;
+                        const stretch = item.customLength || 1;
+                        if(size != 1 || stretch != 1) {
+                            el.style.scale = `${size} ${size * stretch}`;
+                            el.dataset.customScale = size;
+                            el.dataset.customLength = stretch;
+                        }
+                    }
+                });
+            }, 200);
             updateAppStore();
             updateDiyGrid();
         } catch (e) { console.error(e); loading.innerText = "出错了"; }
@@ -781,7 +1447,22 @@ body, html {
             alert('MP3 音频上传成功！点击灵动岛即可播放~');
         }
     };
+function triggerVoiceUpload(slot) {
+        activeVoiceSlot = slot;
+        document.getElementById('voice-audio-input').click();
+    }
 
+    document.getElementById('voice-audio-input').onchange = async (e) => {
+        const file = e.target.files[0];
+        if(file) {
+            document.getElementById(`voice-btn-text-${activeVoiceSlot}`).innerText = "保存中...";
+            await saveToDB('voice_audio_' + activeVoiceSlot, file);
+            voiceUrls[activeVoiceSlot] = URL.createObjectURL(file);
+            document.getElementById(`voice-btn-text-${activeVoiceSlot}`).innerText = "✅ 成功";
+            alert(`第 ${activeVoiceSlot} 张卡片的音频上传成功！双击桌面卡片即可播放~`);
+        }
+        e.target.value = ''; 
+    };
     // --- 组件创建 ---
     
     function createIslandWidget(col, row, id, data = null) {
@@ -792,7 +1473,7 @@ body, html {
         
         div.style.left = '50%';
         div.style.transform = 'translateX(-50%)'; 
-        div.style.top = '-8px'; 
+        div.style.top = '12px'; 
         
         const d = data || { title: "垂耳兔", subtitle: "希望垂耳兔小手机可以给你带来快乐^ ^" };
 
@@ -859,11 +1540,22 @@ body, html {
         div.querySelector('.remove-btn').onclick = (e) => { 
             e.stopPropagation(); 
             div.remove(); 
+            // 恢复所有组件的独立缩放大小
+            setTimeout(() => {
+                if(savedLayout) savedLayout.forEach(item => {
+                    if(item.customScale && item.customScale != 1) {
+                        const el = document.querySelector(`[data-id="${item.id}"]`);
+                        if(el) { el.style.scale = item.customScale; el.dataset.customScale = item.customScale; }
+                    }
+                });
+            }, 200);
+
             updateAppStore(); 
             saveLayout(); 
         };
 
-        desktop.appendChild(div);
+        // 灵动岛挂载到 home-screen，避免被 desktop 的 overflow-y:hidden 裁切
+        document.getElementById('home-screen').appendChild(div);
     }
 
     function createMusicWidget(col, row, id, data = null) {
@@ -873,7 +1565,7 @@ body, html {
         div.dataset.type = 'music';
         div.dataset.col = col; div.dataset.row = row;
         const d = data || { title: "Boyfriend", artist: "Justin Bieber" };
-        div.innerHTML = `<div class="music-vinyl-container"><div class="music-vinyl"><div class="music-cover"></div></div></div><div class="music-info"><div class="music-title" contenteditable="true">${d.title}</div><div class="music-artist" contenteditable="true">${d.artist}</div><div class="music-controls"><div class="icon-btn">${SVGS.prev}</div><div class="icon-btn" style="transform: scale(1.4);">${SVGS.play}</div><div class="icon-btn">${SVGS.next}</div><div class="music-heart icon-btn">${SVGS.heart_line}</div></div></div><div class="remove-btn">×</div>`;
+       div.innerHTML = `<div class="music-vinyl-container"><div class="music-vinyl"><div class="music-cover"></div></div></div><div class="music-info"><div class="music-title" contenteditable="true">${d.title}</div><div class="music-artist" contenteditable="true">${d.artist}</div></div><div class="music-controls"><div class="icon-btn">${SVGS.prev}</div><div class="icon-btn">${SVGS.play}</div><div class="icon-btn">${SVGS.next}</div><div class="music-heart icon-btn">${SVGS.heart_line}</div></div><div class="remove-btn">×</div>`;
         
         const coverKey = div.dataset.id + '_cover';
         if (globalImageCache[coverKey]) div.querySelector('.music-cover').style.backgroundImage = globalImageCache[coverKey];
@@ -887,7 +1579,8 @@ body, html {
         const heart = div.querySelector('.music-heart');
         heart.onclick = () => { heart.innerHTML = heart.innerHTML.includes('none') ? SVGS.heart_fill : SVGS.heart_line; saveLayout(); };
         div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
-        desktop.appendChild(div); initDrag(div);
+        desktop.appendChild(div);
+        initDrag(div);
     }
 
     function createTwitterWidget(col, row, id, data = null) {
@@ -912,73 +1605,396 @@ body, html {
         div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
         desktop.appendChild(div); initDrag(div);
     }
-
-    function createMemoWidget(col, row, id, data = null) {
+function createVoiceWidget(col, row, id, data = null) {
         const div = document.createElement('div');
-        div.className = 'widget-item widget-memo';
-        div.dataset.id = id || 'memo-' + Date.now();
-        div.dataset.type = 'memo';
+        div.className = 'widget-item widget-voice';
+        div.dataset.id = id || 'voice-' + Date.now();
+        div.dataset.type = 'voice';
         div.dataset.col = col; div.dataset.row = row;
-        const d = data || { line1: "今天也要开心呀~", line2: "(｡･ω･｡) 打游戏", line3: "♪ 听音乐" };
+
+        let innerHTML = `<div class="voice-container">`;
+        for(let i=1; i<=4; i++) {
+            innerHTML += `
+                <div class="voice-card" data-idx="${i}">
+                    <div class="vc-bg"></div>
+                    <div class="vc-badge"><div class="vc-wave-bar"></div><div class="vc-wave-bar"></div><div class="vc-wave-bar"></div><div class="vc-wave-bar"></div></div>
+                </div>
+            `;
+        }
+        innerHTML += `</div><div class="remove-btn">×</div>`;
+        div.innerHTML = innerHTML;
+
+        // 给4张卡片分别绑定图片和点击事件
+        for(let i=1; i<=4; i++) {
+            const card = div.querySelector(`.voice-card[data-idx="${i}"]`);
+            const bg = card.querySelector('.vc-bg');
+            const imgKey = div.dataset.id + '_img_' + i;
+
+            if (data && data['img'+i]) {
+                bg.style.backgroundImage = data['img'+i];
+                globalImageCache[imgKey] = data['img'+i];
+            } else if (globalImageCache[imgKey]) {
+                bg.style.backgroundImage = globalImageCache[imgKey];
+            } else {
+                bg.style.backgroundImage = `url('https://picsum.photos/seed/voice${i}/300/600')`; // 默认图
+            }
+
+            // 完美的触屏【单击换图】与【双击播放】分离算法
+            let lastTap = 0;
+            let tapTimeout;
+            card.addEventListener('touchend', (e) => {
+                if(isEditing) return;
+                let currentTime = new Date().getTime();
+                let tapLength = currentTime - lastTap;
+                clearTimeout(tapTimeout);
+
+             if (tapLength < 300 && tapLength > 0) {
+                    // ====== 这是双击：播放/暂停音频 ======
+                    e.preventDefault();
+                    if(voiceUrls[i]) {
+                        // 先把所有卡片的跳动动画关掉
+                        document.querySelectorAll('.voice-card').forEach(c => c.classList.remove('playing'));
+                        
+                        // 智能判断：如果点的是正在播放的这张卡，就暂停它！
+                        if (!voicePlayer.paused && voicePlayer.src === voiceUrls[i]) {
+                            voicePlayer.pause(); 
+                        } else {
+                            // 如果点的是其他卡片，就切歌播放，并让这张卡片开始跳动！
+                            voicePlayer.pause();
+                            voicePlayer.src = voiceUrls[i];
+                            voicePlayer.play();
+                            card.classList.add('playing');
+                        }
+                    } else {
+                        alert(`宝宝，请先在【小兔DIY】里上传 卡片${i} 的专属音频哦！`);
+                    }
+                } else {
+                    // ====== 这是单击：更换图片 ======
+                    tapTimeout = setTimeout(() => {
+                        activeEditType = 'widget';
+                        currentImgKey = imgKey;
+                        imgInput.click();
+                    }, 300); 
+                }
+                lastTap = currentTime;
+            });
+        }
+
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+    function createAppElement(id, col, row) {
+        if (!APP_DATABASE[id]) return;
+        const div = document.createElement('div');
+        div.className = 'app-item';
+        div.dataset.id = id;
+        div.dataset.type = 'app';
+        div.dataset.col = col; 
+        div.dataset.row = row;
+        
+        let style = ''; 
+        let content = APP_DATABASE[id].icon;
+        if(customAppIcons[id] && globalImageCache['icon_' + id]) {
+            style = `background-image: ${globalImageCache['icon_' + id]}`;
+            content = '';
+        }
         
         div.innerHTML = `
-            <div class="memo-top">
-                <div class="memo-avatar"></div>
-                <div class="memo-decor">しゅき(>ω<)</div>
+            <div class="app-icon" style="${style}">${content}</div>
+            <div class="app-name">${APP_DATABASE[id].name}</div>
+            <div class="remove-btn">×</div>
+        `;
+        
+        div.querySelector('.remove-btn').onclick = (e) => { 
+            e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); 
+        };
+        desktop.appendChild(div); 
+        initDrag(div);
+    }
+    function createMessageWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-message';
+        div.dataset.id = id || 'msg-' + Date.now();
+        div.dataset.type = 'message';
+        div.dataset.col = col; div.dataset.row = row;
+
+        const d = data || {
+            unread: "",
+            avatarName: "",
+            time: "今天 17:20",
+            left1: "",
+            left2: "",
+            right: "",
+            readTime: "17:21"
+        };
+
+        div.innerHTML = `
+            <div class="msg-header">
+                <div class="msg-back">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                    <span class="msg-unread" contenteditable="true" spellcheck="false">${d.unread}</span>
+                </div>
+                <div class="msg-avatar-container">
+                    <div class="msg-avatar" contenteditable="true" spellcheck="false">${d.avatarName}</div>
+                </div>
+                <div class="msg-video-icon">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"></polygon><rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect></svg>
+                </div>
             </div>
-            <div class="memo-lines">
-                <div class="memo-line"><span class="memo-icon">💬</span><div class="memo-text" contenteditable="true">${d.line1}</div></div>
-                <div class="memo-line"><span class="memo-icon">🎮</span><div class="memo-text" contenteditable="true">${d.line2}</div></div>
-                <div class="memo-line"><span class="memo-icon">🎵</span><div class="memo-text" contenteditable="true">${d.line3}</div></div>
+            <div class="msg-body">
+                <div class="msg-time-header">
+                    <span>iMessage</span>
+                    <span contenteditable="true" spellcheck="false">${d.time}</span>
+                </div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left1}</div>
+                <div class="msg-bubble left" contenteditable="true" spellcheck="false">${d.left2}</div>
+                <div class="msg-bubble right" contenteditable="true" spellcheck="false">${d.right}</div>
+                <div class="msg-read-status"><span contenteditable="true" spellcheck="false">${d.readTime}</span> 已读</div>
             </div>
             <div class="remove-btn">×</div>
         `;
 
-        const avatarKey = div.dataset.id + '_avatar';
-        if(!globalImageCache[avatarKey] && !data) globalImageCache[avatarKey] = "url('https://picsum.photos/seed/cute/100')";
-        if (globalImageCache[avatarKey]) div.querySelector('.memo-avatar').style.backgroundImage = globalImageCache[avatarKey];
+        // 阻止单行文本框回车换行，防止排版乱掉
+        div.querySelectorAll('.msg-unread, .msg-avatar, .msg-time-header span:last-child, .msg-read-status span').forEach(el => {
+            el.onkeydown = (e) => { if (e.key === 'Enter') { e.preventDefault(); el.blur(); } };
+        });
 
-        div.querySelector('.memo-avatar').onclick = () => { if(!isEditing) { activeEditType='widget'; currentImgKey=avatarKey; imgInput.click(); } };
         div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
-        
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
         desktop.appendChild(div); initDrag(div);
     }
-
-    function createAppElement(id, col, row) {
-        const data = APP_DATABASE[id];
-        if (!data) return;
+    function createLoveWidget(col, row, id, data = null) {
         const div = document.createElement('div');
-        div.className = 'app-item'; div.dataset.id = id; div.dataset.type = 'app';
+        div.className = 'widget-item widget-love';
+        div.dataset.id = id || 'love-' + Date.now();
+        div.dataset.type = 'love';
         div.dataset.col = col; div.dataset.row = row;
         
-        let iconContent = data.icon;
-        let iconStyle = '';
-        if (customAppIcons[id] && globalImageCache['icon_' + id]) {
-            iconContent = ''; 
-            iconStyle = `background-image: ${globalImageCache['icon_' + id]};`;
-        }
+        const d = data || { 
+            top1: "ʚ ふわふわの初戀 ɞ", top2: "૮ S ₊⁺ ♡ ₊⁺ G ꁞ",
+            name_l: "名字", detail1_l: "生日 03.27", detail2_l: "天秤座",
+            name_r: "名字", detail1_r: "生日 00.00", detail2_r: "星座",
+            label: "恋爱进度值", days: "520天"
+        };
+        const svgHeart = `<svg viewBox="0 0 24 24" class="love-bg-heart"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>`;
 
-        div.innerHTML = `<div class="app-icon" style="${iconStyle}">${iconContent}</div><div class="app-name">${data.name}</div><div class="remove-btn">×</div>`;
+        div.innerHTML = `
+            <div class="love-top"><div contenteditable="true">${d.top1}</div><div contenteditable="true">${d.top2}</div></div>
+            <div class="love-main">
+                <div class="love-side">${svgHeart}<div class="love-name" contenteditable="true">${d.name_l}</div><div class="love-detail" contenteditable="true">${d.detail1_l}</div><div class="love-detail" contenteditable="true">${d.detail2_l}</div></div>
+                <div class="love-avatar left"></div>
+                <div class="love-center"><div class="love-hearts">♥ ♥ ♥</div><div class="love-label" contenteditable="true">${d.label}</div><div class="love-days" contenteditable="true">${d.days}</div></div>
+                <div class="love-avatar right"></div>
+                <div class="love-side">${svgHeart}<div class="love-name" contenteditable="true">${d.name_r}</div><div class="love-detail" contenteditable="true">${d.detail1_r}</div><div class="love-detail" contenteditable="true">${d.detail2_r}</div></div>
+            </div>
+            <div class="remove-btn">×</div>
+        `;
+
+        const avatarLKey = div.dataset.id + '_avatar_l'; const avatarRKey = div.dataset.id + '_avatar_r';
+        if(!globalImageCache[avatarLKey] && !data) globalImageCache[avatarLKey] = "url('https://picsum.photos/seed/boy/100')";
+        if(!globalImageCache[avatarRKey] && !data) globalImageCache[avatarRKey] = "url('https://picsum.photos/seed/girl/100')";
+        if (globalImageCache[avatarLKey]) div.querySelector('.love-avatar.left').style.backgroundImage = globalImageCache[avatarLKey];
+        if (globalImageCache[avatarRKey]) div.querySelector('.love-avatar.right').style.backgroundImage = globalImageCache[avatarRKey];
+
+        div.querySelector('.love-avatar.left').onclick = () => { if(!isEditing) { activeEditType='widget'; currentImgKey=avatarLKey; imgInput.click(); } };
+        div.querySelector('.love-avatar.right').onclick = () => { if(!isEditing) { activeEditType='widget'; currentImgKey=avatarRKey; imgInput.click(); } };
+        div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
+        desktop.appendChild(div); initDrag(div);
+    }
+    // 全局图片上传触发器
+    window.triggerImageUpload = function(widgetDiv) {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        input.onchange = (e) => {
+            const file = e.target.files[0];
+            if(!file) return;
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const base64 = event.target.result;
+                widgetDiv.style.backgroundImage = `url(${base64})`;
+                widgetDiv.dataset.image = base64; 
+                const hint = widgetDiv.querySelector('.upload-hint');
+                if(hint) hint.style.display = 'none';
+                saveLayout();
+            };
+            reader.readAsDataURL(file);
+        };
+        input.click();
+    };
+
+    function createPhotoSquareWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-photo-square';
+        div.dataset.id = id || 'sq-' + Date.now();
+        div.dataset.type = 'photo-square';
+        div.dataset.col = col; div.dataset.row = row;
+        if(data && data.image) {
+            div.style.backgroundImage = `url(${data.image})`;
+            div.dataset.image = data.image;
+        } else {
+            div.innerHTML = `<div class="upload-hint" style="color:#fff; text-align:center; padding-top:40%; font-size:14px; text-shadow:0 1px 2px #000;">点击上传图片</div>`;
+        }
+        div.innerHTML += `<div class="remove-btn">×</div>`;
+        div.onclick = (e) => { if(!e.target.classList.contains('remove-btn')) triggerImageUpload(div); };
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
         desktop.appendChild(div); initDrag(div);
     }
 
-    // --- 拖拽与逻辑 ---
-    function findEmptySpot() {
-        const grid = Array(7).fill().map(() => Array(4).fill(false));
-        document.querySelectorAll('.app-item, .widget-item').forEach(el => {
-            if(el.dataset.type === 'island') return; 
-            let r = parseInt(el.dataset.row), c = parseInt(el.dataset.col);
-            let type = el.dataset.type;
-            if(r >= 0 && r < 7 && c >= 0 && c < 4) {
-                grid[r][c] = true;
-                if(type === 'music') grid[r][c+1] = true;
-                if(type === 'twitter' || type === 'music') { if(r+1 < 7) { grid[r+1][c] = true; if(type === 'music') grid[r+1][c+1] = true; } }
-            }
-        });
-        for(let r=0; r<6; r++) { for(let c=0; c<4; c++) { if(!grid[r][c]) return { r, c }; } }
-        return { r: 0, c: 0 };
+    function createPhotoHeartWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-photo-heart';
+        div.dataset.id = id || 'heart-' + Date.now();
+        div.dataset.type = 'photo-heart';
+        div.dataset.col = col; div.dataset.row = row;
+        if(data && data.image) {
+            div.style.backgroundImage = `url(${data.image})`;
+            div.dataset.image = data.image;
+        } else {
+            div.innerHTML = `<div class="upload-hint" style="color:#fff; text-align:center; padding-top:40%; font-size:14px; text-shadow:0 1px 2px #000;">点击上传</div>`;
+        }
+        div.innerHTML += `<div class="remove-btn">×</div>`;
+        div.onclick = (e) => { if(!e.target.classList.contains('remove-btn')) triggerImageUpload(div); };
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
     }
 
+    function createPhotoCircleWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-photo-circle';
+        div.dataset.id = id || 'circle-' + Date.now();
+        div.dataset.type = 'photo-circle';
+        div.dataset.col = col; div.dataset.row = row;
+        if(data && data.image) {
+            div.style.backgroundImage = `url(${data.image})`;
+            div.dataset.image = data.image;
+        } else {
+            div.innerHTML = `<div class="upload-hint" style="color:#fff; text-align:center; padding-top:40%; font-size:14px; text-shadow:0 1px 2px #000;">点击上传</div>`;
+        }
+        div.innerHTML += `<div class="remove-btn">×</div>`;
+        div.onclick = (e) => { if(!e.target.classList.contains('remove-btn')) triggerImageUpload(div); };
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+
+    function createTextGlassWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-text-glass';
+        div.dataset.id = id || 'glass-' + Date.now();
+        div.dataset.type = 'text-glass';
+        div.dataset.col = col; div.dataset.row = row;
+        const textContent = (data && data.text) ? data.text : "在这里输入你想说的话...";
+        div.innerHTML = `
+            <div class="widget-text-glass-content" contenteditable="true" spellcheck="false">${textContent}</div>
+            <div class="remove-btn">×</div>
+        `;
+        const textEl = div.querySelector('.widget-text-glass-content');
+        textEl.onblur = () => saveLayout();
+        textEl.onkeydown = (e) => { if(e.key === 'Enter') { e.preventDefault(); textEl.blur(); } };
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
+        desktop.appendChild(div); initDrag(div);
+    }
+
+    function createBadgeWidget(col, row, id, data = null) {
+        const div = document.createElement('div');
+        div.className = 'widget-item widget-badge';
+        div.dataset.id = id || 'badge-' + Date.now();
+        div.dataset.type = 'badge';
+        div.dataset.col = col; div.dataset.row = row;
+
+        // 结构极其清爽：下层放照片，上层盖着你的原图相框！
+        div.innerHTML = `
+            <div class="badge-wrapper">
+                <div class="badge-core"></div>
+                <div class="badge-frame"></div>
+                <div class="remove-btn">×</div>
+            </div>
+        `;
+
+        const imgKey = div.dataset.id + '_badge';
+        const circle = div.querySelector('.badge-core');
+
+        if (data && data.img) {
+            circle.style.backgroundImage = data.img;
+            globalImageCache[imgKey] = data.img;
+        } else if (globalImageCache[imgKey]) {
+            circle.style.backgroundImage = globalImageCache[imgKey];
+        } else {
+            // 默认网图小帅哥
+            circle.style.backgroundImage = "url('https://picsum.photos/seed/handsome/300')";
+        }
+
+        circle.onclick = () => {
+            if (!isEditing) {
+                activeEditType = 'widget';
+                currentImgKey = imgKey;
+                imgInput.click();
+            }
+        };
+
+        div.querySelector('.remove-btn').onclick = (e) => {
+            e.stopPropagation(); div.remove(); updateAppStore(); saveLayout();
+        };
+
+        desktop.appendChild(div);
+        initDrag(div);
+    }
+    // --- 拖拽与逻辑 ---
+            function findEmptySpot(isWide = false) {
+        const grid = Array(7).fill().map(() => Array(8).fill(false)); 
+        document.querySelectorAll('.app-item, .widget-item').forEach(el => {
+            if(el.dataset.type === 'island') return; 
+            let r = parseInt(el.dataset.row), c = parseInt(el.dataset.col), type = el.dataset.type;
+            if(r >= 0 && r < 7 && c >= 0 && c < 8) {
+                grid[r][c] = true;
+                
+                // 第一行占位
+                if(['music', 'love', 'voice', 'message', 'text-glass'].includes(type)) { 
+                    if(c+1<8) grid[r][c+1]=true; 
+                    if(c+2<8) grid[r][c+2]=true; 
+                    if(c+3<8) grid[r][c+3]=true; 
+                }
+                else if(['twitter', 'memo', 'photo-square', 'photo-heart', 'photo-circle'].includes(type)) { 
+                    if(c+1<8) grid[r][c+1] = true; 
+                }
+                
+                // 第二行占位
+                if(['twitter', 'love', 'music', 'memo', 'voice', 'message', 'photo-square', 'photo-heart', 'photo-circle'].includes(type)) { 
+                    if(r+1 < 7) { 
+                        grid[r+1][c] = true; 
+                        if(['love', 'music', 'voice', 'message'].includes(type)){
+                            if(c+1<8) grid[r+1][c+1]=true; 
+                            if(c+2<8) grid[r+1][c+2]=true; 
+                            if(c+3<8) grid[r+1][c+3]=true;
+                        } 
+                        else if(['twitter', 'memo', 'photo-square', 'photo-heart', 'photo-circle'].includes(type)) { 
+                            if(c+1<8) grid[r+1][c+1]=true; 
+                        }
+                    } 
+                }
+                
+                // 第三行占位
+                if(type === 'message') { 
+                    if(r+2 < 7) {
+                        grid[r+2][c] = true;
+                        if(c+1<8) grid[r+2][c+1]=true; 
+                        if(c+2<8) grid[r+2][c+2]=true; 
+                        if(c+3<8) grid[r+2][c+3]=true;
+                    }
+                }
+            }
+        });
+        for(let r=0; r<6; r++) { 
+            for(let c=0; c<8; c++) { 
+                if(!grid[r][c]) {
+                    if(isWide) {
+                        if(c === 0 || c === 4) return { r, c }; 
+                    } else { return { r, c }; }
+                } 
+            } 
+        }
+        return { r: 0, c: 0 };
+    }
     // ===== 打开 / 关闭 App =====
     function openApp(appId) {
         const url = APP_URLS[appId];
@@ -998,8 +2014,17 @@ body, html {
     function initDrag(el) {
         if(el.dataset.type === 'island') return;
 
-        el.style.left = (layoutMarginX + el.dataset.col * CELL_W) + 'px';
-        el.style.top = (0 + el.dataset.row * CELL_H) + 'px';
+        // 自由定位：优先用 fx/fy，否则降级到 col/row 网格
+        if(el.dataset.fx !== undefined && el.dataset.fy !== undefined) {
+            el.style.left = (parseFloat(el.dataset.fx) * window.innerWidth) + 'px';
+            el.style.top  = (parseFloat(el.dataset.fy) * document.getElementById('desktop-clip').clientHeight) + 'px';
+        } else {
+            let c0 = parseInt(el.dataset.col) || 0;
+            let r0 = parseInt(el.dataset.row) || 0;
+            let p0 = Math.floor(c0 / 4);
+            el.style.left = (p0 * window.innerWidth + layoutMarginX + (c0 % 4) * CELL_W) + 'px';
+            el.style.top = (r0 * CELL_H) + 'px';
+        }
         
         if(el.querySelector('.remove-btn')) {
             el.querySelector('.remove-btn').onclick = (e) => { 
@@ -1021,36 +2046,72 @@ body, html {
                 const tapEnd = () => {
                     window.removeEventListener('mousemove', tapMove); window.removeEventListener('touchmove', tapMove);
                     window.removeEventListener('mouseup', tapEnd); window.removeEventListener('touchend', tapEnd);
-                    if (!moved && el.dataset.type === 'app') {
-                        openApp(el.dataset.id);
-                    }
+                    if (!moved && el.dataset.type === 'app') openApp(el.dataset.id);
                 };
                 window.addEventListener('mousemove', tapMove); window.addEventListener('touchmove', tapMove, {passive: true});
                 window.addEventListener('mouseup', tapEnd); window.addEventListener('touchend', tapEnd);
                 return;
             }
 
-            activeEl = el; const ev = e.touches ? e.touches[0] : e;
+          activeEl = el; const ev = e.touches ? e.touches[0] : e;
             const rect = el.getBoundingClientRect();
             const ox = ev.clientX - rect.left, oy = ev.clientY - rect.top;
+            
+            let lastClientX = ev.clientX; // 记录最后的手指位置
+
+            let edgeScrollInterval = null;
+
             const moveHandler = move => {
+                if (move.cancelable) move.preventDefault(); // 防止拖拽时页面跟着滑
                 const mev = move.touches ? move.touches[0] : move;
+                lastClientX = mev.clientX;
                 const dRect = desktop.getBoundingClientRect();
                 el.classList.add('dragging');
+                
+                // desktop 通过 transform 移动，dRect.left 已经包含了页偏移量
                 el.style.left = (mev.clientX - dRect.left - ox) + 'px';
                 el.style.top = (mev.clientY - dRect.top - oy) + 'px';
+
+                // 拖到边缘自动翻页
+                if (lastClientX > window.innerWidth - 60 && currentPage < 1) {
+                    if (!edgeScrollInterval) {
+                        edgeScrollInterval = setInterval(() => snapToPage(currentPage + 1), 500);
+                    }
+                } else if (lastClientX < 60 && currentPage > 0) {
+                    if (!edgeScrollInterval) {
+                        edgeScrollInterval = setInterval(() => snapToPage(currentPage - 1), 500);
+                    }
+                } else {
+                    clearInterval(edgeScrollInterval);
+                    edgeScrollInterval = null;
+                }
             };
             const endHandler = () => {
+                clearInterval(edgeScrollInterval);
+                edgeScrollInterval = null;
                 window.removeEventListener('mousemove', moveHandler); window.removeEventListener('touchmove', moveHandler);
                 window.removeEventListener('mouseup', endHandler); window.removeEventListener('touchend', endHandler);
                 if (activeEl && isEditing) {
-                    let col = Math.round((parseFloat(activeEl.style.left) - layoutMarginX) / CELL_W);
-                    let row = Math.round((parseFloat(activeEl.style.top) - 0) / CELL_H);
-                    activeEl.dataset.col = Math.max(0, Math.min(activeEl.dataset.type==='music' ? 2 : 3, col)); 
-                    activeEl.dataset.row = Math.max(0, Math.min(6, row));
+                    let absX = parseFloat(activeEl.style.left);
+                    let page = Math.round(absX / window.innerWidth);
+
+                    // 边缘翻页
+                    if (lastClientX > window.innerWidth - 40) page = Math.min(1, currentPage + 1);
+                    if (lastClientX < 40) page = Math.max(0, currentPage - 1);
+                    page = Math.max(0, Math.min(1, page));
+
+                    // 自由定位：直接存当前像素位置（相对屏幕的分数，跨页保持正确）
+                    const clipH = document.getElementById('desktop-clip').clientHeight;
+                    const curLeft = parseFloat(activeEl.style.left);
+                    const curTop  = Math.max(0, parseFloat(activeEl.style.top)); // 不超出顶部
+                    activeEl.dataset.fx = curLeft / window.innerWidth;
+                    activeEl.dataset.fy = curTop / clipH;
+                    // 保持 col/row 兼容性（取近似值）
+                    activeEl.dataset.col = page * 4 + Math.max(0, Math.min(3, Math.round((curLeft - page * window.innerWidth - layoutMarginX) / CELL_W)));
+                    activeEl.dataset.row = Math.round(curTop / CELL_H);
+
                     activeEl.classList.remove('dragging');
-                    activeEl.style.left = (layoutMarginX + activeEl.dataset.col * CELL_W) + 'px';
-                    activeEl.style.top = (0 + activeEl.dataset.row * CELL_H) + 'px';
+                    snapToPage(page);
                     saveLayout();
                 }
                 activeEl = null;
@@ -1060,7 +2121,6 @@ body, html {
         };
         el.addEventListener('mousedown', start); el.addEventListener('touchstart', start);
     }
-
     // --- 面板控制 ---
     function updateAppStore() {
         appStoreGrid.innerHTML = '';
@@ -1103,11 +2163,19 @@ body, html {
         }
     }
 
-    function addNewWidget(type) {
-        const spot = findEmptySpot(type === 'music');
+                function addNewWidget(type) {
+        const isWide = ['music', 'love', 'voice', 'message', 'text-glass'].includes(type);
+        const spot = findEmptySpot(isWide);
         if(type === 'twitter') createTwitterWidget(spot.c, spot.r); 
         else if(type === 'island') createIslandWidget(0, 0); 
-        else if(type === 'memo') createMemoWidget(spot.c, spot.r);
+        else if(type === 'love') createLoveWidget(spot.c, spot.r);
+        else if(type === 'badge') createBadgeWidget(spot.c, spot.r);
+        else if(type === 'voice') createVoiceWidget(spot.c, spot.r);
+        else if(type === 'message') createMessageWidget(spot.c, spot.r);
+        else if(type === 'photo-square') createPhotoSquareWidget(spot.c, spot.r);
+        else if(type === 'photo-heart') createPhotoHeartWidget(spot.c, spot.r);
+        else if(type === 'photo-circle') createPhotoCircleWidget(spot.c, spot.r);
+        else if(type === 'text-glass') createTextGlassWidget(spot.c, spot.r);
         else createMusicWidget(spot.c, spot.r);
         
         if(isEditing) desktop.lastChild.classList.add('jiggling');
@@ -1157,7 +2225,15 @@ body, html {
                         const el = document.querySelector(`.widget-island[data-id="${id}"] .island-avatar`);
                         if(el) el.style.backgroundImage = cssUrl;
                     }
+} else if (currentImgKey.includes('_img_')) {
+                    // 让四宫格长条相册可以单独换图
+                    const parts = currentImgKey.split('_');
+                    const id = parts[0]; 
+                    const idx = parts[2];
+                    const el = document.querySelector(`.widget-voice[data-id="${id}"] .voice-card[data-idx="${idx}"] .vc-bg`);
+                    if(el) el.style.backgroundImage = cssUrl;
                 } 
+
                 else if (activeEditType === 'wallpaper-lock') {
                     globalImageCache['wallpaper_lock'] = cssUrl;
                     lockScreen.style.backgroundImage = cssUrl;
@@ -1196,16 +2272,24 @@ body, html {
                 if(!el.classList.contains('widget-island')) el.classList.add('jiggling');
             });
             document.querySelectorAll('.widget-island').forEach(el => el.classList.add('jiggling')); 
+            document.querySelectorAll('.dock-container .app-icon').forEach(el => el.classList.add('jiggling'));
         }, 800);
     });
     desktop.addEventListener('touchend', () => clearTimeout(longPressTimer));
+    // 关键修复：手指开始滑动时，立刻取消长按判定，释放滑动权限！
+    desktop.addEventListener('touchmove', () => clearTimeout(longPressTimer), { passive: true });
     
     doneBtn.onclick = () => { 
         isEditing = false; 
         doneBtn.style.display = 'none'; 
+        document.getElementById('size-control-panel').classList.remove('show');
+        if (window.selectedElForSize) window.selectedElForSize.style.outline = '';
+        window.selectedElForSize = null;
+
         addBtn.style.display = 'none';
         diyBtn.style.display = 'none';
         document.querySelectorAll('.app-item, .widget-item').forEach(el => el.classList.remove('jiggling')); 
+        document.querySelectorAll('.dock-container .app-icon').forEach(el => el.classList.remove('jiggling'));
         saveLayout(); 
     };
 
@@ -1222,15 +2306,228 @@ body, html {
         document.getElementById('date-str').innerText = `${d.getMonth()+1}月${d.getDate()}日 星期${days[d.getDay()]}`;
     }, 1000);
 
+    // ===== 丝滑翻页手势引擎（iOS 同款速度感） =====
+    const desktopClip = document.getElementById('desktop-clip');
+    let swipeStartX = 0, swipeLastX = 0, swipeLastTime = 0;
+    let swipeVelocity = 0, swipeActive = false;
+
+    desktopClip.addEventListener('touchstart', (e) => {
+        if (isEditing) return;
+        if (e.target.closest('.app-item') || e.target.closest('.widget-item') ||
+            e.target.closest('.dock-container') || e.target.closest('[contenteditable]')) return;
+        swipeStartX = swipeLastX = e.touches[0].clientX;
+        swipeLastTime = Date.now();
+        swipeVelocity = 0;
+        swipeActive = true;
+        desktop.style.transition = 'none';
+    }, { passive: true });
+
+    desktopClip.addEventListener('touchmove', (e) => {
+        if (!swipeActive) return;
+        const x = e.touches[0].clientX;
+        const now = Date.now();
+        const dt = now - swipeLastTime;
+        if (dt > 0) swipeVelocity = (x - swipeLastX) / dt; // px/ms
+        swipeLastX = x;
+        swipeLastTime = now;
+
+        const totalDx = x - swipeStartX;
+        let offset = -currentPage * window.innerWidth + totalDx;
+        // 橡皮筋回弹效果
+        if (offset > 0)        offset = offset * 0.25;
+        if (offset < -window.innerWidth) offset = -window.innerWidth + (offset + window.innerWidth) * 0.25;
+        desktop.style.transform = `translateX(${offset}px)`;
+    }, { passive: true });
+
+    const finishSwipe = () => {
+        if (!swipeActive) return;
+        swipeActive = false;
+        const totalDx = swipeLastX - swipeStartX;
+        const VELOCITY_THRESHOLD = 0.25; // px/ms — 轻扫即翻
+        const DISTANCE_THRESHOLD = window.innerWidth * 0.22;
+
+        let targetPage = currentPage;
+        if (swipeVelocity < -VELOCITY_THRESHOLD || totalDx < -DISTANCE_THRESHOLD) targetPage++;
+        else if (swipeVelocity > VELOCITY_THRESHOLD || totalDx > DISTANCE_THRESHOLD) targetPage--;
+        snapToPage(targetPage);
+    };
+    desktopClip.addEventListener('touchend', finishSwipe, { passive: true });
+    desktopClip.addEventListener('touchcancel', finishSwipe, { passive: true });
+
+    // 初始化指示点
+    snapToPage(0, false);
     loadLayout();
 
     // ===== Dock 图标点击打开 App =====
     document.querySelectorAll('.app-icon[data-dock-id]').forEach(el => {
         el.addEventListener('click', () => {
+            if (isEditing) return; // 编辑模式不打开App
             const dockId = el.dataset.dockId;
             if (APP_URLS[dockId]) openApp(dockId);
         });
     });
+// ===== 独立组件大小及长短调节逻辑 =====
+window.selectedElForSize = null;
+
+desktop.addEventListener('click', (e) => {
+    if (!isEditing) return; // 只有编辑模式才触发
+
+    const item = e.target.closest('.app-item') || e.target.closest('.widget-item');
+    if (e.target.closest('.remove-btn')) return; // 点了删除按钮不管
+
+    if (item) {
+        // 1. 清除上一个选中的粉色边框
+        if (window.selectedElForSize) window.selectedElForSize.style.outline = '';
+        
+        // 2. 选中现在的组件，给个粉色边框提示
+        window.selectedElForSize = item;
+        item.style.outline = '4px solid var(--bunny-pink)';
+        item.style.outlineOffset = '2px';
+        item.style.borderRadius = item.style.borderRadius || '20px'; // 保护圆角
+        
+        // 3. 弹出下方滑块
+        document.getElementById('size-control-panel').classList.add('show');
+        
+        // 4. 读取当前大小和长短设置给滑块
+        let currentScale = item.dataset.customScale || 1;
+        let currentLength = item.dataset.customLength || 1;
+        document.getElementById('item-size-slider').value = currentScale;
+        document.getElementById('item-size-text').innerText = Math.round(currentScale * 100) + '%';
+        document.getElementById('item-length-slider').value = currentLength;
+        document.getElementById('item-length-text').innerText = Math.round(currentLength * 100) + '%';
+    } else {
+        // 点了空白处，隐藏滑块和边框
+        if (window.selectedElForSize) window.selectedElForSize.style.outline = '';
+        window.selectedElForSize = null;
+        document.getElementById('size-control-panel').classList.remove('show');
+    }
+});
+
+// 监听“大小”滑块左右滑动
+document.getElementById('item-size-slider').addEventListener('input', (e) => {
+    if (window.selectedElForSize) {
+        const size = e.target.value;
+        const stretch = document.getElementById('item-length-slider').value;
+        window.selectedElForSize.style.scale = `${size} ${size * stretch}`; // 改变大小！
+        window.selectedElForSize.dataset.customScale = size; // 记录下来
+        document.getElementById('item-size-text').innerText = Math.round(size * 100) + '%';
+    }
+});
+
+// 监听“长短”滑块左右滑动
+document.getElementById('item-length-slider').addEventListener('input', (e) => {
+    if (window.selectedElForSize) {
+        const stretch = e.target.value;
+        const size = document.getElementById('item-size-slider').value;
+        window.selectedElForSize.style.scale = `${size} ${size * stretch}`; // 改变长短！
+        window.selectedElForSize.dataset.customLength = stretch; // 记录下来
+        document.getElementById('item-length-text').innerText = Math.round(stretch * 100) + '%';
+    }
+});
+
+// 滑动松手后，保存数据
+document.getElementById('item-size-slider').addEventListener('change', () => {
+    saveLayout();
+});
+document.getElementById('item-length-slider').addEventListener('change', () => {
+    saveLayout();
+});
+
+// ===== Dock 图标拖动排序（完整重写，修复 passive 问题）=====
+(function() {
+    const dock = document.querySelector('.dock-container');
+    if (!dock) return;
+
+    let dragIcon = null;
+    let placeholder = null;
+    let originRect = null;
+
+    // ① touchstart 挂在 dock 上，非 passive，这样后续 touchmove 才能 preventDefault
+    dock.addEventListener('touchstart', (e) => {
+        if (!isEditing) return;
+        const icon = e.target.closest('.app-icon[data-dock-id]');
+        if (!icon) return;
+
+        e.stopPropagation();
+        e.preventDefault(); // 阻止长按选中/滚动
+
+        dragIcon = icon;
+        originRect = icon.getBoundingClientRect();
+
+        // 创建同尺寸占位符撑着 flex 空间
+        placeholder = document.createElement('div');
+        placeholder.style.cssText = `width:${originRect.width}px;height:${originRect.height}px;flex-shrink:0;opacity:0;border-radius:50%;`;
+        dock.insertBefore(placeholder, icon);
+
+        // 图标脱离文档流浮起来
+        icon.style.cssText = `
+            position: fixed !important;
+            left: ${originRect.left}px;
+            top: ${originRect.top}px;
+            width: ${originRect.width}px;
+            height: ${originRect.height}px;
+            z-index: 99999;
+            transform: scale(1.2);
+            transition: transform 0.12s;
+            border-radius: 22.5%;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+            pointer-events: none;
+        `;
+        icon.classList.remove('jiggling');
+    }, { passive: false });
+
+    // ② touchmove 挂在 document，非 passive，跟随手指
+    document.addEventListener('touchmove', (e) => {
+        if (!dragIcon) return;
+        e.preventDefault();
+
+        const touch = e.touches[0];
+        const dockRect = dock.getBoundingClientRect();
+        const iw = originRect.width, ih = originRect.height;
+
+        // 水平跟手，垂直锁定在 dock 中心
+        dragIcon.style.left = (touch.clientX - iw / 2) + 'px';
+        dragIcon.style.top  = (dockRect.top + dockRect.height / 2 - ih / 2) + 'px';
+
+        // 根据手指位置移动占位符（视觉提示落点）
+        const siblings = Array.from(dock.querySelectorAll('.app-icon[data-dock-id]'));
+        let inserted = false;
+        for (const ic of siblings) {
+            const r = ic.getBoundingClientRect();
+            if (touch.clientX < r.left + r.width / 2) {
+                dock.insertBefore(placeholder, ic);
+                inserted = true;
+                break;
+            }
+        }
+        if (!inserted) {
+            // 手指在最右边：把占位符放到末尾
+            const last = dock.querySelector('.app-icon[data-dock-id]:last-child');
+            if (last && last !== dragIcon) dock.appendChild(placeholder);
+        }
+    }, { passive: false });
+
+    // ③ touchend 挂在 document，释放时归位
+    document.addEventListener('touchend', () => {
+        if (!dragIcon) return;
+
+        // 把图标插入占位符的位置
+        dock.insertBefore(dragIcon, placeholder);
+        placeholder.remove();
+        placeholder = null;
+
+        // 恢复样式，继续抖动
+        dragIcon.style.cssText = '';
+        if (isEditing) dragIcon.classList.add('jiggling');
+        dragIcon = null;
+
+        saveLayout();
+    });
+
+    window.attachDockDrag = () => {}; // 保持兼容性
+})();
+
+
 </script>
 
 </body>
