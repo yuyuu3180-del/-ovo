@@ -2072,14 +2072,14 @@ function createVoiceWidget(col, row, id, data = null) {
                 el.style.left = (mev.clientX - dRect.left - ox) + 'px';
                 el.style.top = (mev.clientY - dRect.top - oy) + 'px';
 
-                // 拖到边缘自动翻页
-                if (lastClientX > window.innerWidth - 60 && currentPage < 1) {
+                // 拖到边缘自动翻页（只有手指贴近屏幕最右/最左边缘才触发）
+                if (lastClientX > window.innerWidth - 6 && currentPage < 1) {
                     if (!edgeScrollInterval) {
-                        edgeScrollInterval = setInterval(() => snapToPage(currentPage + 1), 500);
+                        edgeScrollInterval = setInterval(() => snapToPage(currentPage + 1), 600);
                     }
-                } else if (lastClientX < 60 && currentPage > 0) {
+                } else if (lastClientX < 6 && currentPage > 0) {
                     if (!edgeScrollInterval) {
-                        edgeScrollInterval = setInterval(() => snapToPage(currentPage - 1), 500);
+                        edgeScrollInterval = setInterval(() => snapToPage(currentPage - 1), 600);
                     }
                 } else {
                     clearInterval(edgeScrollInterval);
@@ -2092,12 +2092,12 @@ function createVoiceWidget(col, row, id, data = null) {
                 window.removeEventListener('mousemove', moveHandler); window.removeEventListener('touchmove', moveHandler);
                 window.removeEventListener('mouseup', endHandler); window.removeEventListener('touchend', endHandler);
                 if (activeEl && isEditing) {
-                    let absX = parseFloat(activeEl.style.left);
-                    let page = Math.round(absX / window.innerWidth);
+                    // 放下时默认保持当前页，不根据 X 坐标 round
+                    let page = currentPage;
 
-                    // 边缘翻页
-                    if (lastClientX > window.innerWidth - 40) page = Math.min(1, currentPage + 1);
-                    if (lastClientX < 40) page = Math.max(0, currentPage - 1);
+                    // 只有手指真的贴着物理边缘才翻页
+                    if (lastClientX > window.innerWidth - 6) page = Math.min(1, currentPage + 1);
+                    if (lastClientX < 6) page = Math.max(0, currentPage - 1);
                     page = Math.max(0, Math.min(1, page));
 
                     // 自由定位：直接存当前像素位置（相对屏幕的分数，跨页保持正确）
@@ -2312,9 +2312,14 @@ function createVoiceWidget(col, row, id, data = null) {
     let swipeVelocity = 0, swipeActive = false;
 
     desktopClip.addEventListener('touchstart', (e) => {
-        if (isEditing) return;
-        if (e.target.closest('.app-item') || e.target.closest('.widget-item') ||
-            e.target.closest('.dock-container') || e.target.closest('[contenteditable]')) return;
+        if (isEditing) {
+            // 编辑模式：只要不是点在组件上，就允许翻页滑动
+            if (e.target.closest('.app-item') || e.target.closest('.widget-item') ||
+                e.target.closest('.dock-container') || e.target.closest('[contenteditable]')) return;
+        } else {
+            if (e.target.closest('.app-item') || e.target.closest('.widget-item') ||
+                e.target.closest('.dock-container') || e.target.closest('[contenteditable]')) return;
+        }
         swipeStartX = swipeLastX = e.touches[0].clientX;
         swipeLastTime = Date.now();
         swipeVelocity = 0;
