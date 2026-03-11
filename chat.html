@@ -70,7 +70,7 @@ body {
 
 
 .nav-bar {
-    height: 50px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+    height: 50px; background: rgba(255,255,255,0.98); 
     display: flex; align-items: center; justify-content: center;
     font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border);
     position: relative; z-index: 50; letter-spacing: 0.5px;
@@ -165,7 +165,7 @@ body {
     top: -10px;
     right: 0;
     padding: 6px 14px;
-    background: rgba(255,255,255,0.95);
+    background: rgba(255,255,255,0.98);
     border: 1px solid var(--border);
     border-radius: 20px;
     font-size: 12px;
@@ -414,7 +414,7 @@ body {
 /* ================= 发布面板 ================= */
 .publish-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.5); 
     z-index: 199; display: none; opacity: 0; transition: opacity 0.3s;
 }
 .publish-panel {
@@ -449,7 +449,7 @@ body {
     position: absolute; top: 10px; right: 10px; width: 28px; height: 28px;
     background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; cursor: pointer; backdrop-filter: blur(4px);
+    font-size: 18px; cursor: pointer; 
 }
 
 /* ================= 聊天页与弹窗样式 ================= */
@@ -458,7 +458,7 @@ body {
 
 .dropdown-menu {
     position: absolute; top: 55px; right: 15px; background: rgba(255, 255, 255, 0.95);
-    backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+   border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.08);
     width: 140px; z-index: 200; display: none; overflow: hidden; border: 1px solid var(--border);
 }
 .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
@@ -470,8 +470,8 @@ body {
 .dropdown-item:active { background: #f9f9f9; }
 
 .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
-    backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
+     z-index: 1000; display: none; align-items: center; justify-content: center;
 }
 .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
 .modal-card {
@@ -572,9 +572,7 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.85); 
     border-radius: 14px;
     padding: 10px 14px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -594,8 +592,7 @@ body {
 /* 联系人卡片组（iOS grouped style） */
 .contact-group-card {
     background: rgba(255,255,255,0.85);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+  
     border-radius: 16px;
     margin: 0 16px 8px;
     overflow: hidden;
@@ -679,8 +676,6 @@ body {
 .chat-room-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
     position: relative; z-index: 10;
 }
@@ -946,7 +941,7 @@ body {
 /* ================= 好友调试面板（半屏上拉） ================= */
 .friend-debug-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
+    background: rgba(0,0,0,0.45); 
     z-index: 800; display: none; align-items: flex-end;
 }
 .friend-debug-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
@@ -985,7 +980,7 @@ body {
 }
 .fd-card {
     background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(6px);
+   
     border-radius: 16px; margin: 0 16px 4px;
     overflow: hidden;
 }
@@ -1065,8 +1060,6 @@ body {
 .contact-detail-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
 }
 .contact-detail-nav-inner {
@@ -1107,7 +1100,6 @@ body {
 /* 信息卡片 */
 .cd-card {
     background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(6px);
     border-radius: 16px; overflow: hidden;
     margin-bottom: 12px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
@@ -1452,7 +1444,7 @@ body {
 .emoji-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .emoji-item-label {
     position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.45); color: #fff; font-size: 10px;
+    background: rgba(0,0,0,0.5); color: #fff; font-size: 10px;
     padding: 3px 5px; text-overflow: ellipsis; overflow: hidden;
     white-space: nowrap;
 }
@@ -1472,7 +1464,7 @@ body {
     max-height: 85vh; overflow-y: auto;
 }
 .emoji-add-sheet.active { display: block; }
-.emoji-add-overlay { position: fixed; top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:799;display:none; }
+.emoji-add-overlay { position: fixed; top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:799;display:none; }
 .emoji-add-overlay.active { display: block; }
 .emoji-add-tab-row { display: flex; gap: 10px; margin-bottom: 16px; }
 .emoji-add-tab {
@@ -1567,7 +1559,7 @@ body {
 /* ================= iOS 风格双击菜单 & 新功能样式 ================= */
 .ios-bubble-menu {
     position: fixed; z-index: 2000; display: flex; align-items: center;
-    background: rgba(250, 250, 250, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    background: rgba(250, 250, 250, 0.95); 
     border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); padding: 4px; gap: 2px;
     transition: opacity 0.2s, transform 0.2s; opacity: 0; pointer-events: none; transform: scale(0.9);
 }
@@ -1608,7 +1600,7 @@ body {
 .msg-checkbox.checked::after { content: ''; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
 
 .multi-action-bar {
-    position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
+    position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(255,255,255,0.98); 
     padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between;
     transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 600; box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
 }
@@ -1738,7 +1730,7 @@ body {
 /* 绑定选择弹窗 */
 .lover-pick-overlay {
     position: fixed; inset: 0; z-index: 800;
-    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
+    background: rgba(0,0,0,0.5); 
     display: none; align-items: flex-end; justify-content: center;
 }
 .lover-pick-overlay.show { display: flex; }
@@ -1839,8 +1831,6 @@ body {
 #voice-call-screen {
     position: fixed; inset: 0; z-index: 9000;
     background: rgba(245,245,250,0.92);
-    backdrop-filter: blur(12px) saturate(110%);
-    -webkit-backdrop-filter: blur(12px) saturate(110%);
     display: none; flex-direction: column; align-items: center;
     padding: env(safe-area-inset-top, 50px) 30px 40px;
     color: #333;
@@ -1981,7 +1971,7 @@ body {
     position: relative; z-index: 1;
     width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
     border: 3px solid rgba(255,255,255,0.2);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
 }
 
 /* 我的摄像头（小窗） */
@@ -2025,14 +2015,14 @@ body {
 }
 .vidcall-subtitles::-webkit-scrollbar { display: none; }
 .vidcall-sub-ai {
-    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
+    background: rgba(0,0,0,0.5); 
     padding: 8px 14px; border-radius: 12px;
     font-size: 14px; color: white; line-height: 1.6;
     align-self: flex-start; max-width: 85%;
     animation: fadeIn 0.3s ease;
 }
 .vidcall-sub-me {
-    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.15); 
     padding: 6px 14px; border-radius: 12px;
     font-size: 13px; color: rgba(255,255,255,0.8);
     align-self: flex-end; max-width: 75%;
@@ -2782,7 +2772,7 @@ cursor:pointer;z-index:1;"
 <!-- ============ 评论输入框浮层 ============ -->
 <div id="comment-input-overlay" style="
     position:fixed;inset:0;z-index:600;
-    background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);
+    background:rgba(0,0,0,0.5);
     display:none;align-items:flex-end;
 " onclick="if(event.target===this)hideCommentInput()">
     <div style="
@@ -3769,11 +3759,7 @@ ${userName}评论了你："${myComment.text}"
         renderChatList();
         renderContactList();
         
-        // 初始化顶部导航头像
-        loadMySettings();
-        const navAv = document.getElementById('nav-my-avatar');
-        if (navAv && mySettings.avatar) navAv.src = mySettings.avatar;
-        else if (navAv && config.avatar) navAv.src = config.avatar;
+        
         
         setTimeout(() => startAIPostScheduler(), 3000); // 延迟3秒等页面加载完
     }
@@ -3860,17 +3846,7 @@ ${userName}评论了你："${myComment.text}"
         document.querySelectorAll('.tab-item')[tabs.indexOf(tab)].classList.add('active');
         const chatAddBtn = document.getElementById('nav-btn-chat-add');
         if (chatAddBtn) chatAddBtn.style.display = (tab === 'msg') ? 'block' : 'none';
-        // 只在 Chat 页显示自己的头像
-        const navAvatarWrap = document.getElementById('nav-my-avatar-wrap');
-        if (navAvatarWrap) {
-            navAvatarWrap.style.display = (tab === 'msg') ? 'flex' : 'none';
-            // 更新头像 src
-            const myAvEl = document.getElementById('nav-my-avatar');
-            if (myAvEl) {
-                const profileAvSrc = document.getElementById('profile-avatar')?.src || '';
-                if (profileAvSrc) myAvEl.src = profileAvSrc;
-            }
-        }
+        
         if (tab !== 'settings') {
             closeConfigView();
             document.getElementById('page-title').innerText = { msg: 'Chat', contact: 'Contacts', moment: 'Moments' }[tab];
@@ -4475,7 +4451,7 @@ ${userName}评论了你："${myComment.text}"
 function renderChatMessages(id) {
     if (id !== currentChatId) return;
     const content = document.getElementById('chat-room-content');
-    const msgs = chatMessages[id] || [];
+    const msgs = (chatMessages[id] || []).slice(-50);
     const friend = chatList.find(c => c.id === id);
     const myAvatar = config.avatar || 'https://api.dicebear.com/7.x/notionists/svg?seed=Rabbit&backgroundColor=ffb6c1';
     const friendAvatar = friend ? friend.avatar : '';
@@ -5862,9 +5838,7 @@ async function fdClearChat() {
             if (el) el.src = mySettings.avatar;
             config.avatar = mySettings.avatar;
             persistConfig();
-            // 同步更新顶部导航头像
-            const navAv = document.getElementById('nav-my-avatar');
-            if (navAv) navAv.src = mySettings.avatar;
+           
         }
         // 保存密码修改
         const newPwd = document.getElementById('mysettings-password')?.value;
@@ -9285,7 +9259,7 @@ function uploadVidBg(input, type) {
   </div>
 </div>
 <!-- ========== 照片发送面板 ========== -->
-<div id="photo-panel-overlay" onclick="closePhotoPanel()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:700;"></div>
+<div id="photo-panel-overlay" onclick="closePhotoPanel()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:700;"></div>
 
 <div id="photo-panel" style="
   position:fixed;bottom:-100%;left:0;right:0;
@@ -9450,7 +9424,7 @@ function uploadVidBg(input, type) {
 <!-- 苹果终极保活音频实体播放器 (调用真实的静音 MP3) -->
 <audio id="silent-bg-audio" loop playsinline preload="auto" src="https://raw.githubusercontent.com/anars/blank-audio/master/15-minutes-of-silence.mp3"></audio>
 <!-- ================= 韩系 INS 风：心声与日记面板 ================= -->
-<div id="inner-thoughts-overlay" class="modal-overlay" onclick="closeInnerThoughts()" style="z-index: 9000; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
+<div id="inner-thoughts-overlay" class="modal-overlay" onclick="closeInnerThoughts()" style="z-index: 9000; background: rgba(0,0,0,0.2); 
     <div class="modal-card" style="max-width:360px; width:92%; max-height:85vh; display:none; flex-direction:column; padding:0; align-items:stretch; position:relative; overflow:hidden; background:#fff; border-radius:32px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);" id="inner-thoughts-panel" onclick="event.stopPropagation()">
         
         <!-- 顶部导航栏 -->
@@ -9521,7 +9495,7 @@ function uploadVidBg(input, type) {
 </div>
 
 <!-- 添加头像弹窗 -->
-<div id="avatar-add-overlay" onclick="closeAvatarAddSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:799;"></div>
+<div id="avatar-add-overlay" onclick="closeAvatarAddSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:799;"></div>
 <div id="avatar-add-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:20px;z-index:800;max-height:85vh;overflow-y:auto;">
   <div style="font-size:16px;font-weight:600;margin-bottom:16px;">添加头像</div>
   <div style="display:flex;gap:10px;margin-bottom:16px;">
@@ -9556,7 +9530,7 @@ function uploadVidBg(input, type) {
   <button onclick="confirmAddAvatar()" style="width:100%;height:46px;background:#007aff;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;">添加</button>
 </div>
 <!-- ========== 语音消息面板 ========== -->
-<div id="voice-panel-overlay" onclick="closeVoicePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(8px);z-index:700;"></div>
+<div id="voice-panel-overlay" onclick="closeVoicePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);z-index:700;"></div>
 <div id="voice-panel" style="position:fixed;bottom:-100%;left:0;right:0;background:#fff;border-radius:24px 24px 0 0;padding:24px 20px calc(28px + env(safe-area-inset-bottom));z-index:701;transition:bottom 0.4s cubic-bezier(0.16,1,0.3,1);">
   <div style="width:32px;height:3px;background:#e0e0e0;border-radius:2px;margin:0 auto 20px;"></div>
   <div style="font-size:15px;font-weight:700;color:#1c1c1e;margin-bottom:4px;">发送语音消息</div>
