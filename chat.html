@@ -25,11 +25,7 @@
     contain: layout style;
 }
 .page {
-    will-change: opacity;
-}
-/* 减少重绘区域 */
-#chat-room-content > * {
-    transform: translateZ(0);
+    
 }
 
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
@@ -41,7 +37,7 @@
 .contact-row { contain: layout style; }
 #tab-msg, #tab-contacts, #tab-stories { will-change: auto; }
 .chat-room-page { transform: translateZ(0); -webkit-transform: translateZ(0); }
-img { content-visibility: auto; }
+
 
 
 /* ===== 全设备自适应魔法 ===== */
@@ -70,7 +66,7 @@ body {
 
 
 .nav-bar {
-    height: 50px; background: rgba(255,255,255,0.98); 
+    height: 50px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
     display: flex; align-items: center; justify-content: center;
     font-size: 16px; font-weight: 600; border-bottom: 1px solid var(--border);
     position: relative; z-index: 50; letter-spacing: 0.5px;
@@ -165,7 +161,7 @@ body {
     top: -10px;
     right: 0;
     padding: 6px 14px;
-    background: rgba(255,255,255,0.98);
+    background: rgba(255,255,255,0.95);
     border: 1px solid var(--border);
     border-radius: 20px;
     font-size: 12px;
@@ -414,7 +410,7 @@ body {
 /* ================= 发布面板 ================= */
 .publish-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.5); 
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(4px);
     z-index: 199; display: none; opacity: 0; transition: opacity 0.3s;
 }
 .publish-panel {
@@ -449,7 +445,7 @@ body {
     position: absolute; top: 10px; right: 10px; width: 28px; height: 28px;
     background: rgba(0,0,0,0.5); color: white; border-radius: 50%;
     display: flex; align-items: center; justify-content: center;
-    font-size: 18px; cursor: pointer; 
+    font-size: 18px; cursor: pointer; backdrop-filter: blur(4px);
 }
 
 /* ================= 聊天页与弹窗样式 ================= */
@@ -458,7 +454,7 @@ body {
 
 .dropdown-menu {
     position: absolute; top: 55px; right: 15px; background: rgba(255, 255, 255, 0.95);
-   border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.08);
+    backdrop-filter: blur(10px); border-radius: 16px; box-shadow: 0 4px 25px rgba(0,0,0,0.08);
     width: 140px; z-index: 200; display: none; overflow: hidden; border: 1px solid var(--border);
 }
 .dropdown-menu.show { display: block; animation: fadeIn 0.2s ease; }
@@ -470,8 +466,8 @@ body {
 .dropdown-item:active { background: #f9f9f9; }
 
 .modal-overlay {
-    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.5);
-     z-index: 1000; display: none; align-items: center; justify-content: center;
+    position: fixed; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0,0,0,0.4);
+    backdrop-filter: blur(4px); z-index: 1000; display: none; align-items: center; justify-content: center;
 }
 .modal-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
 .modal-card {
@@ -572,7 +568,9 @@ body {
     display: flex;
     align-items: center;
     gap: 8px;
-    background: rgba(255,255,255,0.85); 
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 14px;
     padding: 10px 14px;
     box-shadow: 0 1px 3px rgba(0,0,0,0.06);
@@ -592,7 +590,8 @@ body {
 /* 联系人卡片组（iOS grouped style） */
 .contact-group-card {
     background: rgba(255,255,255,0.85);
-  
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-radius: 16px;
     margin: 0 16px 8px;
     overflow: hidden;
@@ -676,6 +675,8 @@ body {
 .chat-room-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
     position: relative; z-index: 10;
 }
@@ -941,7 +942,7 @@ body {
 /* ================= 好友调试面板（半屏上拉） ================= */
 .friend-debug-overlay {
     position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-    background: rgba(0,0,0,0.45); 
+    background: rgba(0,0,0,0.35); backdrop-filter: blur(4px);
     z-index: 800; display: none; align-items: flex-end;
 }
 .friend-debug-overlay.show { display: flex; animation: fadeIn 0.2s ease; }
@@ -980,7 +981,7 @@ body {
 }
 .fd-card {
     background: rgba(255,255,255,0.9);
-   
+    backdrop-filter: blur(6px);
     border-radius: 16px; margin: 0 16px 4px;
     overflow: hidden;
 }
@@ -1060,6 +1061,8 @@ body {
 .contact-detail-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
 }
 .contact-detail-nav-inner {
@@ -1100,6 +1103,7 @@ body {
 /* 信息卡片 */
 .cd-card {
     background: rgba(255,255,255,0.9);
+    backdrop-filter: blur(6px);
     border-radius: 16px; overflow: hidden;
     margin-bottom: 12px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
@@ -1444,7 +1448,7 @@ body {
 .emoji-item img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .emoji-item-label {
     position: absolute; bottom: 0; left: 0; right: 0;
-    background: rgba(0,0,0,0.5); color: #fff; font-size: 10px;
+    background: rgba(0,0,0,0.45); color: #fff; font-size: 10px;
     padding: 3px 5px; text-overflow: ellipsis; overflow: hidden;
     white-space: nowrap;
 }
@@ -1464,7 +1468,7 @@ body {
     max-height: 85vh; overflow-y: auto;
 }
 .emoji-add-sheet.active { display: block; }
-.emoji-add-overlay { position: fixed; top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.5);z-index:799;display:none; }
+.emoji-add-overlay { position: fixed; top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.4);z-index:799;display:none; }
 .emoji-add-overlay.active { display: block; }
 .emoji-add-tab-row { display: flex; gap: 10px; margin-bottom: 16px; }
 .emoji-add-tab {
@@ -1559,7 +1563,7 @@ body {
 /* ================= iOS 风格双击菜单 & 新功能样式 ================= */
 .ios-bubble-menu {
     position: fixed; z-index: 2000; display: flex; align-items: center;
-    background: rgba(250, 250, 250, 0.95); 
+    background: rgba(250, 250, 250, 0.95); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
     border-radius: 14px; box-shadow: 0 8px 30px rgba(0,0,0,0.15); padding: 4px; gap: 2px;
     transition: opacity 0.2s, transform 0.2s; opacity: 0; pointer-events: none; transform: scale(0.9);
 }
@@ -1600,7 +1604,7 @@ body {
 .msg-checkbox.checked::after { content: ''; width: 5px; height: 10px; border: solid white; border-width: 0 2px 2px 0; transform: rotate(45deg); margin-bottom: 2px; }
 
 .multi-action-bar {
-    position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(255,255,255,0.98); 
+    position: fixed; bottom: -100%; left: 0; width: 100%; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px);
     padding: 15px 20px calc(15px + env(safe-area-inset-bottom)); display: flex; justify-content: space-between;
     transition: bottom 0.3s cubic-bezier(0.16, 1, 0.3, 1); z-index: 600; box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
 }
@@ -1730,7 +1734,7 @@ body {
 /* 绑定选择弹窗 */
 .lover-pick-overlay {
     position: fixed; inset: 0; z-index: 800;
-    background: rgba(0,0,0,0.5); 
+    background: rgba(0,0,0,0.4); backdrop-filter: blur(6px);
     display: none; align-items: flex-end; justify-content: center;
 }
 .lover-pick-overlay.show { display: flex; }
@@ -1831,6 +1835,8 @@ body {
 #voice-call-screen {
     position: fixed; inset: 0; z-index: 9000;
     background: rgba(245,245,250,0.92);
+    backdrop-filter: blur(12px) saturate(110%);
+    -webkit-backdrop-filter: blur(12px) saturate(110%);
     display: none; flex-direction: column; align-items: center;
     padding: env(safe-area-inset-top, 50px) 30px 40px;
     color: #333;
@@ -1971,7 +1977,7 @@ body {
     position: relative; z-index: 1;
     width: 120px; height: 120px; border-radius: 50%; object-fit: cover;
     border: 3px solid rgba(255,255,255,0.2);
-    box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+    box-shadow: 0 8px 40px rgba(0,0,0,0.4);
 }
 
 /* 我的摄像头（小窗） */
@@ -2015,14 +2021,14 @@ body {
 }
 .vidcall-subtitles::-webkit-scrollbar { display: none; }
 .vidcall-sub-ai {
-    background: rgba(0,0,0,0.5); 
+    background: rgba(0,0,0,0.5); backdrop-filter: blur(10px);
     padding: 8px 14px; border-radius: 12px;
     font-size: 14px; color: white; line-height: 1.6;
     align-self: flex-start; max-width: 85%;
     animation: fadeIn 0.3s ease;
 }
 .vidcall-sub-me {
-    background: rgba(255,255,255,0.15); 
+    background: rgba(255,255,255,0.15); backdrop-filter: blur(10px);
     padding: 6px 14px; border-radius: 12px;
     font-size: 13px; color: rgba(255,255,255,0.8);
     align-self: flex-end; max-width: 75%;
@@ -2076,6 +2082,8 @@ body {
 .vidcall-hangup svg { fill: white; stroke: none; }
 </style>
 
+    <script src="https://cdn.jsdelivr.net/npm/vue@3/dist/vue.global.prod.js"
+        onerror="this.onerror=null;this.src='https://unpkg.com/vue@3/dist/vue.global.prod.js'"></script>
 </head>
 <body>
 <!-- 注册/登录界面 -->
@@ -2201,10 +2209,7 @@ body {
 
 <div class="content" id="main-content">
     <div class="page active" id="tab-msg">
-        <div style="height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ddd;">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-            <p style="margin-top: 15px; font-size: 13px; letter-spacing: 1px;">NO MESSAGES</p>
-        </div>
+    <!-- Vue chat list mounts here -->
     </div>
 
 
@@ -2240,6 +2245,7 @@ body {
             </div>
             <span class="story-name" id="self-story-name">Your Story</span>
         </div>
+        <div id="v-stories" style="display:contents;"></div>
     </div>
 
     <div id="posts-container"></div>
@@ -2496,10 +2502,8 @@ cursor:pointer;z-index:1;"
 
 <!-- 聊天消息区 -->
 <div class="chat-room-content" id="chat-room-content">
-    <!-- 系统消息 -->
-    <div class="msg-system">
-        <span>我已通过好友申请，现在可以开始聊天了 </span>
-    </div>
+    <div class="msg-system"><span>我已通过好友申请，现在可以开始聊天了</span></div>
+    <div id="v-messages"></div>
 </div>
 <!-- iOS 双击气泡菜单 -->
 <div id="ios-bubble-menu" class="ios-bubble-menu">
@@ -2772,7 +2776,7 @@ cursor:pointer;z-index:1;"
 <!-- ============ 评论输入框浮层 ============ -->
 <div id="comment-input-overlay" style="
     position:fixed;inset:0;z-index:600;
-    background:rgba(0,0,0,0.5);
+    background:rgba(0,0,0,0.45);backdrop-filter:blur(6px);
     display:none;align-items:flex-end;
 " onclick="if(event.target===this)hideCommentInput()">
     <div style="
@@ -2836,6 +2840,10 @@ cursor:pointer;z-index:1;"
 </div>
 
 <script>
+// Vue guard: fallback to noop if CDN fails
+const _VUE_LOADED = typeof Vue !== 'undefined';
+const { createApp, reactive, ref, computed, nextTick, watch } = _VUE_LOADED ? Vue : {};
+
 // ================= 新增：心声数据库与统一保存逻辑 =================
 let chatThoughts = {}; // 存放格式： { friendId: [ {date, monologue, diary}, ... ] }
 
@@ -2941,10 +2949,14 @@ async function syncChatDB() {
 }
  // 苹果 iOS 后台弹窗必须的底层服务注册（专破苹果限制）
     if ('serviceWorker' in navigator) {
+    // ★ 只在 PWA 模式下注册，浏览器模式不需要
+    const isPWA = window.navigator.standalone || window.matchMedia('(display-mode: standalone)').matches;
+    if (isPWA) {
         const swCode = "self.addEventListener('notificationclick', function(e){ e.notification.close(); });";
         const swUrl = URL.createObjectURL(new Blob([swCode], {type: 'application/javascript'}));
         navigator.serviceWorker.register(swUrl).catch(()=>{});
-    }  
+    }
+}
 const LS_KEY = 'me_profile_config_v1';
     const POSTS_KEY = 'ins_posts_v1';
 
@@ -2954,7 +2966,7 @@ const LS_KEY = 'me_profile_config_v1';
         gh_token: '', avatar: '', name: '', wechat_id: ''
     };
 
-    let posts = [];
+    const posts = reactive([]);
     let region = localStorage.getItem('user_region') || 'IP 未知';
 
     const els = {
@@ -3500,75 +3512,9 @@ ${alreadyCommented ? '（你已经评论过了，comment必须填空字符串""�
         }
     }
 
-    function renderPosts() {
-        const container = document.getElementById('posts-container');
-        if (!container) return;
-        if (posts.length === 0) {
-            container.innerHTML = '<div style="text-align:center; color:#ccc; padding:40px;">暂无动态，点击右上角发布</div>';
-            return;
-        }
-        let html = '';
-        posts.forEach(post => {
-            const likesText = post.likes === 1 ? '1 like' : (post.likes > 1 ? post.likes + ' likes' : '0 likes');
-            const likeIconClass = post.liked ? 'ins-action-icon liked' : 'ins-action-icon';
-            let commentsHtml = '';
-            if (post.comments && post.comments.length > 0) {
-                commentsHtml = '<div class="ins-post-comments">';
-                post.comments.forEach(cmt => {
-                    commentsHtml += `<div class="comment-item"><img src="${cmt.avatar || config.avatar}" class="comment-avatar"><div class="comment-content"><span class="comment-name">${cmt.name || config.name}</span><span class="comment-text">${cmt.text}</span><div class="comment-time">${cmt.time}</div></div></div>`;
-                });
-                commentsHtml += '</div>';
-            }
-            html += `
-                <div class="ins-post" data-id="${post.id}">
-                    <div class="ins-post-header">
-                        <img src="${post.avatar}" class="ins-post-avatar">
-                        <span class="ins-post-user">${post.name}</span>
-                        <svg class="ins-post-more" data-action="delete" data-post-id="${post.id}" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1.5"></circle><circle cx="19" cy="12" r="1.5"></circle><circle cx="5" cy="12" r="1.5"></circle></svg>
-                    </div>
-                    ${post.image ? `<img src="${post.image}" class="ins-post-img" style="aspect-ratio: 4/5;">` : ''}
-                    ${post.text ? `<div class="ins-post-caption">${post.text}</div>` : ''}
-                    <div class="ins-post-actions">
-                        <div class="ins-post-action-left">
-                            <svg class="${likeIconClass}" data-post-id="${post.id}" data-action="like" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
-                            <svg class="ins-action-icon" data-post-id="${post.id}" data-action="comment" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
-                            <svg class="ins-action-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
-                        </div>
-                        <svg class="ins-action-icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                    </div>
-                    <div class="ins-post-likes">${likesText}</div>
-                    <div class="ins-post-time">${post.time}</div>
-                    ${commentsHtml}
-                </div>
-            `;
-        });
-        container.innerHTML = html;
-    }
+    function renderPosts() { /* Vue reactive */ }
 
-    document.getElementById('posts-container').addEventListener('click', async (e) => {
-        const target = e.target.closest('[data-action]');
-        if (!target) return;
-        const action = target.dataset.action;
-        const postIdRaw = target.dataset.postId;
-const post = posts.find(p => String(p.id) === postIdRaw);
-
-        if (!post) return;
-        if (action === 'like') {
-            if (post.liked) { post.likes -= 1; post.liked = false; } else { post.likes += 1; post.liked = true; }
-            savePosts(); renderPosts();
-                } else if (action === 'comment') {
-            // 弹出美观的评论输入框
-            showCommentInput(post);
-        
-        } else if (action === 'delete') {
-            if (confirm('确定要删除这条动态吗？')) {
-                posts = posts.filter(p => p.id !== post.id);
-                await DB.set('ins_posts_v1', posts);
-                renderPosts();
-                showToast('动态已删除');
-            }
-        }
-    });
+    // posts click delegation removed — handled by Vue
     // ============================================================
     // 美观评论输入框（替换原来丑陋的 prompt()）
     // ============================================================
@@ -3738,7 +3684,13 @@ ${userName}评论了你："${myComment.text}"
         
         // 【核心修复】：加载所有聊天记录
         const savedMsgs = await DB.get('ins_chat_messages_v1');
-        if (savedMsgs) chatMessages = savedMsgs; 
+        if (savedMsgs) {
+            Object.keys(savedMsgs).forEach(k => {
+                if (!chatMessages[k]) chatMessages[k] = [];
+                chatMessages[k].length = 0;
+                chatMessages[k].push(...(savedMsgs[k] || []));
+            });
+        }
 
         // 【新增】：加载所有的心声日记
         const savedThoughts = await DB.get('ins_chat_thoughts_v1');
@@ -3746,11 +3698,15 @@ ${userName}评论了你："${myComment.text}"
 
         const savedPosts = await DB.get('ins_posts_v1');
         if (savedPosts) {
-            posts = savedPosts;
-            posts.forEach(p => { if (p.liked === undefined) p.liked = false; if (!p.comments) p.comments = []; });
+            posts.length = 0;
+            savedPosts.forEach(p => {
+                if (p.liked === undefined) p.liked = false;
+                if (!p.comments) p.comments = [];
+                posts.push(p);
+            });
         }
         const savedChat = await DB.get('ins_chat_list_v1');
-        if (savedChat) chatList = savedChat;
+        if (savedChat) { chatList.length = 0; chatList.push(...savedChat); }
         const savedRegion = localStorage.getItem('user_region');
         if (savedRegion) region = savedRegion;
 
@@ -3846,7 +3802,7 @@ ${userName}评论了你："${myComment.text}"
         document.querySelectorAll('.tab-item')[tabs.indexOf(tab)].classList.add('active');
         const chatAddBtn = document.getElementById('nav-btn-chat-add');
         if (chatAddBtn) chatAddBtn.style.display = (tab === 'msg') ? 'block' : 'none';
-        
+       
         if (tab !== 'settings') {
             closeConfigView();
             document.getElementById('page-title').innerText = { msg: 'Chat', contact: 'Contacts', moment: 'Moments' }[tab];
@@ -4153,7 +4109,7 @@ ${userName}评论了你："${myComment.text}"
     };
 
     // ================= 聊天好友数据逻辑 =================
-    let chatList = [];
+    const chatList = reactive([]);
     let isChatMenuOpen = false;
     let tempFriendAvatar = '';
     let selectedGroupFriends = new Set();
@@ -4278,71 +4234,10 @@ ${userName}评论了你："${myComment.text}"
     }
 
     // 渲染 Chat 聊天列表
-    function renderChatList() {
-        const container = document.getElementById('tab-msg');
-        let displayList = chatList.filter(item => item.inChatList !== false && !item.deleted);
-        displayList.sort((a, b) => (b.isPinned === true ? 1 : 0) - (a.isPinned === true ? 1 : 0));
-        if (displayList.length === 0) {
-            container.innerHTML = `<div style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ddd;"><svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg><p style="margin-top:15px;font-size:13px;letter-spacing:1px;">NO MESSAGES</p></div>`;
-            return;
-        }
-        let html = '<div class="chat-list">';
-        displayList.forEach(item => {
-            const displayName = item.alias ? item.alias : item.name;
-            const subText = item.type === 'group' ? `${item.members.length} members` : 'Tap to chat...';
-            const pinnedClass = item.isPinned ? 'pinned' : '';
-            html += `
-                <div class="chat-item-wrapper" data-id="${item.id}">
-                    <div class="chat-delete-btn" onclick="deleteFromChat('${item.id}')">Delete</div>
-                    <div class="chat-item ${pinnedClass}" data-id="${item.id}" 
-                         onclick="if(!isSwiping) openChatRoom('${item.id}')"
-                         ontouchstart="handleTouchStart(event, '${item.id}')" 
-                         ontouchmove="handleTouchMove(event)" 
-                         ontouchend="handleTouchEnd(event, '${item.id}')">
-                        <img src="${item.avatar}" class="chat-avatar">
-                        <div class="chat-info">
-                            <div class="chat-name">${displayName}</div>
-                            <div class="chat-sub">${subText}</div>
-                        </div>
-                    </div>
-                </div>
-            `;
-        });
-        html += '</div>';
-        container.innerHTML = html;
-    }
+    function renderChatList() { /* Vue reactive */ }
 
     // 渲染联系人页面 - iOS 毛玻璃新风格
-    function renderContactList() {
-        const container = document.getElementById('contacts-container');
-        if (chatList.length === 0) {
-            container.innerHTML = '<div style="text-align:center;padding:60px 20px;color:#aeaeb2;font-size:14px;">暂无联系人</div>';
-            return;
-        }
-        let html = `<div class="contact-section-title">All Contacts</div><div class="contact-group-card">`;
-                const loverId = localStorage.getItem('chat_bound_lover_v1');
-        chatList.forEach((item, index) => {
-           if (item.blocked || item.deleted) return;
-            const displayName = item.alias ? item.alias : item.name;
-            const isLover = item.id === loverId;
-            const relationHtml = isLover ? '<span style="display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:10px;font-size:9px;background:#fef0f2;color:#e75480;border:1px solid #ffccd5;margin-left:6px;">恋人</span>' : '';
-            const uniqueId = item.uniqueId || '';
-            html += `
-                <div class="contact-row" onclick="openContactDetail('${item.id}')">
-                    <img src="${item.avatar}" class="contact-row-avatar">
-                    <div class="contact-row-info">
-                        <div class="contact-row-name">${displayName}${relationHtml}</div>
-                        <div class="contact-row-sub" style="display:flex;align-items:center;gap:6px;">
-                            ${uniqueId ? `<span class="id-copy-row" onclick="event.stopPropagation();copyId('${uniqueId}')">ID: ${uniqueId} <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>` : (item.wechat_id || '')}
-                        </div>
-                    </div>
-                    <svg class="contact-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </div>
-            `;
-        });
-        html += `</div><div style="height:20px;"></div>`;
-        container.innerHTML = html;
-    }
+    function renderContactList() { /* Vue reactive */ }
 
     // ================= 触摸交互 =================
     let touchStartX = 0;
@@ -4372,7 +4267,7 @@ ${userName}评论了你："${myComment.text}"
 
     // ================= 聊天室逻辑 =================
     let currentChatId = null;
-    let chatMessages = {};
+    const chatMessages = reactive({});
     let isAIReplying = false;
 
     function openChatRoom(id) {
@@ -4423,7 +4318,11 @@ ${userName}评论了你："${myComment.text}"
 // ============================================================
     // 气泡CSS注入：把完整CSS规则塞进 <style> 标签，支持任何CSS写法
     // ============================================================
+    let lastInjectedCSS = null;
     function injectBubbleCSS(css) {
+        if (lastInjectedCSS === css) return; // 核心优化：如果气泡样式没变，就不要重复让浏览器重新计算样式，防止卡顿
+        lastInjectedCSS = css;
+        
         let styleTag = document.getElementById('bubble-css-inject');
         if (!styleTag) {
             styleTag = document.createElement('style');
@@ -4434,155 +4333,28 @@ ${userName}评论了你："${myComment.text}"
             styleTag.textContent = '';
             return;
         }
-        // ✅ 把用户CSS里所有选择器全部替换成我们固定的class名
-        // 这样用户粘贴任何格式的CSS都能生效！
         let injected = css
-            // 用户气泡（各种写法）→ 统一替换成 .msg-bubble-me
             .replace(/\.message-bubble\.user\s+\.content|\.message-row\.self\s+\.message-content|\.chat-bubble-me|\.msg-bubble-me|\.bubble-me|\.sent\s+\.bubble|\.self\s+\.content/g, '.msg-bubble-me')
-            // 用户气泡伪元素
             .replace(/\.message-bubble\.user\s+\.content::(before|after)|\.message-row\.self\s+\.message-content::(before|after)|\.chat-bubble-me::(before|after)/g, '.msg-bubble-me::$1')
-            // 对方气泡（各种写法）→ 统一替换成 .msg-bubble-them
             .replace(/\.message-bubble\.ai\s+\.content|\.message-row\.other\s+\.message-content|\.chat-bubble-other|\.msg-bubble-them|\.bubble-them|\.received\s+\.bubble|\.other\s+\.content/g, '.msg-bubble-them')
-            // 对方气泡伪元素
             .replace(/\.message-bubble\.ai\s+\.content::(before|after)|\.message-row\.other\s+\.message-content::(before|after)|\.chat-bubble-other::(before|after)/g, '.msg-bubble-them::$1');
         styleTag.textContent = injected;
     }
         
 function renderChatMessages(id) {
+    // Vue handles rendering — only inject CSS & sync state
     if (id !== currentChatId) return;
-    const content = document.getElementById('chat-room-content');
-    const msgs = (chatMessages[id] || []).slice(-50);
     const friend = chatList.find(c => c.id === id);
-    const myAvatar = config.avatar || 'https://api.dicebear.com/7.x/notionists/svg?seed=Rabbit&backgroundColor=ffb6c1';
-    const friendAvatar = friend ? friend.avatar : '';
     const bubbleCSS = friend && friend.bubbleCSS ? friend.bubbleCSS : '';
-    // ✅ 核心修复：把整段CSS规则直接注入到页面<style>里，支持选择器、::before、!important
     injectBubbleCSS(bubbleCSS);
-
-    let html = `<div class="msg-system"><span>我已通过好友申请，现在可以开始聊天了</span></div>`;
-    
-    msgs.forEach((msg, i) => {
-        // 通话记录只给AI看，不在聊天页面显示
-        if (msg.isCallLog || msg.from === 'system') return;
-        
-        // 最外层包裹，改为顶部对齐
-        html += `<div class="msg-row-wrapper" onclick="toggleMsgCheck(${i})" style="align-items: flex-start; margin-bottom: 12px;">`;
-        html += `<div class="msg-checkbox" id="msg-chk-${i}" style="margin-top:15px;"></div>`;
-        
-        // 增加一个垂直排列的容器，保护内部的行和时间戳不乱
-        html += `<div style="flex:1; display:flex; flex-direction:column; min-width:0;">`;
-
-        // 通话记录只用于AI记忆，不显示在聊天页面
-        if (msg.isCallLog) {
-            html += `</div></div>`;
-            return;
-        }
-
-        if (msg.type === 'recalled') {
-            const who = msg.from === 'me' ? '你' : (friend.alias || friend.name);
-            html += `<div class="msg-recalled">[系统提示：${who} 撤回了一条消息] <span class="cheat-eye" onclick="alert('透视成功！\\nTA撤回的内容是：\\n${msg.originalText}')">透视</span></div></div></div>`;
-            return;
-        }
-
-        const sysMatch = msg.text && typeof msg.text === 'string' ? msg.text.match(/[\[【]?系统提示[:：]\s*([^\]】]+)/) : null;
-        if (sysMatch) {
-            html += `<div class="msg-system"><div class="ins-system-capsule"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>${sysMatch[1].trim()}</div></div></div></div>`;
-            return;
-        }
-
-        let quoteHtml = msg.quote ? `<div class="quote-bubble-content">${msg.quote}</div>` : '';
-        const dblClick = `ondblclick="showBubbleMenu(event, ${i}, '${msg.from}')"`;
-        const isMe = msg.from === 'me';
-        const avatarHtml = isMe 
-            ? `<img src="${myAvatar}" class="msg-avatar">` 
-            : `<img src="${friendAvatar}" class="msg-avatar" onclick="openInnerThoughts()" style="cursor:pointer;" title="点击查看内心">`;
-
-        // 拼接气泡行
-        html += `<div class="msg-row ${isMe ? 'me' : 'them'}" style="margin-bottom:0;">${avatarHtml}`;
-
-        if (msg.type === 'transfer') {
-            const isReceived = msg.status === 'received';
-            const statusText = isReceived ? '已收款' : (msg.status === 'rejected' ? '已退还' : (isMe ? '你发起了一笔转账' : '给你转了一笔钱'));
-            const iconHtml = isReceived ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>` : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
-
-            html += `<div class="transfer-bubble ${isReceived ? 'received' : ''}" onclick="openTransferDetail(${i}, '${msg.from}')" ${dblClick}>
-                ${quoteHtml}
-                <div class="tb-top"><div class="tb-icon">${iconHtml}</div><div class="tb-info"><span class="tb-amount">¥${parseFloat(msg.amount).toFixed(2)}</span><span class="tb-note">${statusText}</span></div></div>
-                <div class="tb-bottom">chat转账 ${msg.text ? ` - ${msg.text}` : ''}</div>
-              </div>`;
-        } else if (msg.type === 'qinshu' || msg.type === 'qinshu_from_ai') {
-            const isReceived = msg.status === 'received';
-            const iconHtml = isReceived ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>` : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
-
-            html += `<div class="qinshu-bubble ${isReceived ? 'received' : ''}" onclick="openQinshuDetail(${i}, '${isMe ? 'me' : 'them'})" ${dblClick}>
-                ${quoteHtml}
-                <div class="qinshu-bubble-header"><div class="qinshu-bubble-icon">${iconHtml}</div><div><div class="qinshu-bubble-title">赠送给${isMe ? msg.toName : '你'}的亲属卡</div><div class="qinshu-bubble-status">${isReceived ? '已领取' : '待领取'}</div></div></div>
-                <div class="qinshu-bubble-tag">亲属卡</div>
-              </div>`;
-        } else {
-            const cls = isMe ? 'msg-bubble msg-bubble-me' : 'msg-bubble msg-bubble-them';
-            let inlineStyle = '';
-            if (bubbleCSS && !bubbleCSS.includes('{')) {
-                let cleanCss = bubbleCSS.replace(/border-radius[^;]+;?/g, '');
-                inlineStyle = `style="${cleanCss}"`;
-            }
-
-            // ✅ 检测独立渲染类型：语音/纯图片/照片卡片 → 不加气泡包裹
-            const isVoice = !!msg.isVoice;
-            const textTrimmed = (msg.text || '').trim();
-            const isPureImage = !isVoice && /^<img\s/i.test(textTrimmed) && !/<\/(?!img)[a-z]/i.test(textTrimmed);
-            const isPhotoCard = !isVoice && /^<div\s[^>]*id="card_/.test(textTrimmed);
-
-            if (isVoice || isPureImage || isPhotoCard) {
-                // 独立渲染：不用 msg-bubble 包裹，直接放在 msg-row 里
-                if (isMe && msg.failed) {
-                    html += `<div style="display:flex;align-items:center;gap:4px;">
-                        <div class="msg-fail-icon" onclick="alert('${msg.failReason || '消息发送失败'}')">!</div>
-                        <div ${dblClick} style="opacity:0.6;">${quoteHtml}${msg.text}</div>
-                    </div>`;
-                } else {
-                    html += `<div ${dblClick}>${quoteHtml}${msg.text}</div>`;
-                }
-            } else if (isMe && msg.failed) {
-                html += `<div style="display:flex;align-items:center;gap:4px;">
-                        <div class="msg-fail-icon" onclick="alert('${msg.failReason || '消息发送失败'}')">!</div>
-                        <div class="${cls}" ${inlineStyle} ${dblClick} style="opacity:0.6;">${quoteHtml}${msg.text}</div>
-                    </div>`;
-            } else {
-                html += `<div class="${cls}" ${isMe ? inlineStyle : ''} ${dblClick}>${quoteHtml}${msg.text}</div>`;
-            }
-        }
-        
-        html += `</div>`; // 关闭 msg-row
-
-        // 添加时间戳和已读状态 (完美对齐)
-        const msgTime = msg.time || new Date().toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
-        const readStatus = isMe ? `<span style="color:#007aff; margin-left:4px; font-weight:600;"></span>` : '';
-        html += `<div style="font-size:10px; color:#bbb; margin-top:4px; text-align:${isMe ? 'right' : 'left'}; padding:${isMe ? '0 45px 0 0' : '0 0 0 45px'};">${msgTime}${readStatus}</div>`;
-
-        html += `</div>`; // 关闭垂直容器
-        html += `</div>`; // 关闭 msg-row-wrapper
-    });
-    // ✅ 新增：检查是否拉黑了对方，显示底部提示
+    if (window._vueState) window._vueState.currentChatId = id;
     const inputArea = document.querySelector('.chat-room-input');
-    if (friend.blocked && friend.blockedBy === 'user') {
-        html += `
-        <div style="text-align:center; padding:30px 20px; margin-top:10px;">
-            <div style="font-size:13px; color:#8e8e93; background:rgba(0,0,0,0.05); padding:10px 16px; border-radius:20px; display:inline-block;">
-                对方已被你拉黑，<span style="color:#007aff; font-weight:600; cursor:pointer;" onclick="unblockUser('${id}')">是否选择移除拉黑？</span>
-            </div>
-        </div>`;
-        if (inputArea) inputArea.style.display = 'none'; // 隐藏输入框
+    if (friend && friend.blocked && friend.blockedBy === 'user') {
+        if (inputArea) inputArea.style.display = 'none';
     } else {
-        if (inputArea) inputArea.style.display = ''; // 恢复输入框
+        if (inputArea) inputArea.style.display = '';
     }
-     // 性能优化：避免不必要的全量重绘
-    const newHash = html.length + '_' + (html.slice(-200));
-    if (content._lastHash !== newHash) {
-        content._lastHash = newHash;
-        content.innerHTML = html;
-    }
-    scrollChatToBottom();
+    nextTick(() => scrollChatToBottom());
 }
 
 // ================= 处理点击气泡的详情与收款逻辑 =================
@@ -5838,7 +5610,7 @@ async function fdClearChat() {
             if (el) el.src = mySettings.avatar;
             config.avatar = mySettings.avatar;
             persistConfig();
-           
+            
         }
         // 保存密码修改
         const newPwd = document.getElementById('mysettings-password')?.value;
@@ -6745,7 +6517,9 @@ function sendEmojiFromPanel(id) {
 
 // 用户第一次点击屏幕时，仅请求通知权限
 document.body.addEventListener('click', function initKeepAlive() {
-    if ("Notification" in window && Notification.permission !== "granted") {
+    if ("Notification" in window && window.Notification.permission !== "granted") {
+    window.Notification.requestPermission();
+}{
         Notification.requestPermission();
     }
     document.body.removeEventListener('click', initKeepAlive);
@@ -6798,10 +6572,10 @@ function toggleKeepAlive() {
 function testSystemNotification() {
     if (!("Notification" in window)) return alert('❌ 不支持系统通知！');
 
-    if (Notification.permission === "granted") {
+    if (window.Notification.permission === "granted") {
         triggerTestNotif();
     } else {
-        Notification.requestPermission().then(perm => {
+        window.Notification.requestPermission().then(perm => {
             if (perm === "granted") triggerTestNotif();
             else alert('❌ 权限被拒绝！');
         });
@@ -6819,30 +6593,38 @@ function triggerTestNotif() {
 function showNotification(friend, text) {
     if (!friend) return;
     
-    // 提取纯文字
     let cleanText = String(text).replace(/<img[^>]+alt="([^"]+)"[^>]*>/g, '[$1]').replace(/<[^>]+>/g, '').trim();
     if (!cleanText) cleanText = '[图片/表情]';
     cleanText = cleanText.slice(0, 40);
 
-    // ★ 不论前台后台，都发系统弹窗
-    sendRealNotification(friend.alias || friend.name, cleanText, friend.avatar);
+    // ★ 用 try-catch 包裹，绝对不能让通知错误影响聊天主流程
+    try {
+        sendRealNotification(friend.alias || friend.name, cleanText, friend.avatar);
+    } catch(e) {
+        console.warn('[通知] 跳过:', e.message);
+    }
 }
 
-
+// 专治苹果 iOS 的终极弹窗核心函数
 // 专治苹果 iOS 的终极弹窗核心函数
 function sendRealNotification(title, body, icon = '') {
-    if (Notification.permission === "granted") {
-        navigator.serviceWorker.getRegistration().then(function(reg) {
-            if (reg && reg.showNotification) {
-                // 苹果 iOS 在后台必须用 Service Worker 才能弹窗
-                reg.showNotification(title, { body: body, icon: icon });
-            } else {
-                // 安卓或电脑的备用方案
-                new Notification(title, { body: body, icon: icon });
-            }
-        }).catch(function() {
-            new Notification(title, { body: body, icon: icon });
-        });
+    // ★ 必须先检查 Notification 是否存在！Safari 浏览器不支持！
+    if (!("Notification" in window)) return;
+    
+    try {
+        if (window.Notification.permission === "granted") {
+            navigator.serviceWorker.getRegistration().then(function(reg) {
+                if (reg && reg.showNotification) {
+                    reg.showNotification(title, { body: body, icon: icon });
+                } else {
+                    new window.Notification(title, { body: body, icon: icon });
+                }
+            }).catch(function() {
+                try { new window.Notification(title, { body: body, icon: icon }); } catch(e) {}
+            });
+        }
+    } catch(e) {
+        console.warn('[通知] 发送失败:', e.message);
     }
 }
 // ================= 心声/日记查看与历史记录控制 =================
@@ -7700,8 +7482,8 @@ async function scheduleCharCheck() {
     }
     
     // 检查用户是否超过5小时没回消息
-    const chatMessages = await DB.get('ins_chat_messages_v1') || {};
-    const loverMsgs = chatMessages[lover.id] || [];
+    const _cmCheck = await DB.get('ins_chat_messages_v1') || {};
+    const loverMsgs = _cmCheck[lover.id] || [];
     if (loverMsgs.length > 0) {
         const lastMsg = loverMsgs[loverMsgs.length - 1];
         if (lastMsg.from === 'ai') {
@@ -8743,6 +8525,282 @@ function uploadVidBg(input, type) {
         orig.call(this, type, fn, opts);
     };
 })();
+// ══════════════════════════════════════════════════════════════════
+// Globals for Vue apps
+// ══════════════════════════════════════════════════════════════════
+window._chatMessages = chatMessages;
+window._chatList = chatList;
+window._posts = posts;
+window._currentChatIdRef = {
+    get value() { return currentChatId; },
+    set value(v) { currentChatId = v; }
+};
+
+// Wrap openChatRoom to sync Vue state
+(function() {
+    const _origOpen = typeof openChatRoom === 'function' ? openChatRoom : null;
+    window.openChatRoom = function(id) {
+        if (_origOpen) _origOpen(id);
+        if (window._vueState) window._vueState.currentChatId = id;
+    };
+})();
+
+// ══════════════════════════════════════════════════════════════════
+// renderSingleMsg: extracted per-message HTML renderer
+// Called by Vue v-html binding in App 1
+// ══════════════════════════════════════════════════════════════════
+window.renderSingleMsg = function(msg, i) {
+    if (msg.isCallLog || msg.from === 'system') return '';
+    const id = window._currentChatIdRef.value;
+    const friend = window._chatList.find(c => c.id === id) || {};
+    const myAvatar = (window.config && window.config.avatar) || 'https://api.dicebear.com/7.x/notionists/svg?seed=Rabbit&backgroundColor=ffb6c1';
+    const friendAvatar = friend.avatar || '';
+    const bubbleCSS = friend.bubbleCSS || '';
+
+    if (msg.type === 'recalled') {
+        const who = msg.from === 'me' ? '你' : (friend.alias || friend.name || '');
+        const ot = (msg.originalText || '').replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\n/g,'\\n');
+        return `<div class="msg-row-wrapper" style="align-items:flex-start;margin-bottom:12px;"><div class="msg-checkbox" id="msg-chk-${i}" style="margin-top:15px;"></div><div style="flex:1;display:flex;flex-direction:column;min-width:0;"><div class="msg-recalled">[系统提示：${who} 撤回了一条消息] <span class="cheat-eye" onclick="alert('透视成功！\\nTA撤回的内容是：\\n${ot}')">透视</span></div></div></div>`;
+    }
+
+    const sysMatch = msg.text && typeof msg.text === 'string' ? msg.text.match(/[\[【]?系统提示[:：]\s*([^\]】]+)/) : null;
+    if (sysMatch) {
+        return `<div class="msg-row-wrapper" style="align-items:flex-start;margin-bottom:12px;"><div class="msg-checkbox" id="msg-chk-${i}" style="margin-top:15px;"></div><div style="flex:1;display:flex;flex-direction:column;min-width:0;"><div class="msg-system"><div class="ins-system-capsule"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>${sysMatch[1].trim()}</div></div></div></div>`;
+    }
+
+    const isMe = msg.from === 'me';
+    const avatarHtml = isMe
+        ? `<img src="${myAvatar}" class="msg-avatar">`
+        : `<img src="${friendAvatar}" class="msg-avatar" onclick="openInnerThoughts()" style="cursor:pointer;" title="点击查看内心">`;
+    const dblClick = `ondblclick="showBubbleMenu(event,${i},'${msg.from}')"`;
+    const quoteHtml = msg.quote ? `<div class="quote-bubble-content">${msg.quote}</div>` : '';
+    const msgTime = msg.time || new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'});
+    const readStatus = isMe ? `<span style="color:#007aff;margin-left:4px;font-weight:600;"></span>` : '';
+
+    let bubbleHtml = '';
+    if (msg.type === 'transfer') {
+        const isReceived = msg.status === 'received';
+        const statusText = isReceived ? '已收款' : (msg.status === 'rejected' ? '已退还' : (isMe ? '你发起了一笔转账' : '给你转了一笔钱'));
+        const iconHtml = isReceived
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>`;
+        bubbleHtml = `<div class="transfer-bubble ${isReceived?'received':''}" onclick="openTransferDetail(${i},'${msg.from}')" ${dblClick}>${quoteHtml}<div class="tb-top"><div class="tb-icon">${iconHtml}</div><div class="tb-info"><span class="tb-amount">¥${parseFloat(msg.amount||0).toFixed(2)}</span><span class="tb-note">${statusText}</span></div></div><div class="tb-bottom">chat转账${msg.text?' - '+msg.text:''}</div></div>`;
+    } else if (msg.type === 'qinshu' || msg.type === 'qinshu_from_ai') {
+        const isReceived = msg.status === 'received';
+        const iconHtml = isReceived
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"><rect x="2" y="7" width="20" height="14" rx="3"/><path d="M16 7V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v2"/></svg>`;
+        bubbleHtml = `<div class="qinshu-bubble ${isReceived?'received':''}" onclick="openQinshuDetail(${i},'${isMe?'me':'them'}')" ${dblClick}>${quoteHtml}<div class="qinshu-bubble-header"><div class="qinshu-bubble-icon">${iconHtml}</div><div><div class="qinshu-bubble-title">赠送给${isMe?(msg.toName||''):'你'}的亲属卡</div><div class="qinshu-bubble-status">${isReceived?'已领取':'待领取'}</div></div></div><div class="qinshu-bubble-tag">亲属卡</div></div>`;
+    } else {
+        let inlineStyle = '';
+        if (bubbleCSS && !bubbleCSS.includes('{')) {
+            let cleanCss = bubbleCSS.replace(/border-radius[^;]+;?/g, '');
+            inlineStyle = `style="${cleanCss}"`;
+        }
+        const isVoice = !!msg.isVoice;
+        const textTrimmed = (msg.text || '').trim();
+        const isPureImage = !isVoice && /^<img\s/i.test(textTrimmed) && !/<\/(?!img)[a-z]/i.test(textTrimmed);
+        const isPhotoCard = !isVoice && /^<div\s[^>]*id="card_/.test(textTrimmed);
+        const cls = isMe ? 'msg-bubble msg-bubble-me' : 'msg-bubble msg-bubble-them';
+        const fr = (msg.failReason||'消息发送失败').replace(/'/g,"\\'");
+        if (isVoice || isPureImage || isPhotoCard) {
+            if (isMe && msg.failed) {
+                bubbleHtml = `<div style="display:flex;align-items:center;gap:4px;"><div class="msg-fail-icon" onclick="alert('${fr}')">!</div><div ${dblClick} style="opacity:0.6;">${quoteHtml}${msg.text}</div></div>`;
+            } else {
+                bubbleHtml = `<div ${dblClick}>${quoteHtml}${msg.text}</div>`;
+            }
+        } else if (isMe && msg.failed) {
+            bubbleHtml = `<div style="display:flex;align-items:center;gap:4px;"><div class="msg-fail-icon" onclick="alert('${fr}')">!</div><div class="${cls}" ${inlineStyle} ${dblClick} style="opacity:0.6;">${quoteHtml}${msg.text}</div></div>`;
+        } else {
+            bubbleHtml = `<div class="${cls}" ${isMe?inlineStyle:''} ${dblClick}>${quoteHtml}${msg.text}</div>`;
+        }
+    }
+
+    return `<div class="msg-row-wrapper" onclick="toggleMsgCheck(${i})" style="align-items:flex-start;margin-bottom:12px;"><div class="msg-checkbox" id="msg-chk-${i}" style="margin-top:15px;"></div><div style="flex:1;display:flex;flex-direction:column;min-width:0;"><div class="msg-row ${isMe?'me':'them'}" style="margin-bottom:0;">${avatarHtml}${bubbleHtml}</div><div style="font-size:10px;color:#bbb;margin-top:4px;text-align:${isMe?'right':'left'};padding:${isMe?'0 45px 0 0':'0 0 0 45px'};">${msgTime}${readStatus}</div></div></div>`;
+};
+
+// ══════════════════════════════════════════════════════════════════
+// initVueApps: 5 reactive Vue apps
+// ══════════════════════════════════════════════════════════════════
+(function initVueApps() {
+if (!_VUE_LOADED) {
+    console.warn('[Vue] CDN failed to load — falling back to static rendering');
+    return;
+}
+
+try {
+
+const vueState = reactive({
+    chatList,
+    chatMessages,
+    posts,
+    currentChatId: null
+});
+window._vueState = vueState;
+
+// ─── App 1: Messages ────────────────────────────────────────────
+createApp({
+    setup() {
+        const MAX = 20;
+        const rSingleMsg = window.renderSingleMsg;
+        const currentMessages = computed(() => {
+            const id = vueState.currentChatId;
+            if (!id) return [];
+            const all = vueState.chatMessages[id] || [];
+            const slice = all.length > MAX ? all.slice(-MAX) : all;
+            return slice.map((msg, i) => ({
+                key: id + '_' + (all.length - slice.length + i),
+                globalIdx: all.length - slice.length + i,
+                msg
+            }));
+        });
+        return { currentMessages, rSingleMsg };
+    },
+    template: `<div><div v-for="item in currentMessages" :key="item.key" v-html="rSingleMsg(item.msg, item.globalIdx)" style="display:contents;"></div></div>`
+}).mount('#v-messages');
+
+// ─── App 2: Chat List ───────────────────────────────────────────
+createApp({
+    setup() {
+        const displayList = computed(() =>
+            vueState.chatList
+                .filter(item => item.inChatList !== false && !item.deleted)
+                .slice().sort((a, b) => (b.isPinned?1:0) - (a.isPinned?1:0))
+        );
+        const onItemClick = (id) => { if (!isSwiping) openChatRoom(id); };
+        const onDelete = (id) => deleteFromChat && deleteFromChat(id);
+        const onTouchStart = (e, id) => handleTouchStart && handleTouchStart(e, id);
+        const onTouchMove = (e) => handleTouchMove && handleTouchMove(e);
+        const onTouchEnd = (e, id) => handleTouchEnd && handleTouchEnd(e, id);
+        return { displayList, onItemClick, onDelete, onTouchStart, onTouchMove, onTouchEnd };
+    },
+    template: `
+        <div v-if="displayList.length===0" style="height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#ddd;">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+            <p style="margin-top:15px;font-size:13px;letter-spacing:1px;">NO MESSAGES</p>
+        </div>
+        <div v-else class="chat-list">
+            <div v-for="item in displayList" :key="item.id" class="chat-item-wrapper" :data-id="item.id">
+                <div class="chat-delete-btn" @click="onDelete(item.id)">Delete</div>
+                <div :class="['chat-item', item.isPinned?'pinned':'']" :data-id="item.id"
+                     @click="onItemClick(item.id)"
+                     @touchstart="onTouchStart($event, item.id)"
+                     @touchmove="onTouchMove($event)"
+                     @touchend="onTouchEnd($event, item.id)">
+                    <img :src="item.avatar" class="chat-avatar">
+                    <div class="chat-info">
+                        <div class="chat-name">{{ item.alias || item.name }}</div>
+                        <div class="chat-sub">{{ item.type==='group' ? item.members.length+' members' : 'Tap to chat...' }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>`
+}).mount('#tab-msg');
+
+// ─── App 3: Contacts ────────────────────────────────────────────
+createApp({
+    setup() {
+        const loverId = localStorage.getItem('chat_bound_lover_v1');
+        const contacts = computed(() => vueState.chatList.filter(item => !item.blocked && !item.deleted));
+        const onOpen = (id) => openContactDetail && openContactDetail(id);
+        const onCopyId = (uid) => copyId && copyId(uid);
+        return { contacts, loverId, onOpen, onCopyId };
+    },
+    template: `
+        <div v-if="contacts.length===0" style="text-align:center;padding:60px 20px;color:#aeaeb2;font-size:14px;">暂无联系人</div>
+        <template v-else>
+            <div class="contact-section-title">All Contacts</div>
+            <div class="contact-group-card">
+                <div v-for="item in contacts" :key="item.id" class="contact-row" @click="onOpen(item.id)">
+                    <img :src="item.avatar" class="contact-row-avatar">
+                    <div class="contact-row-info">
+                        <div class="contact-row-name">
+                            {{ item.alias||item.name }}
+                            <span v-if="item.id===loverId" style="display:inline-flex;align-items:center;gap:2px;padding:1px 6px;border-radius:10px;font-size:9px;background:#fef0f2;color:#e75480;border:1px solid #ffccd5;margin-left:6px;">恋人</span>
+                        </div>
+                        <div class="contact-row-sub" style="display:flex;align-items:center;gap:6px;">
+                            <span v-if="item.uniqueId" class="id-copy-row" @click.stop="onCopyId(item.uniqueId)">ID: {{item.uniqueId}} <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></span>
+                            <span v-else>{{ item.wechat_id||'' }}</span>
+                        </div>
+                    </div>
+                    <svg class="contact-row-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M9 18l6-6-6-6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </div>
+            </div>
+            <div style="height:20px;"></div>
+        </template>`
+}).mount('#contacts-container');
+
+// ─── App 4: Posts ───────────────────────────────────────────────
+createApp({
+    setup() {
+        function likesText(p) { return p.likes===1?'1 like':(p.likes>1?p.likes+' likes':'0 likes'); }
+        async function handleAction(action, postId) {
+            const post = vueState.posts.find(p => String(p.id)===String(postId));
+            if (!post) return;
+            if (action==='like') {
+                if (post.liked) { post.likes=(post.likes||1)-1; post.liked=false; }
+                else { post.likes=(post.likes||0)+1; post.liked=true; }
+                typeof savePosts === 'function' && savePosts();
+            } else if (action==='comment') {
+                typeof showCommentInput === 'function' && showCommentInput(post);
+            } else if (action==='delete') {
+                if (confirm('确定要删除这条动态吗？')) {
+                    const idx = vueState.posts.findIndex(p=>p.id===post.id);
+                    if (idx>-1) vueState.posts.splice(idx,1);
+                    await DB.set('ins_posts_v1', vueState.posts);
+                    typeof showToast === 'function' && showToast('动态已删除');
+                }
+            }
+        }
+        return { postsData: vueState.posts, likesText, handleAction };
+    },
+    template: `
+        <div v-if="postsData.length===0" style="text-align:center;color:#ccc;padding:40px;">暂无动态，点击右上角发布</div>
+        <div v-for="post in postsData" :key="post.id" class="ins-post" :data-id="post.id">
+            <div class="ins-post-header">
+                <img :src="post.avatar" class="ins-post-avatar">
+                <span class="ins-post-user">{{ post.name }}</span>
+                <svg class="ins-post-more" @click="handleAction('delete',post.id)" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1.5"/><circle cx="19" cy="12" r="1.5"/><circle cx="5" cy="12" r="1.5"/></svg>
+            </div>
+            <img v-if="post.image" :src="post.image" class="ins-post-img" style="aspect-ratio:4/5;">
+            <div v-if="post.text" class="ins-post-caption">{{ post.text }}</div>
+            <div class="ins-post-actions">
+                <div class="ins-post-action-left">
+                    <svg :class="post.liked?'ins-action-icon liked':'ins-action-icon'" @click="handleAction('like',post.id)" viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+                    <svg class="ins-action-icon" @click="handleAction('comment',post.id)" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+                    <svg class="ins-action-icon" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                </div>
+                <svg class="ins-action-icon" viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div class="ins-post-likes">{{ likesText(post) }}</div>
+            <div class="ins-post-time">{{ post.time }}</div>
+            <div v-if="post.comments&&post.comments.length>0" class="ins-post-comments">
+                <div v-for="(cmt,ci) in post.comments" :key="ci" class="comment-item">
+                    <img :src="cmt.avatar||''" class="comment-avatar">
+                    <div class="comment-content"><span class="comment-name">{{cmt.name}}</span><span class="comment-text">{{cmt.text}}</span><div class="comment-time">{{cmt.time}}</div></div>
+                </div>
+            </div>
+        </div>`
+}).mount('#posts-container');
+
+// ─── App 5: Stories ─────────────────────────────────────────────
+createApp({
+    setup() {
+        const storyFriends = computed(() => vueState.chatList.filter(i=>!i.deleted&&!i.blocked).slice(0,8));
+        const onStoryClick = (id) => typeof openChatRoom === 'function' && openChatRoom(id);
+        return { storyFriends, onStoryClick };
+    },
+    template: `<div v-for="friend in storyFriends" :key="friend.id" class="story-item" @click="onStoryClick(friend.id)"><div class="story-avatar-ring"><img :src="friend.avatar" class="story-avatar"></div><span class="story-name">{{friend.alias||friend.name}}</span></div>`
+}).mount('#v-stories');
+
+console.log('[Vue] All 5 apps mounted successfully');
+
+} catch(err) {
+    console.error('[Vue initVueApps ERROR]', err);
+}
+
+})(); // end initVueApps
+
 </script>
 
 <!-- ========== 我的设定页 ========== -->
@@ -9259,7 +9317,7 @@ function uploadVidBg(input, type) {
   </div>
 </div>
 <!-- ========== 照片发送面板 ========== -->
-<div id="photo-panel-overlay" onclick="closePhotoPanel()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:700;"></div>
+<div id="photo-panel-overlay" onclick="closePhotoPanel()" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);z-index:700;"></div>
 
 <div id="photo-panel" style="
   position:fixed;bottom:-100%;left:0;right:0;
@@ -9424,7 +9482,7 @@ function uploadVidBg(input, type) {
 <!-- 苹果终极保活音频实体播放器 (调用真实的静音 MP3) -->
 <audio id="silent-bg-audio" loop playsinline preload="auto" src="https://raw.githubusercontent.com/anars/blank-audio/master/15-minutes-of-silence.mp3"></audio>
 <!-- ================= 韩系 INS 风：心声与日记面板 ================= -->
-<div id="inner-thoughts-overlay" class="modal-overlay" onclick="closeInnerThoughts()" style="z-index: 9000; background: rgba(0,0,0,0.2); 
+<div id="inner-thoughts-overlay" class="modal-overlay" onclick="closeInnerThoughts()" style="z-index: 9000; background: rgba(0,0,0,0.2); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);">
     <div class="modal-card" style="max-width:360px; width:92%; max-height:85vh; display:none; flex-direction:column; padding:0; align-items:stretch; position:relative; overflow:hidden; background:#fff; border-radius:32px; box-shadow: 0 20px 60px rgba(0,0,0,0.08);" id="inner-thoughts-panel" onclick="event.stopPropagation()">
         
         <!-- 顶部导航栏 -->
@@ -9495,7 +9553,7 @@ function uploadVidBg(input, type) {
 </div>
 
 <!-- 添加头像弹窗 -->
-<div id="avatar-add-overlay" onclick="closeAvatarAddSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:799;"></div>
+<div id="avatar-add-overlay" onclick="closeAvatarAddSheet()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:799;"></div>
 <div id="avatar-add-sheet" style="display:none;position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;padding:20px;z-index:800;max-height:85vh;overflow-y:auto;">
   <div style="font-size:16px;font-weight:600;margin-bottom:16px;">添加头像</div>
   <div style="display:flex;gap:10px;margin-bottom:16px;">
@@ -9530,7 +9588,7 @@ function uploadVidBg(input, type) {
   <button onclick="confirmAddAvatar()" style="width:100%;height:46px;background:#007aff;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;margin-top:16px;">添加</button>
 </div>
 <!-- ========== 语音消息面板 ========== -->
-<div id="voice-panel-overlay" onclick="closeVoicePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);backdrop-filter:blur(8px);z-index:700;"></div>
+<div id="voice-panel-overlay" onclick="closeVoicePanel()" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.35);backdrop-filter:blur(8px);z-index:700;"></div>
 <div id="voice-panel" style="position:fixed;bottom:-100%;left:0;right:0;background:#fff;border-radius:24px 24px 0 0;padding:24px 20px calc(28px + env(safe-area-inset-bottom));z-index:701;transition:bottom 0.4s cubic-bezier(0.16,1,0.3,1);">
   <div style="width:32px;height:3px;background:#e0e0e0;border-radius:2px;margin:0 auto 20px;"></div>
   <div style="font-size:15px;font-weight:700;color:#1c1c1e;margin-bottom:4px;">发送语音消息</div>
