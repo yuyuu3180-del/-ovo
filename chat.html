@@ -20,7 +20,28 @@
         }
 
 
+/* ===== iOS性能优化 ===== */
+.msg-row-wrapper {
+    contain: layout style;
+}
+.page {
+    will-change: opacity;
+}
+/* 减少重绘区域 */
+#chat-room-content > * {
+    transform: translateZ(0);
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+
+/* ===== 性能优化 ===== */
+.msg-row-wrapper { contain: layout style; }
+.chat-item { contain: layout style; }
+.story-item { contain: layout style; }
+.contact-row { contain: layout style; }
+#tab-msg, #tab-contacts, #tab-stories { will-change: auto; }
+.chat-room-page { transform: translateZ(0); -webkit-transform: translateZ(0); }
+img { content-visibility: auto; }
 
 
 /* ===== 全设备自适应魔法 ===== */
@@ -66,7 +87,7 @@ body {
 .nav-right { position: absolute; right: 20px; font-size: 14px; color: var(--text-main); font-weight: 500; cursor: pointer; }
 .nav-right.active { color: var(--accent); font-weight: 600; }
 
-.content { flex: 1; overflow-y: auto; position: relative; scroll-behavior: smooth; padding-bottom: 90px; }
+.content { flex: 1; overflow-y: auto; position: relative; padding-bottom: 90px; -webkit-overflow-scrolling: touch; overscroll-behavior-y: contain; }
 .page { display: none; width: 100%; min-height: 100%; height: 100%; animation: fadeIn 0.3s ease; }
 .page.active { display: block; }
 @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -85,7 +106,7 @@ body {
 
 .input-box {
     width: 100%; height: 42px; background: var(--input-bg); border-radius: 10px; border: none;
-    padding: 0 12px; font-size: 13px; color: #333; outline: none; transition: all 0.2s;
+    padding: 0 12px; font-size: 13px; color: #333; outline: none; transition: opacity 0.2s, transform 0.2s;
     font-family: monospace;
 }
 .input-box:focus { background: #fff; box-shadow: 0 0 0 1px var(--accent); }
@@ -94,7 +115,7 @@ body {
 .btn-mini {
     padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 500;
     border: 1px solid var(--border); background: #fff; color: var(--text-main);
-    cursor: pointer; transition: all 0.1s;
+    cursor: pointer; transition: opacity 0.1s, transform 0.1s;
 }
 .btn-mini:active { background: var(--input-bg); transform: scale(0.95); }
 
@@ -114,20 +135,20 @@ body {
 .range-slider { width: 100%; margin-top: 10px; accent-color: var(--accent); }
 
 .tab-bar {
-    height: calc(60px + var(--safe-bottom)); background: rgba(255,255,255,0.9);
-    border-top: 1px solid rgba(0,0,0,0.03); display: flex; justify-content: space-around;
-    position: fixed; bottom: 0; width: 100%; z-index: 100; backdrop-filter: blur(10px);
-    padding-bottom: 5px; transition: transform 0.3s;
+    height: calc(60px + var(--safe-bottom)); background: rgba(255,255,255,0.97);
+    border-top: 1px solid rgba(0,0,0,0.06); display: flex; justify-content: space-around;
+    position: fixed; bottom: 0; width: 100%; z-index: 100;
+    padding-bottom: 5px; transition: transform 0.3s; transform: translateZ(0); -webkit-transform: translateZ(0);
 }
 .tab-item { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #ccc; cursor: pointer; transition: color 0.2s; }
 .tab-item.active { color: var(--text-main); }
-.tab-icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.5; fill: none; transition: all 0.2s; }
+.tab-icon { width: 24px; height: 24px; stroke: currentColor; stroke-width: 1.5; fill: none; transition: opacity 0.2s, transform 0.2s; }
 .tab-item.active .tab-icon { stroke: var(--accent); stroke-width: 2; fill: rgba(255, 182, 193, 0.1); }
 
 #toast {
     position: fixed; top: 70px; left: 50%; transform: translateX(-50%) translateY(-20px); opacity: 0;
     background: #fff; color: #333; padding: 10px 20px; border-radius: 30px;
-    font-size: 13px; z-index: 999; transition: all 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); pointer-events: none;
+    font-size: 13px; z-index: 999; transition: opacity 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28), transform 0.3s cubic-bezier(0.18, 0.89, 0.32, 1.28); pointer-events: none;
     box-shadow: 0 4px 15px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 8px; font-weight: 500;
 }
 #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
@@ -636,18 +657,30 @@ body {
 
 /* ================= 重新设计：聊天室页面 iOS 风 ================= */
 .chat-room-page {
-    position: fixed; top: 0; right: -100%; width: 100%; height: 100vh;
-    background: #f2f2f7; z-index: 500; transition: right 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    position: fixed; top: 0; left: 0; width: 100%; height: 100vh;
+    background: #f2f2f7; z-index: 500;
+    transform: translateX(100%);
+    transition: transform 0.32s cubic-bezier(0.32, 0.72, 0, 1);
     display: flex; flex-direction: column; overflow: hidden;
+    will-change: transform;
 }
-.chat-room-page.show { right: 0; }
+.chat-room-page.show { transform: translateX(0); }
+
+/* 聊天室进入时背景遮罩 */
+.chat-room-backdrop {
+    position: fixed; inset: 0; z-index: 499;
+    background: rgba(0,0,0,0.18);
+    opacity: 0; pointer-events: none;
+    transition: opacity 0.32s ease;
+}
+.chat-room-backdrop.show { opacity: 1; pointer-events: auto; }
 
 /* 聊天室顶部导航 - 简洁iOS风 */
 .chat-room-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
     position: relative; z-index: 10;
 }
@@ -731,6 +764,9 @@ body {
     display: flex;
     flex-direction: column;
     gap: 4px;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior-y: contain;
+    contain: strict;
 }
 
 /* 系统提示消息 */
@@ -757,6 +793,7 @@ body {
     font-size: 15px;
     line-height: 1.45;
     word-break: break-word;
+    contain: layout style;
 }
 .msg-row.them .msg-bubble {
     background: #fff;
@@ -816,9 +853,7 @@ body {
 
 /* 底部输入区域 - iOS 风格 */
 .chat-room-input {
-    background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    background: rgba(255,255,255,0.97);
     border-top: 0.5px solid rgba(0,0,0,0.1);
     padding: 8px 12px calc(8px + env(safe-area-inset-bottom));
 }
@@ -950,7 +985,7 @@ body {
 }
 .fd-card {
     background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(6px);
     border-radius: 16px; margin: 0 16px 4px;
     overflow: hidden;
 }
@@ -1030,8 +1065,8 @@ body {
 .contact-detail-nav {
     padding-top: env(safe-area-inset-top);
     background: rgba(255,255,255,0.92);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
     border-bottom: 0.5px solid rgba(0,0,0,0.1);
 }
 .contact-detail-nav-inner {
@@ -1072,7 +1107,7 @@ body {
 /* 信息卡片 */
 .cd-card {
     background: rgba(255,255,255,0.9);
-    backdrop-filter: blur(20px);
+    backdrop-filter: blur(6px);
     border-radius: 16px; overflow: hidden;
     margin-bottom: 12px;
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
@@ -1402,7 +1437,7 @@ body {
     padding: 6px 14px; border-radius: 20px; font-size: 13px;
     white-space: nowrap; cursor: pointer; border: 1px solid #e0e0e0;
     background: #fff; color: #555; flex-shrink: 0; height: 32px;
-    transition: all 0.15s; -webkit-tap-highlight-color: transparent;
+    transition: opacity 0.15s, transform 0.15s; -webkit-tap-highlight-color: transparent;
 }
 .emoji-tab.active { background: #07c160; color: #fff; border-color: #07c160; }
 .emoji-grid {
@@ -1443,7 +1478,7 @@ body {
 .emoji-add-tab {
     flex: 1; height: 38px; border-radius: 8px; border: 1px solid #ddd;
     background: #f7f7f7; color: #555; font-size: 14px; cursor: pointer;
-    transition: all 0.15s;
+    transition: opacity 0.15s, transform 0.15s;
 }
 .emoji-add-tab.active { background: #07c160; color: #fff; border-color: #07c160; }
 .emoji-add-field { margin-bottom: 12px; }
@@ -1634,7 +1669,7 @@ body {
     border: 1px solid #222; border-radius: 0;
     background: transparent; color: #222;
     font-size: 13px; letter-spacing: 4px; font-weight: 400;
-    cursor: pointer; transition: all 0.2s; font-family: inherit;
+    cursor: pointer; transition: opacity 0.2s, transform 0.2s; font-family: inherit;
 }
 .auth-submit:active { background: #222; color: #fff; }
 
@@ -1677,7 +1712,7 @@ body {
 .lover-bind-btn {
     padding: 8px 20px; border-radius: 20px; border: 1px solid var(--accent);
     background: transparent; color: var(--accent); font-size: 12px;
-    cursor: pointer; font-family: inherit; transition: all 0.15s;
+    cursor: pointer; font-family: inherit; transition: opacity 0.15s, transform 0.15s;
 }
 .lover-bind-btn:active { background: var(--accent); color: #fff; }
 
@@ -1719,7 +1754,7 @@ body {
 .lover-pick-item {
     display: flex; align-items: center; gap: 12px; padding: 12px;
     border: 1.5px solid #f0f0f0; border-radius: 14px; margin-bottom: 8px;
-    cursor: pointer; transition: all 0.15s;
+    cursor: pointer; transition: opacity 0.15s, transform 0.15s;
 }
 .lover-pick-item:active { background: #fef0f2; }
 .lover-pick-item.picked { border-color: var(--accent); background: #fef0f2; }
@@ -1804,8 +1839,8 @@ body {
 #voice-call-screen {
     position: fixed; inset: 0; z-index: 9000;
     background: rgba(245,245,250,0.92);
-    backdrop-filter: blur(20px) saturate(120%);
-    -webkit-backdrop-filter: blur(20px) saturate(120%);
+    backdrop-filter: blur(12px) saturate(110%);
+    -webkit-backdrop-filter: blur(12px) saturate(110%);
     display: none; flex-direction: column; align-items: center;
     padding: env(safe-area-inset-top, 50px) 30px 40px;
     color: #333;
@@ -2117,6 +2152,10 @@ body {
     <div class="nav-left" id="nav-btn-back" onclick="closeConfigView()">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
     </div>
+    <!-- 自己头像（Chat 页时显示） -->
+    <div id="nav-my-avatar-wrap" onclick="switchTab('settings')" style="position:absolute;left:14px;display:flex;align-items:center;cursor:pointer;z-index:60;">
+        <img id="nav-my-avatar" src="" style="width:32px;height:32px;border-radius:50%;object-fit:cover;border:1.5px solid rgba(0,0,0,0.07);box-shadow:0 1px 4px rgba(0,0,0,0.10);background:#f0f0f0;">
+    </div>
     <span id="page-title">Chat</span>
     <div class="nav-right" id="nav-btn-save" style="display:none;" onclick="saveConfig()">Done</div>
     <div class="nav-right" id="nav-btn-chat-add" onclick="toggleChatMenu()" style="display:block;">
@@ -2424,7 +2463,7 @@ body {
 <input type="file" id="avatar-input" style="display:none;" accept="image/*">
 
 <!-- ================= 重设计：聊天室页面 ================= -->
-
+<div id="chat-room-backdrop" class="chat-room-backdrop"></div>
 <div id="chat-room-page" class="chat-room-page">
     <div class="chat-room-nav">
     <div class="chat-room-nav-inner" style="display:flex;align-items:center;padding:10px 16px 12px;position:relative;min-height:64px;">
@@ -3733,6 +3772,12 @@ ${userName}评论了你："${myComment.text}"
         renderChatList();
         renderContactList();
         
+        // 初始化顶部导航头像
+        loadMySettings();
+        const navAv = document.getElementById('nav-my-avatar');
+        if (navAv && mySettings.avatar) navAv.src = mySettings.avatar;
+        else if (navAv && config.avatar) navAv.src = config.avatar;
+        
         setTimeout(() => startAIPostScheduler(), 3000); // 延迟3秒等页面加载完
     }
 
@@ -3818,6 +3863,17 @@ ${userName}评论了你："${myComment.text}"
         document.querySelectorAll('.tab-item')[tabs.indexOf(tab)].classList.add('active');
         const chatAddBtn = document.getElementById('nav-btn-chat-add');
         if (chatAddBtn) chatAddBtn.style.display = (tab === 'msg') ? 'block' : 'none';
+        // 只在 Chat 页显示自己的头像
+        const navAvatarWrap = document.getElementById('nav-my-avatar-wrap');
+        if (navAvatarWrap) {
+            navAvatarWrap.style.display = (tab === 'msg') ? 'flex' : 'none';
+            // 更新头像 src
+            const myAvEl = document.getElementById('nav-my-avatar');
+            if (myAvEl) {
+                const profileAvSrc = document.getElementById('profile-avatar')?.src || '';
+                if (profileAvSrc) myAvEl.src = profileAvSrc;
+            }
+        }
         if (tab !== 'settings') {
             closeConfigView();
             document.getElementById('page-title').innerText = { msg: 'Chat', contact: 'Contacts', moment: 'Moments' }[tab];
@@ -3929,14 +3985,27 @@ ${userName}评论了你："${myComment.text}"
         }
     }
 
+    // 从文本中检测情绪，用于 MiniMax TTS 情绪参数
+    function detectTTSEmotion(text) {
+        if (!text) return 'neutral';
+        if (/哈哈|嘻嘻|开心|笑|好棒|棒|太好了|太棒了|耶|哦耶|嘿嘿|好玩|有趣/.test(text)) return 'happy';
+        if (/呜|哭|难过|伤心|委屈|想你|好想|思念|心疼|怎么办|好难|好累/.test(text)) return 'sad';
+        if (/啊！|哎！|哇！|惊|没想到|怎么会|真的吗|什么！|不会吧/.test(text)) return 'surprised';
+        if (/烦|怎么了|算了|随便|无语|不知道|困/.test(text)) return 'neutral';
+        return 'neutral';
+    }
+
     async function callMiniMaxTTSDirect(text, group, apiKey, voice) {
+        const emotion = detectTTSEmotion(text);
+        // 轻微随机化速度，听起来更自然 (0.92~1.05)
+        const speed = parseFloat((0.92 + Math.random() * 0.13).toFixed(2));
         const res = await fetch('https://api.minimax.chat/v1/t2a_v2?GroupId=' + group, {
             method: 'POST',
             headers: { 'Authorization': 'Bearer ' + apiKey, 'Content-Type': 'application/json' },
             body: JSON.stringify({
                 model: 'speech-01-turbo', text,
                 stream: false,
-                voice_setting: { voice_id: voice || 'female-shaonv', speed: 1.0, vol: 1.0, pitch: 0 },
+                voice_setting: { voice_id: voice || 'female-shaonv', speed: speed, vol: 1.0, pitch: 0, emotion: emotion },
                 audio_setting: { sample_rate: 32000, bitrate: 128000, format: 'mp3' }
             })
         });
@@ -4340,6 +4409,11 @@ ${userName}评论了你："${myComment.text}"
     currentChatId = id;
     document.getElementById('room-target-avatar').src = friend.avatar;
     document.getElementById('room-target-name').innerText = friend.alias || friend.name;
+    // 隐藏主导航栏，防止遮挡聊天室原生顶部
+    const mainNavBar = document.querySelector('.nav-bar');
+    if (mainNavBar) mainNavBar.style.display = 'none';
+    // 显示遮罩 + 滑入聊天室
+    document.getElementById('chat-room-backdrop').classList.add('show');
     document.getElementById('chat-room-page').classList.add('show');
     renderChatMessages(id);
 
@@ -4366,7 +4440,11 @@ ${userName}评论了你："${myComment.text}"
 
     function closeChatRoom() {
         document.getElementById('chat-room-page').classList.remove('show');
+        document.getElementById('chat-room-backdrop').classList.remove('show');
         currentChatId = null;
+        // 恢复主导航栏
+        const mainNavBar = document.querySelector('.nav-bar');
+        if (mainNavBar) mainNavBar.style.display = '';
     }
 
 // ============================================================
@@ -4411,12 +4489,21 @@ function renderChatMessages(id) {
     let html = `<div class="msg-system"><span>我已通过好友申请，现在可以开始聊天了</span></div>`;
     
     msgs.forEach((msg, i) => {
+        // 通话记录只给AI看，不在聊天页面显示
+        if (msg.isCallLog || msg.from === 'system') return;
+        
         // 最外层包裹，改为顶部对齐
         html += `<div class="msg-row-wrapper" onclick="toggleMsgCheck(${i})" style="align-items: flex-start; margin-bottom: 12px;">`;
         html += `<div class="msg-checkbox" id="msg-chk-${i}" style="margin-top:15px;"></div>`;
         
         // 增加一个垂直排列的容器，保护内部的行和时间戳不乱
         html += `<div style="flex:1; display:flex; flex-direction:column; min-width:0;">`;
+
+        // 通话记录只用于AI记忆，不显示在聊天页面
+        if (msg.isCallLog) {
+            html += `</div></div>`;
+            return;
+        }
 
         if (msg.type === 'recalled') {
             const who = msg.from === 'me' ? '你' : (friend.alias || friend.name);
@@ -4516,7 +4603,12 @@ function renderChatMessages(id) {
     } else {
         if (inputArea) inputArea.style.display = ''; // 恢复输入框
     }
-     content.innerHTML = html;
+     // 性能优化：避免不必要的全量重绘
+    const newHash = html.length + '_' + (html.slice(-200));
+    if (content._lastHash !== newHash) {
+        content._lastHash = newHash;
+        content.innerHTML = html;
+    }
     scrollChatToBottom();
 }
 
@@ -4915,7 +5007,7 @@ ${loreStr}
 ━━━━━━━━━━━━━━
 【时间与生活感】
 ━━━━━━━━━━━━━━
-现在是${new Date().toLocaleDateString('zh-CN', {year:'numeric',month:'long',day:'numeric',weekday:'long'})} ${new Date().toLocaleTimeString('zh-CN', {hour:'2-digit',minute:'2-digit'})}。
+${(()=>{const now=new Date();const h=now.getHours();const period=h>=0&&h<6?'凌晨（深夜）':h>=6&&h<9?'早上':h>=9&&h<12?'上午（白天）':h>=12&&h<14?'中午（午间）':h>=14&&h<18?'下午（白天）':h>=18&&h<21?'傍晚/晚上':'深夜（快睡了）';const isDaytime=h>=6&&h<22;return`现在是${now.toLocaleDateString('zh-CN',{year:'numeric',month:'long',day:'numeric',weekday:'long'})} ${now.toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit'})}，当前时段：【${period}】。\n\n⚠️ 时间感知要准确：${isDaytime?'现在是白天，对方正在正常活动，不要叫对方睡觉或问对方吃早餐了吗（除非真的是早上）。':'现在确实是深夜/凌晨，对方可能快睡了。'}`;})()}
 
 你是一个活在真实时间里的人：
 - 你知道现在几点。早上你可能还没完全清醒，深夜你可能在犯困或者胡思乱想。
@@ -5773,6 +5865,9 @@ async function fdClearChat() {
             if (el) el.src = mySettings.avatar;
             config.avatar = mySettings.avatar;
             persistConfig();
+            // 同步更新顶部导航头像
+            const navAv = document.getElementById('nav-my-avatar');
+            if (navAv) navAv.src = mySettings.avatar;
         }
         // 保存密码修改
         const newPwd = document.getElementById('mysettings-password')?.value;
@@ -7568,7 +7663,12 @@ ${recentMsgs}`);
 async function callCharAI(lover, userContent) {
     if (!config.url || !config.key) return null;
     const charNameStr = lover.alias || lover.name;
-    const year = new Date().getFullYear();
+    const now = new Date();
+    const year = now.getFullYear();
+    const hour = now.getHours();
+    const timeStr = now.toLocaleTimeString('zh-CN', {hour:'2-digit', minute:'2-digit'});
+    const dateStr = now.toLocaleDateString('zh-CN', {year:'numeric', month:'long', day:'numeric', weekday:'long'});
+    const timePeriod = hour < 6 ? '深夜/凌晨' : hour < 9 ? '早上' : hour < 12 ? '上午' : hour < 14 ? '中午' : hour < 18 ? '下午' : hour < 22 ? '晚上' : '深夜';
     try {
         const res = await fetch(`${config.url}/chat/completions`, {
             method: 'POST',
@@ -7579,6 +7679,8 @@ async function callCharAI(lover, userContent) {
                 messages: [
                     { role: 'system', content: `你就是${charNameStr}本人。以下是关于你的设定：
 ${(lover.prompt||'').substring(0,600)}
+
+【当前时间】现在是${dateStr} ${timeStr}，${timePeriod}。请根据实际时间做出符合常识的判断（中午不要让人睡觉，深夜才适合说早睡）。
 
 【如何成为这个角色——请认真思考】
 
@@ -7806,11 +7908,28 @@ async function vcOnAnswer(friend) {
         document.getElementById('vc-timer').textContent = `${m}:${s}`;
     }, 1000);
     
-    // AI 先说一句开场白
+    // 获取最近聊天记录作为上下文
+    const recentMsgsForCall = (chatMessages[vcChatId] || []).slice(-10)
+        .filter(m => !m.isCallLog && m.text && typeof m.text === 'string')
+        .map(m => {
+            const name = m.from === 'me' ? (mySettings?.name||'用户') : (friend.alias||friend.name);
+            return `${name}: ${m.text.replace(/<[^>]+>/g, '').substring(0, 80)}`;
+        }).join('\n');
+
+    // AI 先说一句开场白（联系聊天上下文）
     const greeting = await callCharAI(friend,
-        `${mySettings?.name||'用户'}给你打了一个语音电话，你刚刚接起来。说一句接电话时自然会说的话。
-比如"喂""嗯？""干嘛""怎么了"之类的，用你自己的方式说。
-字数3-15字。只输出你说的话。`);
+        `${mySettings?.name||'用户'}给你打了一个语音电话，你刚刚接起来。
+
+你们最近聊天的内容：
+${recentMsgsForCall || '（没有最近记录）'}
+
+根据上面的聊天记录，用最自然的方式接电话。
+- 接电话时的第一句话要口语化，有真实语气
+- 如果对方刚才说了难过/不开心/烦恼，接电话后用轻柔关心的语气
+- 如果聊得很开心，用轻松活泼的语气
+- 如果没什么特别内容，随意接就行（"喂""嗯？""哎""干嘛呀"之类）
+- 可以有语气词：嗯、哎、哦、啊、喂
+字数3-15字。只输出你说的话，不加旁白。`);
     
     if (greeting && vcActive) {
         vcAddSubtitle('ai', greeting);
@@ -7818,40 +7937,63 @@ async function vcOnAnswer(friend) {
     }
 }
 
-function vcToggleMic() {
-    vcMicActive = !vcMicActive;
+// ===== 语音通话 长按说话 =====
+let vcPTTRecognition = null;
+let vcPTTActive = false;
+
+function vcPTTStart(e) {
+    if (e) e.preventDefault();
+    if (!vcActive || vcPTTActive) return;
+    vcPTTActive = true;
     const btn = document.getElementById('vc-mic-btn');
-    btn.classList.toggle('active', vcMicActive);
-    
-    if (vcMicActive) {
-        // 启动语音识别
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            vcRecognition = new SpeechRecognition();
-            vcRecognition.lang = 'zh-CN';
-            vcRecognition.continuous = true;
-            vcRecognition.interimResults = false;
-            vcRecognition.onresult = (event) => {
-                const result = event.results[event.results.length - 1];
-                if (result.isFinal) {
-                    const text = result[0].transcript.trim();
-                    if (text) vcSendUserMessage(text);
-                }
-            };
-            vcRecognition.onerror = () => {};
-            vcRecognition.onend = () => {
-                if (vcMicActive && vcActive) vcRecognition.start();
-            };
-            vcRecognition.start();
-        } else {
-            showToast('浏览器不支持语音识别，请用文字输入');
-            vcMicActive = false;
-            btn.classList.remove('active');
+    btn.classList.add('active');
+    btn.style.transform = 'scale(1.15)';
+
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        showToast('浏览器不支持语音识别');
+        vcPTTActive = false;
+        btn.classList.remove('active');
+        btn.style.transform = '';
+        return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    vcPTTRecognition = new SR();
+    vcPTTRecognition.lang = 'zh-CN';
+    vcPTTRecognition.continuous = false;
+    vcPTTRecognition.interimResults = false;
+    vcPTTRecognition._finalText = '';
+    vcPTTRecognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+                vcPTTRecognition._finalText += event.results[i][0].transcript;
+            }
         }
-    } else {
-        if (vcRecognition) { vcRecognition.stop(); vcRecognition = null; }
+    };
+    vcPTTRecognition.onerror = () => {};
+    vcPTTRecognition.start();
+}
+
+function vcPTTEnd(e) {
+    if (e) e.preventDefault();
+    if (!vcPTTActive) return;
+    vcPTTActive = false;
+    const btn = document.getElementById('vc-mic-btn');
+    btn.classList.remove('active');
+    btn.style.transform = '';
+
+    if (vcPTTRecognition) {
+        const rec = vcPTTRecognition;
+        vcPTTRecognition = null;
+        rec.stop();
+        // Give a moment for final result to come in
+        setTimeout(() => {
+            const text = rec._finalText ? rec._finalText.trim() : '';
+            if (text && vcActive) vcSendUserMessage(text);
+        }, 300);
     }
 }
+
+function vcToggleMic() { /* legacy - replaced by PTT */ }
 
 function vcToggleMute() {
     vcMuted = !vcMuted;
@@ -7887,11 +8029,16 @@ async function vcSendUserMessage(text) {
         `你正在和${mySettings?.name||'用户'}打语音电话。这是你们通话的内容：
 ${callContext}
 
-现在轮到你说话了。像真实打电话一样自然地回应。
-- 打电话时说话更口语化、更随意
-- 可以"嗯""啊""哦"这种语气词
-- 字数10-80字
-- 只输出你说的话，不要旁白`);
+现在轮到你说话了。请用真实打电话的语气自然地回应。
+
+【语气要求】
+- 说话要有节奏感，像真人打电话一样，会有停顿、语气词、重复
+- 多用口语：嗯、啊、哦、哈、诶、对对对、好、嗯嗯、啊啊、哎
+- 语调要有起伏，不要平铺直叙
+- 可以用感叹词表达情绪：哎呀、哇、哈哈、哎哟
+- 说话自然断句，不要一口气说完，用逗号或省略号暗示语气停顿
+- 字数15-60字，不要说太长
+- 只输出你说的话，不要旁白、不要括号动作描写`);
     
     if (reply && vcActive) {
         vcHistory.push({ role: 'assistant', content: reply });
@@ -8236,10 +8383,26 @@ function vidStartCall() {
             document.getElementById('vidcall-timer').textContent = `${m}:${s}`;
         }, 1000);
         
-        // AI开场白
+        // AI开场白（联系聊天上下文）
         const userName = mySettings?.name || config.name || '我';
+        const recentMsgsForVid = (chatMessages[vidChatId] || []).slice(-10)
+            .filter(m => !m.isCallLog && m.text && typeof m.text === 'string')
+            .map(m => {
+                const name = m.from === 'me' ? userName : (friend.alias||friend.name);
+                return `${name}: ${m.text.replace(/<[^>]+>/g, '').substring(0, 80)}`;
+            }).join('\n');
+
         const greeting = await callCharAI(friend,
-            `${userName}给你打视频电话了，你刚接起来。说一句自然的开场白。字数3-20字。只输出你说的话。`);
+            `${userName}给你打视频电话了，你刚接起来。
+
+你们最近聊天的内容：
+${recentMsgsForVid || '（没有最近记录）'}
+
+根据上面的聊天记录，用最自然的方式接视频电话。
+- 如果对方刚才说了难过/不开心/烦恼，接电话后要先关心（"还在难过吗""怎么了啊"）
+- 如果聊得轻松，用轻松语气接
+- 如果没什么特别，随意说一句
+字数3-20字。只输出你说的话。`);
         
         if (greeting && vidActive) {
             vidAddSub('ai', greeting);
@@ -8307,7 +8470,7 @@ async function vidToggleCamera() {
                     
                     ctx.drawImage(hiddenVideo, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
                     ctx.restore();
-                }, 33); // 约30fps
+                }, 50); // 约20fps (省电)
             };
             
             camBtn.classList.add('active');
@@ -8364,35 +8527,66 @@ async function vidFlipCamera() {
             else { sh = vw / canvasRatio; sy = (vh - sh) / 2; }
             ctx.drawImage(hiddenVideo, sx, sy, sw, sh, 0, 0, canvas.width, canvas.height);
             ctx.restore();
-        }, 33);
+        }, 50);
     } catch(e) { showToast('切换摄像头失败'); }
 }
 
-function vidToggleMic() {
-    vidMicActive = !vidMicActive;
-    document.getElementById('vidcall-mic-btn').classList.toggle('active', vidMicActive);
-    if (vidMicActive) {
-        if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
-            const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-            vidRecognition = new SR();
-            vidRecognition.lang = 'zh-CN';
-            vidRecognition.continuous = true;
-            vidRecognition.interimResults = false;
-            vidRecognition.onresult = (e) => {
-                const r = e.results[e.results.length - 1];
-                if (r.isFinal && r[0].transcript.trim()) vidSendUserMsg(r[0].transcript.trim());
-            };
-            vidRecognition.onend = () => { if (vidMicActive && vidActive) vidRecognition.start(); };
-            vidRecognition.start();
-        } else {
-            showToast('浏览器不支持语音识别');
-            vidMicActive = false;
-            document.getElementById('vidcall-mic-btn').classList.remove('active');
+// ===== 视频通话 长按说话 =====
+let vidPTTRecognition = null;
+let vidPTTActive = false;
+
+function vidPTTStart(e) {
+    if (e) e.preventDefault();
+    if (!vidActive || vidPTTActive) return;
+    vidPTTActive = true;
+    const btn = document.getElementById('vidcall-mic-btn');
+    btn.classList.add('active');
+    btn.style.transform = 'scale(1.15)';
+
+    if (!('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
+        showToast('浏览器不支持语音识别');
+        vidPTTActive = false;
+        btn.classList.remove('active');
+        btn.style.transform = '';
+        return;
+    }
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    vidPTTRecognition = new SR();
+    vidPTTRecognition.lang = 'zh-CN';
+    vidPTTRecognition.continuous = false;
+    vidPTTRecognition.interimResults = false;
+    vidPTTRecognition._finalText = '';
+    vidPTTRecognition.onresult = (event) => {
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+            if (event.results[i].isFinal) {
+                vidPTTRecognition._finalText += event.results[i][0].transcript;
+            }
         }
-    } else {
-        if (vidRecognition) { vidRecognition.stop(); vidRecognition = null; }
+    };
+    vidPTTRecognition.onerror = () => {};
+    vidPTTRecognition.start();
+}
+
+function vidPTTEnd(e) {
+    if (e) e.preventDefault();
+    if (!vidPTTActive) return;
+    vidPTTActive = false;
+    const btn = document.getElementById('vidcall-mic-btn');
+    btn.classList.remove('active');
+    btn.style.transform = '';
+
+    if (vidPTTRecognition) {
+        const rec = vidPTTRecognition;
+        vidPTTRecognition = null;
+        rec.stop();
+        setTimeout(() => {
+            const text = rec._finalText ? rec._finalText.trim() : '';
+            if (text && vidActive) vidSendUserMsg(text);
+        }, 300);
     }
 }
+
+function vidToggleMic() { /* legacy - replaced by PTT */ }
 
 function vidToggleMute() {
     vidMuted = !vidMuted;
@@ -8426,7 +8620,12 @@ async function vidSendUserMsg(text) {
             text: `你正在和${mySettings?.name||'我'}视频通话。
 通话历史：\n${callCtx}
 现在我对你说：${text}
-请根据通话历史和(如果我开了摄像头)画面里的真实内容回复。如果我给你看了什么东西，你要准确说出来。像真人在打视频一样自然。字数5-60字。只输出你说的话。`
+
+请用JSON格式回复，包含两个字段：
+1. "reply": 你说的话（要口语化、有语气词，像真人视频通话一样自然。多用：嗯、啊、哦、哈、诶、嘿、哎，可以有语气停顿。15-60字）
+2. "action": 此刻你的动作/神情/环境的细腻描写（15-40字，第三人称，像小说一样描写，例如"他微微侧头，嘴角带着一丝若有若无的笑意，视线落在屏幕上"）
+
+只返回JSON，不加\`\`\`。`
         }
     ];
 
@@ -8457,10 +8656,24 @@ async function vidSendUserMsg(text) {
             })
         });
         const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content?.trim();
+        const rawReply = (data.choices?.[0]?.message?.content || '').trim();
+        
+        let reply = '';
+        let action = '';
+        try {
+            const parsed = JSON.parse(rawReply.replace(/```json|```/g, '').trim());
+            reply = parsed.reply || '';
+            action = parsed.action || '';
+        } catch(e) {
+            // fallback: treat whole response as reply
+            reply = rawReply;
+        }
         
         if (reply && vidActive) {
             vidHistory.push({ role: 'assistant', content: reply });
+            if (action) {
+                vidAddSub('action', action);
+            }
             vidAddSub('ai', reply);
             vcPlayTTS(reply); // 播放语音
         }
@@ -8475,6 +8688,9 @@ function vidAddSub(who, text) {
     if (who === 'me') {
         div.className = 'vidcall-sub-me';
         div.textContent = text;
+    } else if (who === 'action') {
+        div.style.cssText = 'font-size:11px;color:rgba(255,255,255,0.55);font-style:italic;text-align:center;padding:2px 12px;line-height:1.5;';
+        div.textContent = text;
     } else {
         div.className = 'vidcall-sub-ai';
         const hasNonChinese = /[가-힣ぁ-んァ-ヶa-zA-Z]{3,}/.test(text);
@@ -8482,8 +8698,8 @@ function vidAddSub(who, text) {
     }
     area.appendChild(div);
     area.scrollTop = area.scrollHeight;
-    // 只保留最近5条字幕
-    while (area.children.length > 5) area.removeChild(area.firstChild);
+    // 只保留最近8条字幕
+    while (area.children.length > 8) area.removeChild(area.firstChild);
 }
 
 function vidHangup() {
@@ -8543,6 +8759,19 @@ function uploadVidBg(input, type) {
     };
     reader.readAsDataURL(file);
 }
+
+// ===== 全局性能优化：让所有touchmove事件默认passive，减少iOS卡顿 =====
+(function() {
+    const orig = EventTarget.prototype.addEventListener;
+    EventTarget.prototype.addEventListener = function(type, fn, opts) {
+        if (type === 'touchmove' || type === 'touchstart') {
+            if (typeof opts === 'boolean') opts = { capture: opts, passive: true };
+            else if (!opts) opts = { passive: true };
+            else if (opts.passive === undefined) opts = Object.assign({}, opts, { passive: true });
+        }
+        orig.call(this, type, fn, opts);
+    };
+})();
 </script>
 
 <!-- ========== 我的设定页 ========== -->
@@ -9365,9 +9594,15 @@ function uploadVidBg(input, type) {
         </button>
     </div>
     <div class="vc-controls">
-        <button class="vc-btn vc-btn-mic" id="vc-mic-btn" onclick="vcToggleMic()">
-            <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
-        </button>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:6px;">
+            <button class="vc-btn vc-btn-mic" id="vc-mic-btn" 
+                ontouchstart="vcPTTStart(event)" ontouchend="vcPTTEnd(event)" ontouchcancel="vcPTTEnd(event)"
+                onmousedown="vcPTTStart(event)" onmouseup="vcPTTEnd(event)" onmouseleave="vcPTTEnd(event)"
+                style="user-select:none;-webkit-user-select:none;">
+                <svg width="24" height="24" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/></svg>
+            </button>
+            <div style="font-size:10px;color:#999;text-align:center;">长按说话</div>
+        </div>
         <button class="vc-btn vc-btn-hangup" onclick="vcHangup()">
             <svg width="28" height="28" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.38 2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.76a16 16 0 0 0 6.29 6.29l.95-.95a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z" fill="white" stroke="none"/></svg>
         </button>
@@ -9427,7 +9662,10 @@ function uploadVidBg(input, type) {
             </button>
         </div>
         <div class="vidcall-controls">
-            <button class="vidcall-ctrl-btn" id="vidcall-mic-btn" onclick="vidToggleMic()">
+            <button class="vidcall-ctrl-btn" id="vidcall-mic-btn"
+                ontouchstart="vidPTTStart(event)" ontouchend="vidPTTEnd(event)" ontouchcancel="vidPTTEnd(event)"
+                onmousedown="vidPTTStart(event)" onmouseup="vidPTTEnd(event)" onmouseleave="vidPTTEnd(event)"
+                style="user-select:none;-webkit-user-select:none;">
                 <svg width="22" height="22" viewBox="0 0 24 24"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg>
             </button>
             <button class="vidcall-ctrl-btn" id="vidcall-cam-btn" onclick="vidToggleCamera()">
