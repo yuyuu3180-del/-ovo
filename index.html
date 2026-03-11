@@ -1576,6 +1576,25 @@ else if (item.type === 'voice') {
             else if (['photo-square', 'photo-heart', 'photo-circle'].includes(item.type)) {
                 item.data = { image: el.dataset.image || '' };
             }
+            else if (item.type === 'love') {
+                const tops = el.querySelectorAll('.love-top [contenteditable]');
+                const names = el.querySelectorAll('.love-name');
+                const details = el.querySelectorAll('.love-detail');
+                item.data = {
+                    avatar_l: globalImageCache[item.id + '_avatar_l'],
+                    avatar_r: globalImageCache[item.id + '_avatar_r'],
+                    top1: tops[0] ? tops[0].innerText : '',
+                    top2: tops[1] ? tops[1].innerText : '',
+                    name_l: names[0] ? names[0].innerText : '',
+                    name_r: names[1] ? names[1].innerText : '',
+                    detail1_l: details[0] ? details[0].innerText : '',
+                    detail2_l: details[1] ? details[1].innerText : '',
+                    detail1_r: details[2] ? details[2].innerText : '',
+                    detail2_r: details[3] ? details[3].innerText : '',
+                    label: el.querySelector('.love-label') ? el.querySelector('.love-label').innerText : '',
+                    days: el.querySelector('.love-days') ? el.querySelector('.love-days').innerText : '',
+                };
+            }
             else if (item.type === 'text-glass') {
                 item.data = { text: el.querySelector('.widget-text-glass-content').innerText };
             }
@@ -1696,6 +1715,13 @@ else if(item.type === 'voice') {
                     }
                     else if(item.type === 'message-day') {
                         createMessageDayWidget(item.col, item.row, item.id, item.data);
+                    }
+                    else if(item.type === 'love') {
+                        if(item.data) {
+                            globalImageCache[item.id + '_avatar_l'] = item.data.avatar_l;
+                            globalImageCache[item.id + '_avatar_r'] = item.data.avatar_r;
+                        }
+                        createLoveWidget(item.col, item.row, item.id, item.data);
                     }
                     else if(item.type === 'profile') {
                         globalImageCache[item.id + '_avatar'] = item.data ? item.data.avatar : null;
@@ -2305,14 +2331,17 @@ function createVoiceWidget(col, row, id, data = null) {
         `;
 
         const avatarLKey = div.dataset.id + '_avatar_l'; const avatarRKey = div.dataset.id + '_avatar_r';
-        if(!globalImageCache[avatarLKey] && !data) globalImageCache[avatarLKey] = "url('https://picsum.photos/seed/boy/100')";
-        if(!globalImageCache[avatarRKey] && !data) globalImageCache[avatarRKey] = "url('https://picsum.photos/seed/girl/100')";
+        if (data && data.avatar_l) globalImageCache[avatarLKey] = data.avatar_l;
+        else if(!globalImageCache[avatarLKey]) globalImageCache[avatarLKey] = "url('https://picsum.photos/seed/boy/100')";
+        if (data && data.avatar_r) globalImageCache[avatarRKey] = data.avatar_r;
+        else if(!globalImageCache[avatarRKey]) globalImageCache[avatarRKey] = "url('https://picsum.photos/seed/girl/100')";
         if (globalImageCache[avatarLKey]) div.querySelector('.love-avatar.left').style.backgroundImage = globalImageCache[avatarLKey];
         if (globalImageCache[avatarRKey]) div.querySelector('.love-avatar.right').style.backgroundImage = globalImageCache[avatarRKey];
 
         div.querySelector('.love-avatar.left').onclick = () => { if(!isEditing) { activeEditType='widget'; currentImgKey=avatarLKey; imgInput.click(); } };
         div.querySelector('.love-avatar.right').onclick = () => { if(!isEditing) { activeEditType='widget'; currentImgKey=avatarRKey; imgInput.click(); } };
         div.querySelectorAll('[contenteditable]').forEach(el => el.onblur = () => saveLayout());
+        div.querySelector('.remove-btn').onclick = (e) => { e.stopPropagation(); div.remove(); updateAppStore(); saveLayout(); };
         desktop.appendChild(div); initDrag(div);
     }
     // 全局图片上传触发器
@@ -2738,6 +2767,14 @@ function createVoiceWidget(col, row, id, data = null) {
 
                     } else if (key.endsWith('_avatar_r')) {
                         const el = document.querySelector(`.widget-love[data-id="${id}"] .love-avatar.right`);
+                        if(el) el.style.backgroundImage = cssUrl;
+
+                    } else if (key.endsWith('_ins_l')) {
+                        const el = document.querySelector(`.widget-ins-chat[data-id="${id}"] .ins-avatar-l`);
+                        if(el) el.style.backgroundImage = cssUrl;
+
+                    } else if (key.endsWith('_ins_r')) {
+                        const el = document.querySelector(`.widget-ins-chat[data-id="${id}"] .ins-avatar-r`);
                         if(el) el.style.backgroundImage = cssUrl;
 
                     } else if (key.includes('_avatar')) {
